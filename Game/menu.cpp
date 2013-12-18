@@ -1,6 +1,7 @@
 
 #include "menu.h"
 #include "../Framework/framework.h"
+#include "fight.h"
 
 void Menu::Begin()
 {
@@ -13,7 +14,7 @@ void Menu::Begin()
 
 	titleChar = new Akuma();
 	titleChar->Initialise( Scale );
-	titleChar->Fighter_SetPosition( -(Framework::System->GetDisplayWidth() / 2), Framework::System->GetDisplayHeight() );
+	titleChar->Fighter_SetPosition( -(Framework::System->GetDisplayWidth() / 2), -(Framework::System->GetDisplayHeight() * 0.05f) );
 
 	titleSuper = spLoadSurface( "Resource/super.png" );
 	titleJumpFighter = spLoadSurface( "Resource/jumpfighter.png" );
@@ -62,31 +63,41 @@ void Menu::EventOccurred(Event *e)
 			case SDLK_UP:
 				menuOption = (menuOption + 7) % 4;
 				break;
+			case SDLK_RETURN:
+			case SDLK_SPACE:
+				Framework::System->ProgramStages->Push( (Stage*)new Fight() );
+				break;
 			default:
 				if( inputData->button[SP_BUTTON_DOWN] != 0 )
 				{
+					menuOption = (menuOption + 1) % 4;
 				}
 				if( inputData->button[SP_BUTTON_UP] != 0 )
 				{
+					menuOption = (menuOption + 7) % 4;
 				}
 				break;
 		}
 
 	}
 
+/*
 	if( e->Type == EVENT_JOYSTICK_AXIS || e->Type == EVENT_JOYSTICK_HAT || e->Type == EVENT_JOYSTICK_BALL )
 	{
 		inputData = spGetInput();
 		if( inputData->axis[SP_AXIS_UPDOWN] > 0 )
 		{
+			menuOption = (menuOption + 1) % 4;
 		}
 		if( inputData->axis[SP_AXIS_UPDOWN] < 0 )
 		{
+			menuOption = (menuOption + 7) % 4;
 		}
 	}
 	if( e->Type == EVENT_JOYSTICK_BUTTON_DOWN )
 	{
 	}
+*/
 }
 
 void Menu::Update()

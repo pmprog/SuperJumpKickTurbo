@@ -1,9 +1,12 @@
 
 #include "fighter_akuma.h"
+#include "../Framework/framework.h"
 
 void Akuma::Initialise( float Scale )
 {
 	currentPosition = new Vector2( 0, 0 );
+	currentFaceLeft = false;
+	currentScale = Scale;
 
 	spriteSheet = new SpriteSheet( spLoadSurfaceZoom("Resource/akuma.png", (int)(SP_ONE * Scale)) );
 	// Idle Frames
@@ -13,8 +16,8 @@ void Akuma::Initialise( float Scale )
 	spriteSheet->AddSprite( 133 * Scale, 6 * Scale, 38 * Scale, 52 * Scale );
 	// Jump Frames
 	spriteSheet->AddSprite( 208 * Scale, 0, 32 * Scale, 64 * Scale );
-	spriteSheet->AddSprite( 256 * Scale, 378 * Scale, 32 * Scale, 64 * Scale );
-	spriteSheet->AddSprite( 304 * Scale, 372 * Scale, 32 * Scale, 64 * Scale );
+	spriteSheet->AddSprite( 256 * Scale, 0 * Scale, 32 * Scale, 64 * Scale );
+	spriteSheet->AddSprite( 304 * Scale, 0 * Scale, 32 * Scale, 64 * Scale );
 	// Kick Frames
 	spriteSheet->AddSprite( 384 * Scale, 64 * Scale, 48 * Scale, 64 * Scale );
 	// Super Frames
@@ -92,6 +95,70 @@ void Akuma::CharSelect_RenderName( int ScreenX, int ScreenY )
 void Akuma::Fighter_Update()
 {
 	currentAnimation->Update();
+	currentStateTime++;
+
+	switch( currentState )
+	{
+		case Fighter::Idle:
+			break;
+		case Fighter::Jump:
+			if( currentStateTime < AKUMA_JUMP_FRAMES )
+			{
+				currentPosition->Y += (currentScale * AKUMA_JUMP_SPEED) * ((AKUMA_JUMP_FRAMES - currentStateTime) / AKUMA_JUMP_FRAMES);
+			} else {
+				currentPosition->Y -= (currentScale * AKUMA_JUMP_SPEED) * ((currentStateTime - AKUMA_JUMP_FRAMES) / AKUMA_JUMP_FRAMES);
+				if( currentStateTime == (int)(AKUMA_JUMP_FRAMES * 0.9f) )
+				{
+					currentAnimation = animJumpLand;
+					currentAnimation->Start();
+				}
+				if( currentPosition->Y <= 0 )
+				{
+					currentPosition->Y = 0;
+					Fighter_SetState( Fighter::Idle );
+				}
+			}
+			break;
+		case Fighter::BackJump:
+			if( currentStateTime < AKUMA_BACKJUMP_FRAMES )
+			{
+				currentPosition->Y += (currentScale * AKUMA_BACKJUMP_SPEED) * ((AKUMA_BACKJUMP_FRAMES - currentStateTime) / AKUMA_BACKJUMP_FRAMES);
+				currentPosition->X -= (currentFaceLeft ? -1 : 1) * (currentScale * AKUMA_BACKJUMP_RSPEED);
+			} else {
+				currentPosition->Y -= (currentScale * AKUMA_BACKJUMP_SPEED) * ((currentStateTime - AKUMA_BACKJUMP_FRAMES) / AKUMA_BACKJUMP_FRAMES);
+				currentPosition->X -= (currentFaceLeft ? -1 : 1) * (currentScale * AKUMA_BACKJUMP_RSPEED);
+				if( currentStateTime == (int)(AKUMA_BACKJUMP_FRAMES * 0.9f) )
+				{
+					currentAnimation = animJumpLand;
+					currentAnimation->Start();
+				}
+				if( currentPosition->Y <= 0 )
+				{
+					currentPosition->Y = 0;
+					Fighter_SetState( Fighter::Idle );
+				}
+			}
+			break;
+		case Fighter::Kick:
+			currentPosition->Y -= (currentScale * AKUMA_KICK_SPEED);
+			currentPosition->X -= (currentFaceLeft ? 1 : -1) * (currentScale * AKUMA_KICK_RSPEED);
+			if( currentPosition->Y <= 0 )
+			{
+				currentPosition->Y = 0;
+				Fighter_SetState( Fighter::Idle );
+			}
+			break;
+		case Fighter::Super:
+			break;
+		case Fighter::Loser:
+			break;
+		case Fighter::Victor:
+			break;
+//		case Fighter::Ultra:
+//			break;
+	}
+
+
 	if( currentAnimation->HasEnded() )
 	{
 		if( currentAnimation == animJumpTakeOff )
@@ -115,6 +182,9 @@ void Akuma::Fighter_SetState( int NewState )
 	{
 	}
 	*/
+
+	currentState = (Fighter::FighterStates)NewState;
+	currentStateTime = 0;
 
 	// Enter State Code
 	switch( NewState )
@@ -169,5 +239,62 @@ void Akuma::Fighter_Render( int ScreenOffsetX, int ScreenOffsetY )
 {
 	spSetVerticalOrigin( SP_BOTTOM );
 	spSetHorizontalOrigin( SP_CENTER );
-	currentAnimation->DrawFrame( (int)currentPosition->X - ScreenOffsetX, (int)currentPosition->Y - ScreenOffsetY );
+
+	int screenY = Framework::System->GetDisplayHeight() * 0.9;	// Y @ 0 is 10% screen height from the bottom of the screen
+	screenY = screenY - currentPosition->Y + ScreenOffsetY;
+
+	currentAnimation->DrawFrame( (int)currentPosition->X - ScreenOffsetX, screenY, currentFaceLeft, false );
 }
+
+bool Akuma::Fighter_IsFacingLeft()
+{
+	return currentFaceLeft;
+}
+
+void Akuma::Fighter_SetFacing( bool FacingLeft )
+{
+	if( currentState == Fighter::Idle )
+	{
+		currentFaceLeft = FacingLeft;
+	}
+}
+
+void Akuma::Fighter_JumpPressed()
+{
+	switch( currentState )
+	{
+		case Fighter::Idle:
+			Fighter_SetState( Fighter::Jump );
+			break;
+	}
+}
+
+void Akuma::Fighter_KickPressed()
+{
+	switch( currentState )
+	{
+		case Fighter::Idle:
+			Fighter_SetState( Fighter::BackJump );
+			break;
+		case Fighter::Jump:
+		case Fighter::BackJump:
+			Fighter_SetState( Fighter::Kick );
+			break;
+
+	}
+}
+
+void Akuma::Fighter_SuperPressed()
+{
+	switch( currentState )
+	{
+		case Fighter::Idle:
+		case Fighter::Jump:
+		case Fighter::BackJump:
+		case Fighter::Kick:
+			Fighter_SetState( Fighter::Super );
+			break;
+
+	}
+}
+

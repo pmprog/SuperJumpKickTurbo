@@ -34,6 +34,10 @@ void BootUp::EventOccurred(Event *e)
 			StartGame();
 		}
 	}
+	if( e->Type == EVENT_JOYSTICK_BUTTON_DOWN )
+	{
+		StartGame();
+	}
 }
 
 void BootUp::Update()

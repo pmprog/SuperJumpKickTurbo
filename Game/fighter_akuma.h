@@ -7,6 +7,14 @@
 class Akuma : public Fighter
 {
 
+	#define AKUMA_JUMP_FRAMES				100.0f
+	#define AKUMA_JUMP_SPEED				3.0f
+	#define AKUMA_BACKJUMP_FRAMES		50.0f
+	#define AKUMA_BACKJUMP_SPEED		2.0f
+	#define AKUMA_BACKJUMP_RSPEED		1.0f
+	#define AKUMA_KICK_SPEED				2.0f
+	#define AKUMA_KICK_RSPEED				1.5f
+
 	private:
 		SpriteSheet* spriteSheet;
 		Animation* animIdle;
@@ -21,10 +29,12 @@ class Akuma : public Fighter
 		Animation* animKO;
 		Animation* animWin;
 
-
+		float currentScale;
 		Fighter::FighterStates currentState;
+		int currentStateTime;
 		Animation* currentAnimation;
 		Vector2* currentPosition;
+		bool currentFaceLeft;
 
 	public:
 		virtual void Initialise( float Scale );
@@ -39,5 +49,12 @@ class Akuma : public Fighter
 		virtual void Fighter_SetPosition( float X, float Y );
 		virtual void Fighter_SetPosition( Vector2* NewPosition );
 		virtual void Fighter_Render( int ScreenOffsetX, int ScreenOffsetY );
+
+		virtual bool Fighter_IsFacingLeft();
+		virtual void Fighter_SetFacing( bool FacingLeft );
+
+		virtual void Fighter_JumpPressed();
+		virtual void Fighter_KickPressed();
+		virtual void Fighter_SuperPressed();
 
 };
