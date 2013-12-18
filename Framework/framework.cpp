@@ -217,6 +217,17 @@ void Framework::InitialiseDisplay()
 	}
 
 	displaySurface = spCreateWindow( scrW, scrH, scrFS, 0 );
+
+	// Hack for Sparrow3D. If a device goes fullscreen, doesn't always use requested dimensions
+	if( displaySurface->w != scrW )
+	{
+		Settings->SetIntegerValue( "Visual.ScreenWidth", displaySurface->w );
+	}
+	if( displaySurface->h != scrH )
+	{
+		Settings->SetIntegerValue( "Visual.ScreenHeight", displaySurface->h );
+	}
+
 	spSelectRenderTarget( spGetWindowSurface() );
 	spSetPerspective( 50.0f, (float)spGetWindowSurface()->w / (float)spGetWindowSurface()->h, 0.1f, 100.0f);
 

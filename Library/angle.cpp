@@ -2,11 +2,17 @@
 #include "angle.h"
 #include "vector2.h"
 #include <cmath>
+#include "../Framework/graphicslib.h"
 
-Angle::Angle( float StartAngle )
+Angle::Angle()
 {
 	curAngle = 0;
-	Add( StartAngle );
+}
+
+Angle::Angle( float Degrees )
+{
+	curAngle = 0;
+	Add( Degrees );
 }
 
 void Angle::Add( float Degrees )
@@ -30,6 +36,11 @@ float Angle::ToDegrees()
 float Angle::ToRadians()
 {
 	return curAngle * (180.0f / M_PI);
+}
+
+float Angle::ToRadiansSparrow()
+{
+	return (curAngle / 360.0f) * (2 * SP_PI);
 }
 
 bool Angle::ClockwiseShortestTo( Angle* DestinationAngle )

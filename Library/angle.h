@@ -9,10 +9,12 @@ class Angle
 		float curAngle;
 
 	public:
-		Angle( float StartAngle );
+		Angle();
+		Angle( float Degrees );
 		void Add( float Degrees );
 		float ToDegrees();
 		float ToRadians();
+		float ToRadiansSparrow();
 
 		float ShortestAngleTo( Angle* DestinationAngle );
 		float ShortestAngleTo( float DestinationAngle );

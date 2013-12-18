@@ -38,15 +38,9 @@ void BootUp::EventOccurred(Event *e)
 
 void BootUp::Update()
 {
-	if( logoFadeIn < 255 )
+	if( logoFadeIn < 128 )
 	{
-		logoFadeIn += 16;
-		SDL_SetAlpha( logoSprite->GetSheet(), SDL_SRCALPHA, logoFadeIn );
-	}
-	if( logoFadeIn > 255 )
-	{
-		logoFadeIn = 255;
-		SDL_SetAlpha( logoSprite->GetSheet(), SDL_SRCALPHA, logoFadeIn );
+		logoFadeIn += 4;
 	}
 	if( bootBarSize < Framework::System->GetDisplayWidth() )
 	{
@@ -62,7 +56,8 @@ void BootUp::Render()
 	spClearTarget( 0 );
 	spSetHorizontalOrigin( SP_CENTER );
 	spSetVerticalOrigin( SP_CENTER );
-	logoSprite->DrawSprite( 0, Framework::System->GetDisplayWidth() / 2, Framework::System->GetDisplayHeight() / 2 );
+
+	logoSprite->DrawSprite( 0, Framework::System->GetDisplayWidth() / 2, Framework::System->GetDisplayHeight() / 2, logoFadeIn / 128.0f, logoFadeIn / 128.0f, 0 );
 	spRectangle( Framework::System->GetDisplayWidth() / 2, Framework::System->GetDisplayHeight() - 12 , -1, bootBarSize, 8, spGetRGB( 255, 120, 0 ) );
 }
 

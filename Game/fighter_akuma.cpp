@@ -27,9 +27,6 @@ void Akuma::Initialise( float Scale )
 	spriteSheet->AddSprite( 74 * Scale, 192 * Scale, 50 * Scale, 38 * Scale );
 	spriteSheet->AddSprite( 128 * Scale, 192 * Scale, 54 * Scale, 38 * Scale );
 	// Win Frames
-	//spriteSheet->AddSprite( 272 * Scale, 144 * Scale, 42 * Scale, 48 * Scale );
-	//spriteSheet->AddSprite( 322 * Scale, 140 * Scale, 26 * Scale, 52 * Scale );
-	//spriteSheet->AddSprite( 313 * Scale, 140 * Scale, 41 * Scale, 52 * Scale );
 	spriteSheet->AddSprite( 360 * Scale, 144 * Scale, 44 * Scale, 48 * Scale );
 	spriteSheet->AddSprite( 410 * Scale, 144 * Scale, 44 * Scale, 48 * Scale );
 	// Profile Icon
@@ -47,7 +44,7 @@ void Akuma::Initialise( float Scale )
 	animJumpTakeOff->AddFrame( 4 );
 	animJumpFloat = new Animation( spriteSheet, true, 40 );
 	animJumpFloat->AddFrame( 5 );
-	animJumpLand = new Animation( spriteSheet, false, 40 );
+	animJumpLand = new Animation( spriteSheet, true, 40 );
 	animJumpLand->AddFrame( 6 );
 
 	animKick = new Animation( spriteSheet, true, 9 );
@@ -85,7 +82,7 @@ void Akuma::CharSelect_RenderProfileIcon( int ScreenX, int ScreenY )
 {
 	spSetVerticalOrigin( SP_CENTER );
 	spSetHorizontalOrigin( SP_CENTER );
-	spriteSheet->DrawSprite( 15, ScreenX, ScreenY );
+	spriteSheet->DrawSprite( 15, ScreenX, ScreenY, 1.0, 1.0, 0 );
 }
 
 void Akuma::CharSelect_RenderName( int ScreenX, int ScreenY )
@@ -101,10 +98,6 @@ void Akuma::Fighter_Update()
 		{
 			currentAnimation = animJumpFloat;
 			currentAnimation->Start();
-		}
-		if( currentAnimation == animJumpLand )
-		{
-			Fighter_SetState( Fighter::Idle );
 		}
 		if( currentAnimation == animKOLand )
 		{

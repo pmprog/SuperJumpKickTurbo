@@ -6,6 +6,7 @@ Animation::Animation( SpriteSheet* Sprites, bool LoopAnimation, int FrameDuratio
 	sprites = Sprites;
 	animRepeats = LoopAnimation;
 	animDelayTime = FrameDuration;
+	animScale = 1.0;
 	Start();
 }
 
@@ -36,7 +37,17 @@ void Animation::Update()
 
 void Animation::DrawFrame( int ScreenX, int ScreenY )
 {
-	sprites->DrawSprite( frameList.at(animCurrentFrame), ScreenX, ScreenY );
+	sprites->DrawSprite( frameList.at(animCurrentFrame), ScreenX, ScreenY, animScale, animScale, 0 );
+}
+
+void Animation::DrawFrame( int ScreenX, int ScreenY, bool FlipX, bool FlipY )
+{
+	sprites->DrawSprite( frameList.at(animCurrentFrame), ScreenX, ScreenY, animScale * (FlipX ? -1 : 1), animScale * (FlipY ? -1 : 1), 0 );
+}
+
+void Animation::DrawFrame( int ScreenX, int ScreenY, bool FlipX, bool FlipY, Angle* Rotation )
+{
+	sprites->DrawSprite( frameList.at(animCurrentFrame), ScreenX, ScreenY, animScale * (FlipX ? -1 : 1), animScale * (FlipY ? -1 : 1), Rotation );
 }
 
 bool Animation::Loops()
@@ -53,3 +64,14 @@ int Animation::GetCurrentFrame()
 {
 	return animCurrentFrame;
 }
+
+void Animation::SetScale( float NewScale )
+{
+	animScale = NewScale;
+}
+
+float Animation::GetScale()
+{
+	return animScale;
+}
+

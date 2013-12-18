@@ -14,6 +14,7 @@ class Animation
 		int animCurrentFrame;
 		int animDelayTime;
 		int animDelayTick;
+		float animScale;
 
 	public:
 		Animation( SpriteSheet* Sprites, bool LoopAnimation, int FrameDuration );
@@ -23,9 +24,13 @@ class Animation
 		void Start();
 		void Update();
 		void DrawFrame( int ScreenX, int ScreenY );
+		void DrawFrame( int ScreenX, int ScreenY, bool FlipX, bool FlipY );
+		void DrawFrame( int ScreenX, int ScreenY, bool FlipX, bool FlipY, Angle* Rotation );
 		bool Loops();
 		bool HasEnded();
 		int GetCurrentFrame();
+		void SetScale( float NewScale );
+		float GetScale();
 
 
 };
