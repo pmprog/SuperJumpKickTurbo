@@ -6,7 +6,7 @@
 void BootUp::Begin()
 {
 	bootBarSize = 0;
-	bootBarAdjust = (Framework::System->GetDisplayWidth() / (FRAMES_PER_SECOND * 1.5));
+	bootBarAdjust = (Framework::System->GetDisplayWidth() / (FRAMES_PER_SECOND * 1.5f));
 	logoSprite = new SpriteSheet( spLoadSurface("Resource/pmprog.png"), 204, 200 );
 	logoFadeIn = 0;
 }

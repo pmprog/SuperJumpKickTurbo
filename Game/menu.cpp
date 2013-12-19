@@ -5,7 +5,7 @@
 
 void Menu::Begin()
 {
-	ScreenScale = Framework::System->GetDisplayHeight() / 240.0;
+	ScreenScale = Framework::System->GetDisplayHeight() / 240.0f;
 	float Scale = 3 * ScreenScale;
 
 	menuOption = 0;
@@ -105,9 +105,9 @@ void Menu::Update()
 	menuTimer++;
 
 	titleChar->Fighter_Update();
-	if( titleChar->Fighter_GetPosition()->X < Framework::System->GetDisplayWidth() / 6.0 )
+	if( titleChar->Fighter_GetPosition()->X < Framework::System->GetDisplayWidth() / 6.0f )
 	{
-		titleChar->Fighter_GetPosition()->X += (Framework::System->GetDisplayWidth() / (FRAMES_PER_SECOND * 6.0));
+		titleChar->Fighter_GetPosition()->X += (Framework::System->GetDisplayWidth() / (FRAMES_PER_SECOND * 6.0f));
 	}
 }
 
@@ -118,7 +118,7 @@ void Menu::Render()
 	spSetHorizontalOrigin( SP_CENTER );
 	spSetVerticalOrigin( SP_TOP );
 	spRotozoomSurface( Framework::System->GetDisplayWidth() / 2, 4, -3, titleSuper, SP_ONE * ScreenScale, SP_ONE * ScreenScale, 0 );
-	if( menuTimer > FRAMES_PER_SECOND * 2.0 )
+	if( menuTimer > FRAMES_PER_SECOND * 2.0f )
 	{
 		spRotozoomSurface( Framework::System->GetDisplayWidth() / 2, 4, -2, titleJumpFighter, SP_ONE * ScreenScale, SP_ONE * ScreenScale, 0 );
 	}

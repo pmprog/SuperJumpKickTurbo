@@ -240,7 +240,7 @@ void Akuma::Fighter_Render( int ScreenOffsetX, int ScreenOffsetY )
 	spSetVerticalOrigin( SP_BOTTOM );
 	spSetHorizontalOrigin( SP_CENTER );
 
-	int screenY = Framework::System->GetDisplayHeight() * 0.9;	// Y @ 0 is 10% screen height from the bottom of the screen
+	int screenY = Framework::System->GetDisplayHeight() * 0.9f;	// Y @ 0 is 10% screen height from the bottom of the screen
 	screenY = screenY - currentPosition->Y + ScreenOffsetY;
 
 	currentAnimation->DrawFrame( (int)currentPosition->X - ScreenOffsetX, screenY, currentFaceLeft, false );

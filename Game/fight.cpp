@@ -5,10 +5,10 @@
 
 void Fight::Begin()
 {
-	ScreenScale = (Framework::System->GetDisplayHeight() / 240.0);
+	ScreenScale = (Framework::System->GetDisplayHeight() / 240.0f);
 
-	ArenaWidth = Framework::System->GetDisplayWidth() * 1.8;
-	ArenaHeight = Framework::System->GetDisplayWidth() * 1.5;
+	ArenaWidth = Framework::System->GetDisplayWidth() * 1.8f;
+	ArenaHeight = Framework::System->GetDisplayWidth() * 1.5f;
 	CameraX = ArenaWidth / 2;
 	CameraY = 0;
 
