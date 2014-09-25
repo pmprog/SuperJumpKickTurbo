@@ -5,12 +5,14 @@
 
 void Fight::Begin()
 {
-	ScreenScale = (Framework::System->GetDisplayHeight() / 240.0f);
+	ScreenScale = (Framework::System->GetDisplayHeight() / 218.0f); // 109.0f);
 
 	ArenaWidth = Framework::System->GetDisplayWidth() * 1.8f;
 	ArenaHeight = Framework::System->GetDisplayWidth() * 1.5f;
 	CameraX = ArenaWidth / 2;
 	CameraY = 0;
+
+	Background = spLoadSurfaceZoom("Resource/bkg_america_day.png", (int)(SP_ONE * ScreenScale));
 
 	PlayerA = new Akuma();
 	PlayerA->Initialise( ScreenScale );
@@ -86,7 +88,9 @@ void Fight::Update()
 
 void Fight::Render()
 {
-	spClearTarget( 0 );
+	//spClearTarget( 0 );
+	spBlitSurface( 0, 0, -5, Background );
+
 	PlayerA->Fighter_Render( CameraX - (Framework::System->GetDisplayWidth() / 2), CameraY );
 	PlayerB->Fighter_Render( CameraX - (Framework::System->GetDisplayWidth() / 2), CameraY );
 }
