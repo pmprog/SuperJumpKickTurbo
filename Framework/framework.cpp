@@ -1,29 +1,89 @@
+
 #include "framework.h"
 #include "../Game/boot.h"
 
 Framework* Framework::System;
 
-Framework::Framework()
+Framework::Framework( int Width, int Height, int Framerate, bool DropFrames )
 {
 #ifdef WRITE_LOG
-  printf( "Framework: Startup\n" );
+	printf( "Framework: Startup: Allegro\n" );
 #endif
-	spInitCore();
-	spInitPrimitives();
-	SDL_EnableUNICODE( 1 );
 
+	if( !al_init() )
+	{
+		printf( "Framework: Error: Cannot init Allegro\n" );
+		quitProgram = true;
+		return;
+	}
+	
+	al_init_font_addon();
+	if( !al_install_keyboard() || !al_install_mouse() || !al_init_primitives_addon() || !al_init_ttf_addon() || !al_init_image_addon() )
+	{
+		printf( "Framework: Error: Cannot init Allegro plugin\n" );
+		quitProgram = true;
+		return;
+	}
+
+#ifdef NETWORK_SUPPORT
+#ifdef WRITE_LOG
+	printf( "Framework: Startup: Network\n" );
+#endif
+	if( enet_initialize() != 0 )
+	{
+		printf( "Framework: Error: Cannot init enet\n" );
+		quitProgram = true;
+		return;
+	}
+#endif
+
+#ifdef WRITE_LOG
+	printf( "Framework: Startup: Default Variables\n" );
+#endif
 	quitProgram = false;
   ProgramStages = new StageStack();
-	deltaTime = 0;
   framesToProcess = 0;
+	framesPerSecond = Framerate;
+	enableSlowDown = DropFrames;
+
+#ifdef WRITE_LOG
+	printf( "Framework: Startup: Settings file\n" );
+#endif
   Settings = new ConfigFile( "settings.cfg" );
 
-  InitialiseDisplay();
-	InitialiseAudioSystem();
 
-	eventMutex = SDL_CreateMutex();
+#ifdef DOWNLOAD_SUPPORT
+#ifdef WRITE_LOG
+	printf( "Framework: Startup: Download Manager\n" );
+#endif
+	DOWNLOADS = new DownloadManager( Settings->GetQuickIntegerValue( "Downloads.Concurrent", 3 ) );
+#endif
 
-  System = this;
+#ifdef WRITE_LOG
+	printf( "Framework: Startup: Allegro Events\n" );
+#endif
+	eventAllegro = al_create_event_queue();
+	eventMutex = al_create_mutex_recursive();
+	frameTimer = al_create_timer( 1.0 / (double)framesPerSecond );
+
+	srand( (unsigned int)al_get_time() );
+
+#ifdef WRITE_LOG
+	printf( "Framework: Startup: Display\n" );
+#endif
+	DISPLAY = new Display( Width, Height );
+	DISPLAY->Initialise( Settings->GetQuickIntegerValue( "Video.Width", Width ), Settings->GetQuickIntegerValue( "Video.Height", Height ), Settings->GetQuickBooleanValue( "Video.Fullscreen", false ), (DisplayScaleMode::ScaleMode)Settings->GetQuickIntegerValue( "Video.ScaleMode", DisplayScaleMode::Letterbox ) );
+	AUDIO = new Audio();
+
+#ifdef WRITE_LOG
+	printf( "Framework: Startup: Register event sources\n" );
+#endif
+	RegisterEventSource( DISPLAY->GetEventSource() );
+	RegisterEventSource( al_get_keyboard_event_source() );
+	RegisterEventSource( al_get_mouse_event_source() );
+	RegisterEventSource( al_get_timer_event_source( frameTimer ) );
+
+	System = this;
 }
 
 Framework::~Framework()
@@ -34,14 +94,52 @@ Framework::~Framework()
   SaveSettings();
 
 #ifdef WRITE_LOG
+  printf( "Framework: Clear stages\n" );
+#endif
+	if( ProgramStages != 0 )
+	{
+		// Just make sure all stages are popped and deleted
+		ShutdownFramework();
+	}
+
+#ifdef WRITE_LOG
   printf( "Framework: Shutdown\n" );
 #endif
-	SDL_DestroyMutex( eventMutex );
-	ShutdownDisplay();
-	ShutdownAudioSystem();
+	al_unregister_event_source( eventAllegro, DISPLAY->GetEventSource() );
+	al_destroy_event_queue( eventAllegro );
+	al_destroy_mutex( eventMutex );
+	al_destroy_timer( frameTimer );
 
-	//spQuitPrimitives();
-	spQuitCore();
+#ifdef WRITE_LOG
+  printf( "Framework: Shutdown display\n" );
+#endif
+	DISPLAY->Shutdown();
+	delete DISPLAY;
+
+#ifdef WRITE_LOG
+  printf( "Framework: Shutdown audio\n" );
+#endif
+	delete AUDIO;
+	
+#ifdef NETWORK_SUPPORT
+#ifdef WRITE_LOG
+  printf( "Framework: Shutdown enet\n" );
+#endif
+	enet_deinitialize();
+#endif
+
+#ifdef DOWNLOAD_SUPPORT
+#ifdef WRITE_LOG
+  printf( "Framework: Shutdown downloads\n" );
+#endif
+	DOWNLOADS->AbortDownloads = true;
+	delete DOWNLOADS;
+#endif
+
+#ifdef WRITE_LOG
+  printf( "Framework: Shutdown Allegro\n" );
+#endif
+	al_uninstall_system();
 }
 
 void Framework::Run()
@@ -50,10 +148,31 @@ void Framework::Run()
   printf( "Framework: Run.Program Loop\n" );
 #endif
 
-  // Set BootUp Stage active
-  ProgramStages->Push( (Stage*)new BootUp() );
+  ProgramStages->Push( new BootUp() );
 
-	spLoop( engineDraw, engineUpdate, FRAME_TIME_IN_MS, resizeWindow, pushSDLEvent);
+	al_start_timer( frameTimer );
+
+	while( !quitProgram )
+	{
+		ProcessEvents();
+		while( framesToProcess > 0 )
+		{
+			if( ProgramStages->IsEmpty() )
+			{
+				break;
+			}
+			ProgramStages->Current()->Update();
+#ifdef DOWNLOAD_SUPPORT
+			DOWNLOADS->Update();
+#endif
+			framesToProcess--;
+		}
+		if( !ProgramStages->IsEmpty() )
+		{
+			ProgramStages->Current()->Render();
+			DISPLAY->Render();
+		}
+	}
 }
 
 void Framework::ProcessEvents()
@@ -68,7 +187,11 @@ void Framework::ProcessEvents()
     return;
 	}
 
-	SDL_LockMutex( eventMutex );
+	// Convert Allegro events before we process
+	// TODO: Consider threading the translation
+	TranslateAllegroEvents();
+
+	al_lock_mutex( eventMutex );
 
 	while( eventQueue.size() > 0 && !ProgramStages->IsEmpty() )
 	{
@@ -78,80 +201,179 @@ void Framework::ProcessEvents()
 		switch( e->Type )
 		{
 			case EVENT_WINDOW_CLOSED:
-				SDL_UnlockMutex( eventMutex );
+				delete e;
+				al_unlock_mutex( eventMutex );
 				ShutdownFramework();
 				return;
 				break;
-			case EVENT_WINDOW_RESIZE:
-				resizeWindow( e->Data.Display.Resize.w, e->Data.Display.Resize.h );
-				break;
 			default:
 				ProgramStages->Current()->EventOccurred( e );
+#ifdef DOWNLOAD_SUPPORT
+				DOWNLOADS->EventOccured( e );
+#endif
 				break;
 		}
 		delete e;
 	}
 
-	SDL_UnlockMutex( eventMutex );
-}
-
-void Framework::ProcessUpdates( int Delta )
-{
-	deltaTime += Delta;
-
-	while( deltaTime >= FRAME_TIME_IN_MS && !ProgramStages->IsEmpty() )
-	{
-		ProgramStages->Current()->Update();
-		deltaTime -= FRAME_TIME_IN_MS;
-	}
+	al_unlock_mutex( eventMutex );
 }
 
 void Framework::PushEvent( Event* e )
 {
-	SDL_LockMutex( eventMutex );
+	al_lock_mutex( eventMutex );
 	eventQueue.push_back( e );
-	SDL_UnlockMutex( eventMutex );
+	al_unlock_mutex( eventMutex );
 }
 
-void Framework::PushSDLEvent( SDL_Event* e )
+void Framework::TranslateAllegroEvents()
 {
-	SDL_LockMutex( eventMutex );
-	eventQueue.push_back( new Event( e ) );
-	SDL_UnlockMutex( eventMutex );
+	ALLEGRO_EVENT e;
+	Event* fwE;
+
+	while( al_get_next_event( eventAllegro, &e ) )
+	{
+		switch( e.type )
+		{
+			case ALLEGRO_EVENT_DISPLAY_CLOSE:
+				fwE = new Event();
+				fwE->Type = EVENT_WINDOW_CLOSED;
+				PushEvent( fwE );
+				break;
+			case ALLEGRO_EVENT_JOYSTICK_CONFIGURATION:
+				al_reconfigure_joysticks();
+				break;
+			case ALLEGRO_EVENT_TIMER:
+				if( e.timer.source == frameTimer )
+				{
+					if( enableSlowDown )
+					{
+						// Slow the game down, never process more than one update per frame
+						framesToProcess = 1;
+					} else {
+						framesToProcess++;
+					}
+				} else {
+					fwE = new Event();
+					fwE->Type = EVENT_TIMER_TICK;
+					fwE->Data.Timer.TimerObject = (void*)e.timer.source;
+					PushEvent( fwE );
+				}
+				break;
+			case ALLEGRO_EVENT_KEY_DOWN:
+				fwE = new Event();
+				fwE->Type = EVENT_KEY_DOWN;
+				fwE->Data.Keyboard.KeyCode = e.keyboard.keycode;
+				fwE->Data.Keyboard.UniChar = e.keyboard.unichar;
+				fwE->Data.Keyboard.Modifiers = e.keyboard.modifiers;
+				PushEvent( fwE );
+				break;
+			case ALLEGRO_EVENT_KEY_UP:
+				fwE = new Event();
+				fwE->Type = EVENT_KEY_UP;
+				fwE->Data.Keyboard.KeyCode = e.keyboard.keycode;
+				fwE->Data.Keyboard.UniChar = e.keyboard.unichar;
+				fwE->Data.Keyboard.Modifiers = e.keyboard.modifiers;
+				PushEvent( fwE );
+				break;
+			case ALLEGRO_EVENT_KEY_CHAR:
+				fwE = new Event();
+				fwE->Type = EVENT_KEY_PRESS;
+				fwE->Data.Keyboard.KeyCode = e.keyboard.keycode;
+				fwE->Data.Keyboard.UniChar = e.keyboard.unichar;
+				fwE->Data.Keyboard.Modifiers = e.keyboard.modifiers;
+				PushEvent( fwE );
+				break;
+			case ALLEGRO_EVENT_MOUSE_AXES:
+				fwE = new Event();
+				fwE->Type = EVENT_MOUSE_MOVE;
+				fwE->Data.Mouse.X = DISPLAY->ScreenXToGameX(e.mouse.x);
+				fwE->Data.Mouse.Y = DISPLAY->ScreenYToGameY(e.mouse.y);
+				fwE->Data.Mouse.DeltaX = DISPLAY->ScreenXToGameX(e.mouse.dx);
+				fwE->Data.Mouse.DeltaY = DISPLAY->ScreenYToGameY(e.mouse.dy);
+				fwE->Data.Mouse.WheelVertical = e.mouse.dz;
+				fwE->Data.Mouse.WheelHorizontal = e.mouse.dw;
+				fwE->Data.Mouse.Button = e.mouse.button;
+				PushEvent( fwE );
+				break;
+			case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+				fwE = new Event();
+				fwE->Type = EVENT_MOUSE_DOWN;
+				fwE->Data.Mouse.X = DISPLAY->ScreenXToGameX(e.mouse.x);
+				fwE->Data.Mouse.Y = DISPLAY->ScreenYToGameY(e.mouse.y);
+				fwE->Data.Mouse.DeltaX = DISPLAY->ScreenXToGameX(e.mouse.dx);
+				fwE->Data.Mouse.DeltaY = DISPLAY->ScreenYToGameY(e.mouse.dy);
+				fwE->Data.Mouse.WheelVertical = e.mouse.dz;
+				fwE->Data.Mouse.WheelHorizontal = e.mouse.dw;
+				fwE->Data.Mouse.Button = e.mouse.button;
+				PushEvent( fwE );
+				break;
+			case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
+				fwE = new Event();
+				fwE->Type = EVENT_MOUSE_UP;
+				fwE->Data.Mouse.X = DISPLAY->ScreenXToGameX(e.mouse.x);
+				fwE->Data.Mouse.Y = DISPLAY->ScreenYToGameY(e.mouse.y);
+				fwE->Data.Mouse.DeltaX = DISPLAY->ScreenXToGameX(e.mouse.dx);
+				fwE->Data.Mouse.DeltaY = DISPLAY->ScreenYToGameY(e.mouse.dy);
+				fwE->Data.Mouse.WheelVertical = e.mouse.dz;
+				fwE->Data.Mouse.WheelHorizontal = e.mouse.dw;
+				fwE->Data.Mouse.Button = e.mouse.button;
+				PushEvent( fwE );
+				break;
+			case ALLEGRO_EVENT_DISPLAY_RESIZE:
+				fwE = new Event();
+				fwE->Type = EVENT_WINDOW_RESIZE;
+				fwE->Data.Display.X = 0;
+				fwE->Data.Display.Y = 0;
+				fwE->Data.Display.Width = e.display.width;
+				fwE->Data.Display.Height = e.display.height;
+				fwE->Data.Display.Active = true;
+				PushEvent( fwE );
+				break;
+			case ALLEGRO_EVENT_DISPLAY_SWITCH_IN:
+				fwE = new Event();
+				fwE->Type = EVENT_WINDOW_ACTIVATE;
+				fwE->Data.Display.X = 0;
+				fwE->Data.Display.Y = 0;
+				fwE->Data.Display.Width = e.display.width;
+				fwE->Data.Display.Height = e.display.height;
+				fwE->Data.Display.Active = true;
+				PushEvent( fwE );
+				break;
+			case ALLEGRO_EVENT_DISPLAY_SWITCH_OUT:
+				fwE = new Event();
+				fwE->Type = EVENT_WINDOW_DEACTIVATE;
+				fwE->Data.Display.X = 0;
+				fwE->Data.Display.Y = 0;
+				fwE->Data.Display.Width = e.display.width;
+				fwE->Data.Display.Height = e.display.height;
+				fwE->Data.Display.Active = false;
+				PushEvent( fwE );
+				break;
+			case ALLEGRO_EVENT_AUDIO_STREAM_FINISHED:
+				fwE = new Event();
+				fwE->Type = EVENT_AUDIO_STREAM_FINISHED;
+				PushEvent( fwE );
+				break;
+			default:
+				fwE = new Event();
+				fwE->Type = EVENT_UNDEFINED;
+				PushEvent( fwE );
+				break;
+		}
+	}
 }
 
 void Framework::ShutdownFramework()
 {
+#ifdef WRITE_LOG
+  printf( "Framework: Shutdown Framework\n" );
+#endif
   while( !ProgramStages->IsEmpty() )
   {
     delete ProgramStages->Pop();
   }
   quitProgram = true;
-}
-
-int Framework::GetDisplayWidth()
-{
-  return displaySurface->w;
-}
-
-int Framework::GetDisplayHeight()
-{
-	return displaySurface->h;
-}
-
-void Framework::PlayMusic( std::string Filename, bool Loop )
-{
-#ifdef WRITE_LOG
-  printf( "Framework: Play Music '%s'\n", Filename.c_str() );
-#endif
-
-}
-
-void Framework::StopMusic()
-{
-#ifdef WRITE_LOG
-  printf( "Framework: Stop Music\n" );
-#endif
 }
 
 void Framework::SaveSettings()
@@ -160,126 +382,33 @@ void Framework::SaveSettings()
   Settings->Save( "settings.cfg" );
 }
 
-void Framework::SetWindowTitle( std::string* NewTitle )
+bool Framework::IsSlowMode()
 {
-  SDL_WM_SetCaption( NewTitle->c_str(), 0 );
+	return enableSlowDown;
 }
 
-void Framework::InitialiseAudioSystem()
+void Framework::SetSlowMode(bool SlowEnabled)
 {
-#ifdef WRITE_LOG
-  printf( "Framework: Initialise Audio\n" );
-#endif
-	spSoundInit();
+	enableSlowDown = SlowEnabled;
 }
 
-void Framework::ShutdownAudioSystem()
+int Framework::GetFramesPerSecond()
 {
-#ifdef WRITE_LOG
-  printf( "Framework: Shutdown Audio\n" );
-#endif
-	spSoundQuit();
+	return framesPerSecond;
 }
 
-void Framework::InitialiseDisplay()
+void Framework::RegisterEventSource( ALLEGRO_EVENT_SOURCE* Source )
 {
-#ifdef WRITE_LOG
-  printf( "Framework: Initialise Display\n" );
-#endif
-
-#ifdef X86CPU
-	int scrW = 800;
-	int scrH = 600;
-	bool scrFS = false;
-#else
-	int scrW = 800;
-	int scrH = 480;
-	bool scrFS = true;
-#endif
-
-	if( Settings->KeyExists( "Visual.ScreenWidth" ) )
-  {
-    Settings->GetIntegerValue( "Visual.ScreenWidth", &scrW );
-	} else {
-		Settings->SetIntegerValue( "Visual.ScreenWidth", scrW );
-	}
-	if( Settings->KeyExists( "Visual.ScreenHeight" ) )
-  {
-    Settings->GetIntegerValue( "Visual.ScreenHeight", &scrH );
-	} else {
-		Settings->SetIntegerValue( "Visual.ScreenHeight", scrH );
-	}
-	if( Settings->KeyExists( "Visual.FullScreen" ) )
-  {
-    Settings->GetBooleanValue( "Visual.FullScreen", &scrFS );
-	} else {
-		Settings->SetBooleanValue( "Visual.FullScreen", scrFS );
-	}
-
-	displaySurface = spCreateWindow( scrW, scrH, scrFS, 0 );
-
-	// Hack for Sparrow3D. If a device goes fullscreen, doesn't always use requested dimensions
-	if( displaySurface->w != scrW )
+	if( Source != nullptr )
 	{
-		Settings->SetIntegerValue( "Visual.ScreenWidth", displaySurface->w );
+		al_register_event_source( eventAllegro, Source );
 	}
-	if( displaySurface->h != scrH )
+}
+
+void Framework::UnregisterEventSource( ALLEGRO_EVENT_SOURCE* Source )
+{
+	if( Source != nullptr )
 	{
-		Settings->SetIntegerValue( "Visual.ScreenHeight", displaySurface->h );
+		al_unregister_event_source( eventAllegro, Source );
 	}
-
-	spSelectRenderTarget( spGetWindowSurface() );
-	spSetPerspective( 50.0f, (float)spGetWindowSurface()->w / (float)spGetWindowSurface()->h, 0.1f, 100.0f);
-
-	spSetZTest( 0 );
-	spSetZSet( 0 );
-	spSetAlphaTest( 1 );
-}
-
-void Framework::ShutdownDisplay()
-{
-#ifdef WRITE_LOG
-  printf( "Framework: Shutdown Display\n" );
-#endif
-	spDeleteSurface(displaySurface);
-}
-
-
-int engineUpdate(Uint32 steps)
-{
-	if( Framework::System->IsShuttingDown() || Framework::System->ProgramStages->IsEmpty() )
-	{
-		return 1;
-	}
-	Framework::System->ProcessEvents();
-	Framework::System->ProcessUpdates( steps );
-	return 0;
-}
-
-void engineDraw()
-{
-#ifdef WRITE_LOG
-  printf( "Framework: engineDraw\n" );
-#endif
-  if( !Framework::System->ProgramStages->IsEmpty() )
-  {
-		spResetZBuffer();
-    Framework::System->ProgramStages->Current()->Render();
-		spFlip();
-  }
-}
-
-void resizeWindow( Uint16 w, Uint16 h )
-{
-	Framework::System->ShutdownDisplay();
-
-  Framework::System->Settings->SetIntegerValue( "Visual.ScreenWidth", w );
-  Framework::System->Settings->SetIntegerValue( "Visual.ScreenHeight", h );
-
-	Framework::System->InitialiseDisplay();
-}
-
-void pushSDLEvent( SDL_Event* e )
-{
-	Framework::System->PushSDLEvent( e );
 }

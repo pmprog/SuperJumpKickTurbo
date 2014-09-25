@@ -4,7 +4,7 @@
 #include "includes.h"
 #include "../Framework/Display/spritesheet.h"
 
-class Menu : public Stage
+class PlayerSelect : public Stage
 {
 	private:
 

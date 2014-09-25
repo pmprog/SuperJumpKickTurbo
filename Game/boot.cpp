@@ -1,13 +1,15 @@
 
 #include "boot.h"
 #include "../Framework/framework.h"
-#include "menu.h"
+#include "../Framework/Display/display.h"
+#include "../Framework/Network/download.h"
 
 void BootUp::Begin()
 {
+	DISPLAY->SetTitle("Super JumpKick Turbo");
 	bootBarSize = 0;
-	bootBarAdjust = (Framework::System->GetDisplayWidth() / (FRAMES_PER_SECOND * 1.5f));
-	logoSprite = new SpriteSheet( spLoadSurface("Resource/pmprog.png"), 204, 200 );
+	bootBarAdjust = (DISPLAY->GetWidth() / (FRAMEWORK->GetFramesPerSecond() * 1.5f));
+	logoSprite = new SpriteSheet( "resources/pmprog.png", 204, 200 );
 	logoFadeIn = 0;
 }
 
@@ -21,22 +23,19 @@ void BootUp::Resume()
 
 void BootUp::Finish()
 {
+  delete logoSprite;
 }
 
 void BootUp::EventOccurred(Event *e)
 {
 	if( e->Type == EVENT_KEY_DOWN )
 	{
-		if( e->Data.Keyboard.keysym.sym == SDLK_ESCAPE )
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ESCAPE )
 		{
-			delete Framework::System->ProgramStages->Pop();
+			delete FRAMEWORK->ProgramStages->Pop();
 		} else {
 			StartGame();
 		}
-	}
-	if( e->Type == EVENT_JOYSTICK_BUTTON_DOWN )
-	{
-		StartGame();
 	}
 }
 
@@ -46,7 +45,7 @@ void BootUp::Update()
 	{
 		logoFadeIn += 4;
 	}
-	if( bootBarSize < Framework::System->GetDisplayWidth() )
+	if( bootBarSize < DISPLAY->GetWidth() )
 	{
 		bootBarSize += bootBarAdjust;
 	} else {
@@ -57,17 +56,26 @@ void BootUp::Update()
 
 void BootUp::Render()
 {
-	spClearTarget( 0 );
-	spSetHorizontalOrigin( SP_CENTER );
-	spSetVerticalOrigin( SP_CENTER );
+	al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
 
-	logoSprite->DrawSprite( 0, Framework::System->GetDisplayWidth() / 2, Framework::System->GetDisplayHeight() / 2, logoFadeIn / 128.0f, logoFadeIn / 128.0f, 0 );
-	spRectangle( Framework::System->GetDisplayWidth() / 2, Framework::System->GetDisplayHeight() - 12 , -1, bootBarSize, 8, spGetRGB( 255, 120, 0 ) );
+	int qrtWidth = DISPLAY->GetWidth() / 2;
+	int hlfHeight = DISPLAY->GetHeight() / 2;
+	float scale = logoFadeIn / 128.0f;
+
+	logoSprite->DrawSprite( 0, qrtWidth - ((logoSprite->GetFrame( 0 )->Width * scale) / 2), hlfHeight - ((logoSprite->GetFrame( 0 )->Height * scale) / 2), scale, scale, 0 );
+
+	int xPos = (DISPLAY->GetWidth() / 2) - (bootBarSize / 2);
+	int yPos = DISPLAY->GetHeight() - 12;
+	al_draw_filled_rectangle( xPos, yPos, xPos + bootBarSize, yPos + 8, al_map_rgb( 255, 128, 0 ) );
 }
 
 void BootUp::StartGame()
 {
 	delete Framework::System->ProgramStages->Pop();
-	// TODO: Boot stage
-	Framework::System->ProgramStages->Push( (Stage*)new Menu() );
+	// Framework::System->ProgramStages->Push( new MainMenu() );
+}
+
+bool BootUp::IsTransition()
+{
+	return false;
 }
