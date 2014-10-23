@@ -3,11 +3,22 @@
 
 void Fighter::Initialise(std::string Config)
 {
+	ConfigFile* cfg = new ConfigFile( Config );
+
+	CharacterName.clear();
+	CharacterName.append( cfg->GetQuickStringValue("Name", "Unknown")->c_str() );
+
+	spriteSheet = new SpriteSheet( *cfg->GetQuickStringValue("Sprites", "") );
+
+	// Add profile sprite
+	spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Profile", 0, 0), cfg->GetQuickIntegerValue( "Profile", 1, 0), cfg->GetQuickIntegerValue( "Profile", 2, 0), cfg->GetQuickIntegerValue( "Profile", 3, 0) )
+
 }
 
 void Fighter::CharSelect_RenderProfileIcon(int ScreenX, int ScreenY)
 {
 	// TODO: Write render code
+	spriteSheet->DrawSprite( 0, ScreenX, ScreenY );
 }
 
 void Fighter::CharSelect_RenderName(int ScreenX, int ScreenY)

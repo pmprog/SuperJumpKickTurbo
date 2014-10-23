@@ -42,7 +42,16 @@ class Fighter
 		Vector2* currentPosition;
 		bool currentFaceLeft;
 
+		float jumpSpeed;
+		float jumpBackVSpeed;
+		float jumpBackHSpeed;
+		float kickVSpeed;
+		float kickHSpeed;
+
+
 	public:
+		std::string CharacterName;
+
 		void Initialise( std::string Config );
 
 		void CharSelect_RenderProfileIcon( int ScreenX, int ScreenY );
