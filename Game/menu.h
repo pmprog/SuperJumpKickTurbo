@@ -7,6 +7,13 @@
 class Menu : public Stage
 {
 	private:
+		ALLEGRO_BITMAP* imgSuper;
+		ALLEGRO_BITMAP* imgJumpKick;
+		SpriteSheet* imgTurbo;
+
+		ALLEGRO_FONT* fntTitle;
+
+		int menuTime;
 
   public:
     // Stage control

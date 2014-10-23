@@ -1,0 +1,68 @@
+Name = "Akuma"
+Sprites = "resources/akuma.png"
+
+JumpSpeed = 3.0
+JumpBackVSpeed = 2.0
+JumpBackHSpeed = 1.0
+KickVSpeed = 2.0
+KickHSpeed = 1.5
+
+Profile [ 353, 17, 14, 14 ]
+
+IdleFrameTime = 20
+Idle [
+	 12, 6, 38, 52,
+	 52, 6, 38, 52,
+	 92, 6, 38, 52,
+	133, 6, 38, 52
+	]
+
+TakeOffFrameTime = 40
+TakeOff [
+	208, 0, 32, 64
+	]
+
+InAirFrameTime = 40
+InAir [
+	256, 0, 32, 64
+	]
+
+LandFrameTime = 40
+Land [
+	304, 0, 32, 64
+	]
+
+KickFrameTime = 40
+Kick [
+	384, 64, 48, 64
+	]
+
+SuperFrameTime = 10
+Super [
+	 94, 64, 32, 64,
+	262, 64, 48, 64,
+	132, 64, 32, 64,
+	170, 64, 46, 64
+	]
+
+KnockDownFrameTime = 40
+KnockDown [
+	18, 192, 54, 40
+	]
+	
+KnockDownLandFrameTime = 40
+KnockDownLand [
+	74, 192, 50, 38
+	]
+
+KnockedOutFrameTime = 40
+KnockedOut [
+	128, 192, 54, 38
+	]
+
+WinFrameTime = 40
+Win [
+	360, 144, 44, 48,
+	410, 144, 44, 48
+	]
+

@@ -3,6 +3,7 @@
 #include "../Framework/framework.h"
 #include "../Framework/Display/display.h"
 #include "../Framework/Network/download.h"
+#include "menu.h"
 
 void BootUp::Begin()
 {
@@ -72,7 +73,7 @@ void BootUp::Render()
 void BootUp::StartGame()
 {
 	delete Framework::System->ProgramStages->Pop();
-	// Framework::System->ProgramStages->Push( new MainMenu() );
+	Framework::System->ProgramStages->Push( new Menu() );
 }
 
 bool BootUp::IsTransition()

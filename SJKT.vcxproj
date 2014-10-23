@@ -121,6 +121,7 @@
     <ClCompile Include="Framework\Transitions\tiled.cpp" />
     <ClCompile Include="Game\arena.cpp" />
     <ClCompile Include="Game\boot.cpp" />
+    <ClCompile Include="Game\fighter.cpp" />
     <ClCompile Include="Game\menu.cpp" />
     <ClCompile Include="Game\playerselect.cpp" />
   </ItemGroup>
@@ -170,6 +171,7 @@
     <ClInclude Include="Framework\Transitions\transitions.h" />
     <ClInclude Include="Game\arena.h" />
     <ClInclude Include="Game\boot.h" />
+    <ClInclude Include="Game\fighter.h" />
     <ClInclude Include="Game\includes.h" />
     <ClInclude Include="Game\menu.h" />
     <ClInclude Include="Game\playerselect.h" />
