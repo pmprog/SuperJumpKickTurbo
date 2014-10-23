@@ -3,10 +3,12 @@
 
 #include <string>
 #include "../Framework/Primitives/vector2.h"
+#include "../Framework/Display/animation.h"
+
+
 
 class Fighter
 {
-
 	public:
 		enum FighterStates
 		{
@@ -20,6 +22,27 @@ class Fighter
 			Loser
 		};
 
+	private:
+		SpriteSheet* spriteSheet;
+		Animation* animIdle;
+		Animation* animJumpTakeOff;
+		Animation* animJumpFloat;
+		Animation* animJumpLand;
+		Animation* animKick;
+		Animation* animSuper;
+		Animation* animKnockDown;
+		Animation* animKOLand;
+		Animation* animKO;
+		Animation* animWin;
+
+		float currentScale;
+		FighterStates currentState;
+		int currentStateTime;
+		Animation* currentAnimation;
+		Vector2* currentPosition;
+		bool currentFaceLeft;
+
+	public:
 		void Initialise( std::string Config );
 
 		void CharSelect_RenderProfileIcon( int ScreenX, int ScreenY );
