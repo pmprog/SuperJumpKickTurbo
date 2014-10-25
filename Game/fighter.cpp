@@ -4,14 +4,87 @@
 void Fighter::Initialise(std::string Config)
 {
 	ConfigFile* cfg = new ConfigFile( Config );
+	std::string* tmpstring;
 
 	CharacterName.clear();
 	CharacterName.append( cfg->GetQuickStringValue("Name", "Unknown")->c_str() );
 
-	spriteSheet = new SpriteSheet( *cfg->GetQuickStringValue("Sprites", "") );
+	tmpstring = cfg->GetQuickStringValue("Sprites", "");
+	spriteSheet = new SpriteSheet( *tmpstring );
+	delete tmpstring;
 
 	// Add profile sprite
-	spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Profile", 0, 0), cfg->GetQuickIntegerValue( "Profile", 1, 0), cfg->GetQuickIntegerValue( "Profile", 2, 0), cfg->GetQuickIntegerValue( "Profile", 3, 0) )
+	spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Profile", 0, 0), cfg->GetQuickIntegerValue( "Profile", 1, 0), cfg->GetQuickIntegerValue( "Profile", 2, 0), cfg->GetQuickIntegerValue( "Profile", 3, 0) );
+
+	// Add Idle Animation
+	animIdle = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "IdleFrameTime", 20) );
+	for( int frameidx = 0; frameidx < cfg->GetArraySize( "Idle" ) / 4; frameidx++ )
+	{
+		animIdle->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Idle", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "Idle", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "Idle", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "Idle", (frameidx * 4) + 3, 0) ) );
+	}
+
+	// Add TakeOff Animation
+	animJumpTakeOff = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "TakeOffFrameTime", 40) );
+	for( int frameidx = 0; frameidx < cfg->GetArraySize( "TakeOff" ) / 4; frameidx++ )
+	{
+		animJumpTakeOff->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4) + 3, 0) ) );
+	}
+
+	// Add InAir Animation
+	animJumpFloat = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "InAirFrameTime", 40) );
+	for( int frameidx = 0; frameidx < cfg->GetArraySize( "InAir" ) / 4; frameidx++ )
+	{
+		animJumpFloat->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "InAir", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "InAir", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "InAir", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "InAir", (frameidx * 4) + 3, 0) ) );
+	}
+
+	// Add Land Animation
+	animJumpLand = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "LandFrameTime", 40) );
+	for( int frameidx = 0; frameidx < cfg->GetArraySize( "Land" ) / 4; frameidx++ )
+	{
+		animJumpLand->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Land", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "Land", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "Land", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "Land", (frameidx * 4) + 3, 0) ) );
+	}
+
+	// Add Kick Animation
+	animKick = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "KickFrameTime", 40) );
+	for( int frameidx = 0; frameidx < cfg->GetArraySize( "Kick" ) / 4; frameidx++ )
+	{
+		animKick->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Kick", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "Kick", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "Kick", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "Kick", (frameidx * 4) + 3, 0) ) );
+	}
+
+	// Add Super Animation
+	animSuper = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "SuperFrameTime", 40) );
+	for( int frameidx = 0; frameidx < cfg->GetArraySize( "Super" ) / 4; frameidx++ )
+	{
+		animSuper->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Super", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "Super", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "Super", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "Super", (frameidx * 4) + 3, 0) ) );
+	}
+
+	// Add KnockDown Animation
+	animKnockDown = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "KnockDownFrameTime", 40) );
+	for( int frameidx = 0; frameidx < cfg->GetArraySize( "KnockDown" ) / 4; frameidx++ )
+	{
+		animKnockDown->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "KnockDown", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "KnockDown", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "KnockDown", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "KnockDown", (frameidx * 4) + 3, 0) ) );
+	}
+
+	// Add KnockDownLand Animation
+	animKnockDownLand = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "KnockDownLandFrameTime", 40) );
+	for( int frameidx = 0; frameidx < cfg->GetArraySize( "KnockDownLand" ) / 4; frameidx++ )
+	{
+		animKnockDownLand->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "KnockDownLand", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "KnockDownLand", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "KnockDownLand", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "KnockDownLand", (frameidx * 4) + 3, 0) ) );
+	}
+
+	// Add KnockedOut Animation
+	animKnockedOut = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "KnockedOutFrameTime", 40) );
+	for( int frameidx = 0; frameidx < cfg->GetArraySize( "KnockedOut" ) / 4; frameidx++ )
+	{
+		animKnockedOut->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "KnockedOut", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "KnockedOut", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "KnockedOut", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "KnockedOut", (frameidx * 4) + 3, 0) ) );
+	}
+
+	// Add Win Animation
+	animWin = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "WinFrameTime", 40) );
+	for( int frameidx = 0; frameidx < cfg->GetArraySize( "Win" ) / 4; frameidx++ )
+	{
+		animWin->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Win", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "Win", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "Win", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "Win", (frameidx * 4) + 3, 0) ) );
+	}
 
 }
 
@@ -102,9 +175,9 @@ void Fighter::Fighter_Update()
 			currentAnimation = animJumpFloat;
 			currentAnimation->Start();
 		}
-		if (currentAnimation == animKOLand)
+		if (currentAnimation == animKnockDownLand)
 		{
-			currentAnimation = animKO;
+			currentAnimation = animKnockedOut;
 			currentAnimation->Start();
 		}
 	}

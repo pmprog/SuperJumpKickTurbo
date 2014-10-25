@@ -34,5 +34,6 @@ class SpriteSheet
 		void DrawSpritePortion( int FrameNumber, int ScreenX, int ScreenY, int FrameX, int FrameY, int Width, int Height );
 
 		SpriteSheetRegion* GetFrame( int FrameNumber );
+		int GetFrameCount();
 
 };

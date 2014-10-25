@@ -31,8 +31,8 @@ class Fighter
 		Animation* animKick;
 		Animation* animSuper;
 		Animation* animKnockDown;
-		Animation* animKOLand;
-		Animation* animKO;
+		Animation* animKnockDownLand;
+		Animation* animKnockedOut;
 		Animation* animWin;
 
 		float currentScale;

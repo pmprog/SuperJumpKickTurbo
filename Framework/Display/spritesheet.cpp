@@ -88,3 +88,8 @@ SpriteSheetRegion* SpriteSheet::GetFrame( int FrameNumber )
 {
 	return frames.at( FrameNumber );
 }
+
+int SpriteSheet::GetFrameCount()
+{
+	return frames.size();
+}
