@@ -1,7 +1,9 @@
 Name = "Akuma"
 Sprites = "resources/akuma.png"
 
+JumpFrames = 80.0
 JumpSpeed = 3.0
+JumpBackFrames = 40.0
 JumpBackVSpeed = 2.0
 JumpBackHSpeed = 1.0
 KickVSpeed = 2.0

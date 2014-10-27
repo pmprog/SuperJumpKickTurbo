@@ -3,10 +3,13 @@
 
 #include "includes.h"
 #include "../Framework/Display/spritesheet.h"
+#include "fighter.h"
 
 class Arena : public Stage
 {
 	private:
+		Fighter* Player1;
+		Fighter* Player2;
 
   public:
     // Stage control

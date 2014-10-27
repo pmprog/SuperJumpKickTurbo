@@ -13,6 +13,14 @@ void Fighter::Initialise(std::string Config)
 	spriteSheet = new SpriteSheet( *tmpstring );
 	delete tmpstring;
 
+	jumpFrames = cfg->GetQuickFloatValue( "JumpFrames", 60.0f );
+	jumpSpeed = cfg->GetQuickFloatValue( "JumpSpeed", 3.0f );
+	jumpBackFrames = cfg->GetQuickFloatValue( "JumpBackFrames", 30.0f );
+	jumpBackVSpeed = cfg->GetQuickFloatValue( "JumpBackVSpeed", 2.0f );
+	jumpBackHSpeed = cfg->GetQuickFloatValue( "JumpBackHSpeed", 1.0f );
+	kickVSpeed = cfg->GetQuickFloatValue( "KickVSpeed", 2.0f );
+	kickHSpeed = cfg->GetQuickFloatValue( "KickHSpeed", 1.5f );
+
 	// Add profile sprite
 	spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Profile", 0, 0), cfg->GetQuickIntegerValue( "Profile", 1, 0), cfg->GetQuickIntegerValue( "Profile", 2, 0), cfg->GetQuickIntegerValue( "Profile", 3, 0) );
 
@@ -24,7 +32,7 @@ void Fighter::Initialise(std::string Config)
 	}
 
 	// Add TakeOff Animation
-	animJumpTakeOff = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "TakeOffFrameTime", 40) );
+	animJumpTakeOff = new Animation( spriteSheet, false, cfg->GetQuickIntegerValue( "TakeOffFrameTime", 40) );
 	for( int frameidx = 0; frameidx < cfg->GetArraySize( "TakeOff" ) / 4; frameidx++ )
 	{
 		animJumpTakeOff->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4) + 3, 0) ) );
@@ -66,7 +74,7 @@ void Fighter::Initialise(std::string Config)
 	}
 
 	// Add KnockDownLand Animation
-	animKnockDownLand = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "KnockDownLandFrameTime", 40) );
+	animKnockDownLand = new Animation( spriteSheet, false, cfg->GetQuickIntegerValue( "KnockDownLandFrameTime", 40) );
 	for( int frameidx = 0; frameidx < cfg->GetArraySize( "KnockDownLand" ) / 4; frameidx++ )
 	{
 		animKnockDownLand->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "KnockDownLand", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "KnockDownLand", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "KnockDownLand", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "KnockDownLand", (frameidx * 4) + 3, 0) ) );
@@ -109,48 +117,48 @@ void Fighter::Fighter_Update()
 	case Fighter::Idle:
 		break;
 	case Fighter::Jump:
-		//if (currentStateTime < AKUMA_JUMP_FRAMES)
-		//{
-		//	currentPosition->Y += (currentScale * AKUMA_JUMP_SPEED) * ((AKUMA_JUMP_FRAMES - currentStateTime) / AKUMA_JUMP_FRAMES);
-		//}
-		//else {
-		//	currentPosition->Y -= (currentScale * AKUMA_JUMP_SPEED) * ((currentStateTime - AKUMA_JUMP_FRAMES) / AKUMA_JUMP_FRAMES);
-		//	if (currentStateTime == (int)(AKUMA_JUMP_FRAMES * 0.9f))
-		//	{
-		//		currentAnimation = animJumpLand;
-		//		currentAnimation->Start();
-		//	}
-		//	if (currentPosition->Y <= 0)
-		//	{
-		//		currentPosition->Y = 0;
-		//		Fighter_SetState(Fighter::Idle);
-		//	}
-		//}
+		if (currentStateTime < jumpFrames)
+		{
+			currentPosition->Y += jumpSpeed * ((jumpFrames - currentStateTime) / jumpFrames);
+		}
+		else {
+			currentPosition->Y -= jumpSpeed * ((currentStateTime - jumpFrames) / jumpFrames);
+			if (currentStateTime == (int)(jumpFrames * 0.9f))
+			{
+				currentAnimation = animJumpLand;
+				currentAnimation->Start();
+			}
+			if (currentPosition->Y <= 0)
+			{
+				currentPosition->Y = 0;
+				Fighter_SetState(Fighter::Idle);
+			}
+		}
 		break;
 	case Fighter::BackJump:
-		//if (currentStateTime < AKUMA_BACKJUMP_FRAMES)
-		//{
-		//	currentPosition->Y += (currentScale * AKUMA_BACKJUMP_SPEED) * ((AKUMA_BACKJUMP_FRAMES - currentStateTime) / AKUMA_BACKJUMP_FRAMES);
-		//	currentPosition->X -= (currentFaceLeft ? -1 : 1) * (currentScale * AKUMA_BACKJUMP_RSPEED);
-		//}
-		//else {
-		//	currentPosition->Y -= (currentScale * AKUMA_BACKJUMP_SPEED) * ((currentStateTime - AKUMA_BACKJUMP_FRAMES) / AKUMA_BACKJUMP_FRAMES);
-		//	currentPosition->X -= (currentFaceLeft ? -1 : 1) * (currentScale * AKUMA_BACKJUMP_RSPEED);
-		//	if (currentStateTime == (int)(AKUMA_BACKJUMP_FRAMES * 0.9f))
-		//	{
-		//		currentAnimation = animJumpLand;
-		//		currentAnimation->Start();
-		//	}
-		//	if (currentPosition->Y <= 0)
-		//	{
-		//		currentPosition->Y = 0;
-		//		Fighter_SetState(Fighter::Idle);
-		//	}
-		//}
+		if (currentStateTime < jumpBackFrames)
+		{
+			currentPosition->Y += jumpBackVSpeed * ((jumpBackFrames - currentStateTime) / jumpBackFrames);
+			currentPosition->X -= (currentFaceLeft ? -1 : 1) * jumpBackHSpeed;
+		}
+		else {
+			currentPosition->Y -= jumpBackVSpeed * ((currentStateTime - jumpBackFrames) / jumpBackFrames);
+			currentPosition->X -= (currentFaceLeft ? -1 : 1) * jumpBackHSpeed;
+			if (currentStateTime == (int)(jumpBackFrames * 0.9f))
+			{
+				currentAnimation = animJumpLand;
+				currentAnimation->Start();
+			}
+			if (currentPosition->Y <= 0)
+			{
+				currentPosition->Y = 0;
+				Fighter_SetState(Fighter::Idle);
+			}
+		}
 		break;
 	case Fighter::Kick:
-		//currentPosition->Y -= (currentScale * AKUMA_KICK_SPEED);
-		//currentPosition->X -= (currentFaceLeft ? 1 : -1) * (currentScale * AKUMA_KICK_RSPEED);
+		currentPosition->Y -= kickVSpeed;
+		currentPosition->X -= (currentFaceLeft ? 1 : -1) * kickHSpeed;
 		if (currentPosition->Y <= 0)
 		{
 			currentPosition->Y = 0;

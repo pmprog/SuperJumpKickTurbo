@@ -42,7 +42,9 @@ class Fighter
 		Vector2* currentPosition;
 		bool currentFaceLeft;
 
+		float jumpFrames;
 		float jumpSpeed;
+		float jumpBackFrames;
 		float jumpBackVSpeed;
 		float jumpBackHSpeed;
 		float kickVSpeed;
