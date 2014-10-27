@@ -1,10 +1,12 @@
 
 #include "fighter.h"
 
-void Fighter::Initialise(std::string Config)
+Fighter::Fighter(std::string Config)
 {
 	ConfigFile* cfg = new ConfigFile( Config );
 	std::string* tmpstring;
+
+	currentPosition = new Vector2();
 
 	CharacterName.clear();
 	CharacterName.append( cfg->GetQuickStringValue("Name", "Unknown")->c_str() );
@@ -94,17 +96,12 @@ void Fighter::Initialise(std::string Config)
 		animWin->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Win", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "Win", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "Win", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "Win", (frameidx * 4) + 3, 0) ) );
 	}
 
+	Fighter_SetState( Fighter::FighterStates::Idle );
 }
 
 void Fighter::CharSelect_RenderProfileIcon(int ScreenX, int ScreenY)
 {
-	// TODO: Write render code
 	spriteSheet->DrawSprite( 0, ScreenX, ScreenY );
-}
-
-void Fighter::CharSelect_RenderName(int ScreenX, int ScreenY)
-{
-	// TODO: Write render code
 }
 
 void Fighter::Fighter_Update()
@@ -254,7 +251,10 @@ void Fighter::Fighter_SetPosition(Vector2* NewPosition)
 
 void Fighter::Fighter_Render(int ScreenOffsetX, int ScreenOffsetY)
 {
-	// TODO: Write render code
+	int screenY = 432 - currentPosition->Y + ScreenOffsetY - spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Height;
+	
+	currentAnimation->DrawFrame( currentPosition->X - ScreenOffsetX - (spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Width / 2), screenY, currentFaceLeft, false );
+
 }
 
 bool Fighter::Fighter_IsFacingLeft()

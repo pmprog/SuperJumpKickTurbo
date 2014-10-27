@@ -1,70 +1,78 @@
 Name = "Akuma"
 Sprites = "resources/akuma.png"
 
-JumpFrames = 80.0
-JumpSpeed = 3.0
-JumpBackFrames = 40.0
-JumpBackVSpeed = 2.0
-JumpBackHSpeed = 1.0
-KickVSpeed = 2.0
-KickHSpeed = 1.5
+JumpFrames = 60.0
+JumpSpeed = 12.0
+JumpBackFrames = 20.0
+JumpBackVSpeed = 9.0
+JumpBackHSpeed = 6.0
+KickVSpeed = 7.0
+KickHSpeed = 9.5
 
-Profile [ 353, 17, 14, 14 ]
+Profile [ 1408, 64, 64, 64 ]
 
-IdleFrameTime = 20
+IdleFrameTime = 8
 Idle [
-	 12, 6, 38, 52,
-	 52, 6, 38, 52,
-	 92, 6, 38, 52,
-	133, 6, 38, 52
+	 48, 24, 152, 208,
+	208, 24, 152, 208,
+	368, 24, 152, 208,
+	532, 24, 152, 208
 	]
 
-TakeOffFrameTime = 40
+TakeOffFrameTime = 6
 TakeOff [
-	208, 0, 32, 64
+	832, 0, 128, 256
 	]
 
-InAirFrameTime = 40
+InAirFrameTime = 6
 InAir [
-	256, 0, 32, 64
+	1024, 0, 128, 256
 	]
 
-LandFrameTime = 40
+LandFrameTime = 6
 Land [
-	304, 0, 32, 64
+	1216, 0, 128, 256
 	]
 
-KickFrameTime = 40
+KickFrameTime = 6
 Kick [
-	384, 64, 48, 64
+	1536, 256, 192, 256
 	]
 
-SuperFrameTime = 10
+SuperFrameTime = 4
 Super [
-	 94, 64, 32, 64,
-	262, 64, 48, 64,
-	132, 64, 32, 64,
-	170, 64, 46, 64
+	 376, 256, 128, 256,
+	1048, 256, 192, 256,
+	 528, 256, 128, 256,
+	 680, 256, 184, 256
 	]
 
-KnockDownFrameTime = 40
+KnockDownFrameTime = 6
 KnockDown [
-	18, 192, 54, 40
+	72, 768, 216, 160
 	]
 	
-KnockDownLandFrameTime = 40
+KnockDownLandFrameTime = 6
 KnockDownLand [
-	74, 192, 50, 38
+	296, 768, 200, 152
 	]
 
-KnockedOutFrameTime = 40
+KnockedOutFrameTime = 6
 KnockedOut [
-	128, 192, 54, 38
+	512, 768, 516, 152
 	]
 
-WinFrameTime = 40
+WinFrameTime = 8
 Win [
-	360, 144, 44, 48,
-	410, 144, 44, 48
+	1440, 576, 176, 192,
+	1640, 576, 176, 192,
+	1440, 576, 176, 192,
+	1640, 576, 176, 192,
+	1440, 576, 176, 192,
+	1640, 576, 176, 192,
+	1440, 576, 176, 192,
+	1640, 576, 176, 192,
+	1440, 576, 176, 192,
+	1640, 576, 176, 192
 	]
 

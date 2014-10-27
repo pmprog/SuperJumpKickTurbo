@@ -4,6 +4,8 @@
 #include "includes.h"
 #include "../Framework/Display/spritesheet.h"
 
+#include "fighter.h"
+
 class Menu : public Stage
 {
 	private:
@@ -14,6 +16,8 @@ class Menu : public Stage
 		ALLEGRO_FONT* fntTitle;
 
 		int menuTime;
+
+		Fighter* TitleFighter;
 
   public:
     // Stage control

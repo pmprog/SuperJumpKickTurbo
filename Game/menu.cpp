@@ -10,6 +10,10 @@ void Menu::Begin()
 	fntTitle = al_load_font( "resources/titlefont.ttf", 24, 0 );
 
 	menuTime = 0;
+
+	TitleFighter = new Fighter( "resources/akuma.txt" );
+	TitleFighter->Fighter_SetPosition( 1200, 400 );
+	TitleFighter->Fighter_SetFacing( true );
 }
 
 void Menu::Pause()
@@ -43,12 +47,30 @@ void Menu::EventOccurred(Event *e)
 			FRAMEWORK->ShutdownFramework();
 			return;
 		}
+
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_1 )
+		{
+			TitleFighter->Fighter_JumpPressed();
+		}
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_2 )
+		{
+			TitleFighter->Fighter_KickPressed();
+		}
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_3 )
+		{
+			TitleFighter->Fighter_SuperPressed();
+		}
 	}
 }
 
 void Menu::Update()
 {
 	menuTime++;
+	if( menuTime == 260 )
+	{
+		TitleFighter->Fighter_SetState( Fighter::FighterStates::Kick );
+	}
+	TitleFighter->Fighter_Update();
 }
 
 void Menu::Render()
@@ -86,6 +108,7 @@ void Menu::Render()
 
 	}
 
+	TitleFighter->Fighter_Render( 0, 0 );
 }
 
 bool Menu::IsTransition()

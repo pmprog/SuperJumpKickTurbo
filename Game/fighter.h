@@ -54,10 +54,9 @@ class Fighter
 	public:
 		std::string CharacterName;
 
-		void Initialise( std::string Config );
+		Fighter( std::string Config );
 
 		void CharSelect_RenderProfileIcon( int ScreenX, int ScreenY );
-		void CharSelect_RenderName( int ScreenX, int ScreenY );
 
 		void Fighter_Update();
 		void Fighter_SetState( int NewState );

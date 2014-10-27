@@ -87,3 +87,8 @@ float Animation::GetScaleY()
 {
 	return animScaleY;
 }
+
+int Animation::GetCurrentFramesSpriteIndex()
+{
+	return frameList.at(animCurrentFrame);
+}

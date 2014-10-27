@@ -35,5 +35,6 @@ class Animation
 		float GetScaleX();
 		float GetScaleY();
 
+		int GetCurrentFramesSpriteIndex();
 
 };
