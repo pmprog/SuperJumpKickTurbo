@@ -1,5 +1,6 @@
 
 #include "menu.h"
+#include "arena.h"
 
 void Menu::Begin()
 {
@@ -48,17 +49,10 @@ void Menu::EventOccurred(Event *e)
 			return;
 		}
 
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_1 )
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ENTER )
 		{
-			TitleFighter->Fighter_JumpPressed();
-		}
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_2 )
-		{
-			TitleFighter->Fighter_KickPressed();
-		}
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_3 )
-		{
-			TitleFighter->Fighter_SuperPressed();
+			// Testing
+			FRAMEWORK->ProgramStages->Push( new Arena() );
 		}
 	}
 }
@@ -66,7 +60,7 @@ void Menu::EventOccurred(Event *e)
 void Menu::Update()
 {
 	menuTime++;
-	if( menuTime == 260 )
+	if( menuTime == 275 )
 	{
 		TitleFighter->Fighter_SetState( Fighter::FighterStates::Kick );
 	}

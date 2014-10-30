@@ -10,6 +10,11 @@ class Arena : public Stage
 	private:
 		Fighter* Player1;
 		Fighter* Player2;
+		ALLEGRO_BITMAP* Background;
+		Vector2 Camera;
+
+		int CamXMove;
+		int CamYMove;
 
   public:
     // Stage control
