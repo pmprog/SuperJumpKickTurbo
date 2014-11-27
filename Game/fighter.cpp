@@ -252,8 +252,9 @@ void Fighter::Fighter_SetPosition(Vector2* NewPosition)
 void Fighter::Fighter_Render(int ScreenOffsetX, int ScreenOffsetY)
 {
 	int screenY = 432 - currentPosition->Y + ScreenOffsetY - spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Height;
-	
-	currentAnimation->DrawFrame( currentPosition->X - ScreenOffsetX - (spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Width / 2), screenY, currentFaceLeft, false );
+	int screenX = currentPosition->X - ScreenOffsetX;
+	screenX -= (currentFaceLeft ? -1 : 1) * (spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Width / 2);
+	currentAnimation->DrawFrame( screenX, screenY, currentFaceLeft, false );
 
 }
 
