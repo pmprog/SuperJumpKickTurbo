@@ -15,6 +15,7 @@ class Arena : public Stage
 
 		int CamXMove;
 		int CamYMove;
+		int arenaWidth;
 
   public:
     // Stage control

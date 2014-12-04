@@ -1,10 +1,12 @@
 
 #include "fighter.h"
 
-Fighter::Fighter(std::string Config)
+Fighter::Fighter( std::string Config, int ArenaWidth )
 {
 	ConfigFile* cfg = new ConfigFile( Config );
 	std::string* tmpstring;
+
+	arenaWidth = ArenaWidth;
 
 	currentPosition = new Vector2();
 
@@ -186,6 +188,15 @@ void Fighter::Fighter_Update()
 			currentAnimation->Start();
 		}
 	}
+
+	if( currentPosition->X < 0 )
+	{
+		currentPosition->X = 0;
+	}
+	if( currentPosition->X > arenaWidth )
+	{
+		currentPosition->X = arenaWidth;
+	}
 }
 
 void Fighter::Fighter_SetState(int NewState)
@@ -304,7 +315,7 @@ void Fighter::Fighter_SuperPressed()
 		case Fighter::Jump:
 		case Fighter::BackJump:
 		case Fighter::Kick:
-			Fighter_SetState( Fighter::Super );
+			// Fighter_SetState( Fighter::Super );
 			break;
 	}
 }

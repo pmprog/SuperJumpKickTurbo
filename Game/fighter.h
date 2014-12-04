@@ -49,12 +49,13 @@ class Fighter
 		float jumpBackHSpeed;
 		float kickVSpeed;
 		float kickHSpeed;
+		int arenaWidth;
 
 
 	public:
 		std::string CharacterName;
 
-		Fighter( std::string Config );
+		Fighter( std::string Config, int ArenaWidth );
 
 		void CharSelect_RenderProfileIcon( int ScreenX, int ScreenY );
 

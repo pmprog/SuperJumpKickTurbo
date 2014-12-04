@@ -3,11 +3,14 @@
 
 void Arena::Begin()
 {
-	Player1 = new Fighter( "resources/akuma.txt" );
-	Player2 = new Fighter( "resources/akuma.txt" );
 	Background = al_load_bitmap( "resources/japan.png" );
-	Camera.X = (al_get_bitmap_width(Background) / 2) - (DISPLAY->GetWidth() / 2);
+	arenaWidth = al_get_bitmap_width(Background);
+
+	Camera.X = (arenaWidth / 2) - (DISPLAY->GetWidth() / 2);
 	Camera.Y = 0;
+
+	Player1 = new Fighter( "resources/akuma.txt", arenaWidth );
+	Player2 = new Fighter( "resources/ryu.txt", arenaWidth );
 
 	Player1->Fighter_SetPosition( al_get_bitmap_width(Background) / 3, 0 );
 	Player1->Fighter_SetFacing( false );
@@ -57,6 +60,24 @@ void Arena::EventOccurred(Event *e)
 		{
 			CamYMove = -1;
 		}
+
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_LSHIFT )
+		{
+			Player1->Fighter_JumpPressed();
+		}
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_LCTRL )
+		{
+			Player1->Fighter_KickPressed();
+		}
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_RSHIFT )
+		{
+			Player2->Fighter_JumpPressed();
+		}
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_RCTRL )
+		{
+			Player2->Fighter_KickPressed();
+		}
+
 	}
 	if( e->Type == EVENT_KEY_UP )
 	{
@@ -90,9 +111,9 @@ void Arena::Update()
 	{
 		Camera.Y = 0;
 	}
-	if( Camera.X > al_get_bitmap_width(Background) - DISPLAY->GetWidth() )
+	if( Camera.X > arenaWidth - DISPLAY->GetWidth() )
 	{
-		Camera.X = al_get_bitmap_width(Background) - DISPLAY->GetWidth();
+		Camera.X = arenaWidth - DISPLAY->GetWidth();
 	}
 	if( Camera.Y > al_get_bitmap_height(Background) - DISPLAY->GetHeight() )
 	{
@@ -101,6 +122,16 @@ void Arena::Update()
 
 	Player1->Fighter_Update();
 	Player2->Fighter_Update();
+
+	if( Player1->Fighter_GetPosition()->X < Player2->Fighter_GetPosition()->X )
+	{
+		Player1->Fighter_SetFacing( false );
+		Player2->Fighter_SetFacing( true );
+	} else {
+		Player2->Fighter_SetFacing( false );
+		Player1->Fighter_SetFacing( true );
+	}
+
 }
 
 void Arena::Render()

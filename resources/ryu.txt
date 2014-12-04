@@ -1,0 +1,80 @@
+Name = "Ryu"
+Sprites = "resources/ryu.png"
+
+JumpFrames = 60.0
+JumpSpeed = 12.0
+JumpBackFrames = 20.0
+JumpBackVSpeed = 9.0
+JumpBackHSpeed = 6.0
+KickVSpeed = 7.0
+KickHSpeed = 9.5
+
+Profile [ 1408, 64, 64, 64 ]
+
+IdleFrameTime = 8
+Idle [
+	  0, 0, 152, 208,
+	152, 0, 152, 208,
+	304, 0, 152, 208,
+	456, 0, 152, 208,
+	608, 0, 152, 208,
+	760, 0, 152, 208
+	]
+
+TakeOffFrameTime = 6
+TakeOff [
+	1024, 0, 128, 256
+	]
+
+InAirFrameTime = 6
+InAir [
+	1152, 0, 128, 256
+	]
+
+LandFrameTime = 6
+Land [
+	1280, 0, 128, 256
+	]
+
+KickFrameTime = 6
+Kick [
+	1536, 256, 192, 256
+	]
+
+SuperFrameTime = 4
+Super [
+	 376, 256, 128, 256,
+	1048, 256, 192, 256,
+	 528, 256, 128, 256,
+	 680, 256, 184, 256
+	]
+
+KnockDownFrameTime = 6
+KnockDown [
+	72, 768, 216, 160
+	]
+	
+KnockDownLandFrameTime = 6
+KnockDownLand [
+	296, 768, 200, 152
+	]
+
+KnockedOutFrameTime = 6
+KnockedOut [
+	512, 768, 516, 152
+	]
+
+WinFrameTime = 8
+Win [
+	1440, 576, 176, 192,
+	1640, 576, 176, 192,
+	1440, 576, 176, 192,
+	1640, 576, 176, 192,
+	1440, 576, 176, 192,
+	1640, 576, 176, 192,
+	1440, 576, 176, 192,
+	1640, 576, 176, 192,
+	1440, 576, 176, 192,
+	1640, 576, 176, 192
+	]
+
