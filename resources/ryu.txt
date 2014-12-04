@@ -1,15 +1,15 @@
 Name = "Ryu"
 Sprites = "resources/ryu.png"
 
-JumpFrames = 60.0
-JumpSpeed = 12.0
+JumpFrames = 64.0
+JumpSpeed = 10.6
 JumpBackFrames = 20.0
-JumpBackVSpeed = 9.0
-JumpBackHSpeed = 6.0
-KickVSpeed = 7.0
-KickHSpeed = 9.5
+JumpBackVSpeed = 8.5
+JumpBackHSpeed = 6.5
+KickVSpeed = 6.2
+KickHSpeed = 12.0
 
-Profile [ 1408, 64, 64, 64 ]
+Profile [ 1536, 32, 64, 64 ]
 
 IdleFrameTime = 8
 Idle [
@@ -38,7 +38,7 @@ Land [
 
 KickFrameTime = 6
 Kick [
-	1536, 256, 192, 256
+	880, 340, 220, 170
 	]
 
 SuperFrameTime = 4
@@ -51,17 +51,17 @@ Super [
 
 KnockDownFrameTime = 6
 KnockDown [
-	72, 768, 216, 160
+	796, 554, 200, 160
 	]
 	
 KnockDownLandFrameTime = 6
 KnockDownLand [
-	296, 768, 200, 152
+	1015, 566, 200, 138
 	]
 
 KnockedOutFrameTime = 6
 KnockedOut [
-	512, 768, 516, 152
+	1229, 568, 200, 114
 	]
 
 WinFrameTime = 8
