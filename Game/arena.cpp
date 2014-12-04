@@ -3,7 +3,7 @@
 
 void Arena::Begin()
 {
-	Background = al_load_bitmap( "resources/japan.png" );
+	Background = al_load_bitmap( "resources/england.png" );
 	arenaWidth = al_get_bitmap_width(Background);
 
 	Camera.X = (arenaWidth / 2) - (DISPLAY->GetWidth() / 2);
