@@ -6,8 +6,8 @@ JumpSpeed = 10.6
 JumpBackFrames = 20.0
 JumpBackVSpeed = 8.5
 JumpBackHSpeed = 6.5
-KickVSpeed = 6.2
-KickHSpeed = 12.0
+KickVSpeed = 8.0
+KickHSpeed = 15.0
 
 Profile [ 1536, 32, 64, 64 ]
 

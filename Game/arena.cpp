@@ -94,6 +94,21 @@ void Arena::EventOccurred(Event *e)
 
 void Arena::Update()
 {
+
+	// Update players
+	Player1->Fighter_Update();
+	Player2->Fighter_Update();
+
+	if( Player1->Fighter_GetPosition()->X < Player2->Fighter_GetPosition()->X )
+	{
+		Player1->Fighter_SetFacing( false );
+		Player2->Fighter_SetFacing( true );
+	} else {
+		Player2->Fighter_SetFacing( false );
+		Player1->Fighter_SetFacing( true );
+	}
+
+	// Update camera
 	if( CamXMove != 0 )
 	{
 		Camera.X += 2.0f * CamXMove;
@@ -102,6 +117,14 @@ void Arena::Update()
 	{
 		Camera.Y += 2.0f * CamYMove;
 	}
+
+	int xmax = Maths::Max( Player1->Fighter_GetPosition()->X, Player2->Fighter_GetPosition()->X );
+	int xmin = Maths::Min( Player1->Fighter_GetPosition()->X, Player2->Fighter_GetPosition()->X );
+	Camera.X = xmin + ((xmax - xmin) / 2) - (DISPLAY->GetWidth() / 2);
+
+	int ymax = Maths::Max( Player1->Fighter_GetPosition()->Y, Player2->Fighter_GetPosition()->Y );
+	int ymin = Maths::Min( Player1->Fighter_GetPosition()->Y, Player2->Fighter_GetPosition()->Y );
+	Camera.Y = ymin + ((ymax - ymin) / 2);
 
 	if( Camera.X < 0 )
 	{
@@ -120,16 +143,39 @@ void Arena::Update()
 		Camera.Y = al_get_bitmap_height(Background) - DISPLAY->GetHeight();
 	}
 
-	Player1->Fighter_Update();
-	Player2->Fighter_Update();
-
-	if( Player1->Fighter_GetPosition()->X < Player2->Fighter_GetPosition()->X )
+	// Lock players in screen
+	switch( Player1->Fighter_GetState() )
 	{
-		Player1->Fighter_SetFacing( false );
-		Player2->Fighter_SetFacing( true );
-	} else {
-		Player2->Fighter_SetFacing( false );
-		Player1->Fighter_SetFacing( true );
+		case Fighter::BackJump:
+		case Fighter::Kick:
+		case Fighter::Super:
+		case Fighter::Ultra:
+			if( Player1->Fighter_GetPosition()->X < Camera.X )
+			{
+				Player1->Fighter_GetPosition()->X = Camera.X;
+			}
+			if( Player1->Fighter_GetPosition()->X > Camera.X + DISPLAY->GetWidth() )
+			{
+				Player1->Fighter_GetPosition()->X = Camera.X + DISPLAY->GetWidth();
+			}
+			break;
+	}
+	// Lock players in screen
+	switch( Player2->Fighter_GetState() )
+	{
+		case Fighter::BackJump:
+		case Fighter::Kick:
+		case Fighter::Super:
+		case Fighter::Ultra:
+			if( Player2->Fighter_GetPosition()->X < Camera.X )
+			{
+				Player2->Fighter_GetPosition()->X = Camera.X;
+			}
+			if( Player2->Fighter_GetPosition()->X > Camera.X + DISPLAY->GetWidth() )
+			{
+				Player2->Fighter_GetPosition()->X = Camera.X + DISPLAY->GetWidth();
+			}
+			break;
 	}
 
 }

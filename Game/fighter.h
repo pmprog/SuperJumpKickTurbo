@@ -60,6 +60,7 @@ class Fighter
 		void CharSelect_RenderProfileIcon( int ScreenX, int ScreenY );
 
 		void Fighter_Update();
+		int Fighter_GetState();
 		void Fighter_SetState( int NewState );
 
 		Vector2* Fighter_GetPosition();

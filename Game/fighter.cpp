@@ -199,6 +199,11 @@ void Fighter::Fighter_Update()
 	}
 }
 
+int Fighter::Fighter_GetState()
+{
+	return currentState;
+}
+
 void Fighter::Fighter_SetState(int NewState)
 {
 	// Exit State Code
