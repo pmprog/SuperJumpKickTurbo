@@ -96,8 +96,8 @@ void Arena::Update()
 {
 
 	// Update players
-	Player1->Fighter_Update();
-	Player2->Fighter_Update();
+	Player1->Fighter_Update( this );
+	Player2->Fighter_Update( this );
 
 	if( Player1->Fighter_GetPosition()->X < Player2->Fighter_GetPosition()->X )
 	{
@@ -192,4 +192,14 @@ void Arena::Render()
 bool Arena::IsTransition()
 {
 	return false;
+}
+
+Fighter* Arena::GetOpponent(Fighter* Current)
+{
+	if( Player1 == Current )
+	{
+		return Player2;
+	} else {
+		return Player1;
+	}
 }

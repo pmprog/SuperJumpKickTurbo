@@ -18,25 +18,46 @@ Idle [
 	368, 24, 152, 208,
 	532, 24, 152, 208
 	]
+IdleHit [
+	0, 0, 152, 208,
+	0, 0, 152, 208,
+	0, 0, 152, 208,
+	0, 0, 152, 208
+	]
 
 TakeOffFrameTime = 6
 TakeOff [
 	832, 0, 128, 256
+	]
+TakeOffHit [
+	0, 0, 128, 256
 	]
 
 InAirFrameTime = 6
 InAir [
 	1024, 0, 128, 256
 	]
+InAirHit [
+	0, 0, 128, 256
+	]
 
 LandFrameTime = 6
 Land [
 	1216, 0, 128, 256
 	]
+LandHit [
+	0, 0, 128, 256
+	]
 
 KickFrameTime = 6
 Kick [
 	1536, 256, 192, 256
+	]
+KickHit [
+	0, 0, 192, 256
+	]
+KickAttack [
+	124, 192, 48, 44
 	]
 
 SuperFrameTime = 4

@@ -3,9 +3,12 @@
 
 #include <string>
 #include "../Framework/Primitives/vector2.h"
+#include "../Framework/Primitives/box.h"
 #include "../Framework/Display/animation.h"
 
-
+#ifndef Arena
+class Arena;
+#endif
 
 class Fighter
 {
@@ -18,6 +21,8 @@ class Fighter
 			BackJump,
 			Super,
 			Ultra,
+			Knockdown,
+			Floored,
 			Victor,
 			Loser
 		};
@@ -25,10 +30,16 @@ class Fighter
 	private:
 		SpriteSheet* spriteSheet;
 		Animation* animIdle;
+		std::vector<Box*> collisionIdle;
 		Animation* animJumpTakeOff;
+		std::vector<Box*> collisionJumpTakeOff;
 		Animation* animJumpFloat;
+		std::vector<Box*> collisionJumpFloat;
 		Animation* animJumpLand;
+		std::vector<Box*> collisionJumpLand;
 		Animation* animKick;
+		std::vector<Box*> collisionKick;
+		std::vector<Box*> attackKick;
 		Animation* animSuper;
 		Animation* animKnockDown;
 		Animation* animKnockDownLand;
@@ -51,6 +62,8 @@ class Fighter
 		float kickHSpeed;
 		int arenaWidth;
 
+		Box* CollisionBoxToScreenBox(Box* Source);
+
 
 	public:
 		std::string CharacterName;
@@ -59,7 +72,7 @@ class Fighter
 
 		void CharSelect_RenderProfileIcon( int ScreenX, int ScreenY );
 
-		void Fighter_Update();
+		void Fighter_Update( Arena* Current );
 		int Fighter_GetState();
 		void Fighter_SetState( int NewState );
 
@@ -74,5 +87,7 @@ class Fighter
 		void Fighter_JumpPressed();
 		void Fighter_KickPressed();
 		void Fighter_SuperPressed();
+
+		Box* Fighter_GetCurrentHitBox();
 
 };

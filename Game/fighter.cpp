@@ -1,5 +1,6 @@
 
 #include "fighter.h"
+#include "arena.h"
 
 Fighter::Fighter( std::string Config, int ArenaWidth )
 {
@@ -33,6 +34,7 @@ Fighter::Fighter( std::string Config, int ArenaWidth )
 	for( int frameidx = 0; frameidx < cfg->GetArraySize( "Idle" ) / 4; frameidx++ )
 	{
 		animIdle->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Idle", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "Idle", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "Idle", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "Idle", (frameidx * 4) + 3, 0) ) );
+		collisionIdle.push_back( new Box( cfg->GetQuickIntegerValue( "IdleHit", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "IdleHit", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "IdleHit", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "IdleHit", (frameidx * 4) + 3, 0) ) );
 	}
 
 	// Add TakeOff Animation
@@ -40,6 +42,7 @@ Fighter::Fighter( std::string Config, int ArenaWidth )
 	for( int frameidx = 0; frameidx < cfg->GetArraySize( "TakeOff" ) / 4; frameidx++ )
 	{
 		animJumpTakeOff->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4) + 3, 0) ) );
+		collisionJumpTakeOff.push_back( new Box( cfg->GetQuickIntegerValue( "TakeOffHit", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "TakeOffHit", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "TakeOffHit", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "TakeOffHit", (frameidx * 4) + 3, 0) ) );
 	}
 
 	// Add InAir Animation
@@ -47,6 +50,7 @@ Fighter::Fighter( std::string Config, int ArenaWidth )
 	for( int frameidx = 0; frameidx < cfg->GetArraySize( "InAir" ) / 4; frameidx++ )
 	{
 		animJumpFloat->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "InAir", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "InAir", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "InAir", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "InAir", (frameidx * 4) + 3, 0) ) );
+		collisionJumpFloat.push_back( new Box( cfg->GetQuickIntegerValue( "InAirHit", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "InAirHit", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "InAirHit", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "InAirHit", (frameidx * 4) + 3, 0) ) );
 	}
 
 	// Add Land Animation
@@ -54,6 +58,7 @@ Fighter::Fighter( std::string Config, int ArenaWidth )
 	for( int frameidx = 0; frameidx < cfg->GetArraySize( "Land" ) / 4; frameidx++ )
 	{
 		animJumpLand->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Land", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "Land", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "Land", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "Land", (frameidx * 4) + 3, 0) ) );
+		collisionJumpLand.push_back( new Box( cfg->GetQuickIntegerValue( "LandHit", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "LandHit", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "LandHit", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "LandHit", (frameidx * 4) + 3, 0) ) );
 	}
 
 	// Add Kick Animation
@@ -61,6 +66,8 @@ Fighter::Fighter( std::string Config, int ArenaWidth )
 	for( int frameidx = 0; frameidx < cfg->GetArraySize( "Kick" ) / 4; frameidx++ )
 	{
 		animKick->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Kick", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "Kick", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "Kick", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "Kick", (frameidx * 4) + 3, 0) ) );
+		collisionKick.push_back( new Box( cfg->GetQuickIntegerValue( "KickHit", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "KickHit", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "KickHit", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "KickHit", (frameidx * 4) + 3, 0) ) );
+		attackKick.push_back( new Box( cfg->GetQuickIntegerValue( "KickAttack", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "KickAttack", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "KickAttack", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "KickAttack", (frameidx * 4) + 3, 0) ) );
 	}
 
 	// Add Super Animation
@@ -106,8 +113,11 @@ void Fighter::CharSelect_RenderProfileIcon(int ScreenX, int ScreenY)
 	spriteSheet->DrawSprite( 0, ScreenX, ScreenY );
 }
 
-void Fighter::Fighter_Update()
+void Fighter::Fighter_Update( Arena* Current )
 {
+	Fighter* opponent;
+	Box* collisionarea;
+
 	currentAnimation->Update();
 	currentStateTime++;
 
@@ -163,9 +173,35 @@ void Fighter::Fighter_Update()
 			currentPosition->Y = 0;
 			Fighter_SetState(Fighter::Idle);
 		}
+		if( Current != 0 )
+		{
+			opponent = Current->GetOpponent( this );
+			collisionarea = opponent->Fighter_GetCurrentHitBox();
+			if( collisionarea != 0 )
+			{
+				if( attackKick.at( currentAnimation->GetCurrentFrame() )->Collides( collisionarea ) )
+				{
+					opponent->Fighter_SetState( Fighter::Knockdown );
+				}
+			}
+		}
 		break;
 	case Fighter::Super:
 		break;
+
+	case Fighter::Knockdown:
+		currentPosition->Y -= jumpSpeed;
+		if (currentPosition->Y <= 0)
+		{
+			currentPosition->Y = 0;
+			if( currentAnimation != animKnockDownLand )
+			{
+				currentAnimation = animKnockDownLand;
+				currentAnimation->Start();
+			}
+		}
+		break;
+
 	case Fighter::Loser:
 		break;
 	case Fighter::Victor:
@@ -184,8 +220,7 @@ void Fighter::Fighter_Update()
 		}
 		if (currentAnimation == animKnockDownLand)
 		{
-			currentAnimation = animKnockedOut;
-			currentAnimation->Start();
+			Fighter_SetState( Fighter::Loser );
 		}
 	}
 
@@ -236,12 +271,16 @@ void Fighter::Fighter_SetState(int NewState)
 		currentAnimation = animSuper;
 		currentAnimation->Start();
 		break;
+	case Fighter::Knockdown:
+		currentAnimation = animKnockDown;
+		currentAnimation->Start();
+		break;
 	case Fighter::Victor:
 		currentAnimation = animWin;
 		currentAnimation->Start();
 		break;
 	case Fighter::Loser:
-		currentAnimation = animKnockDown;
+		currentAnimation = animKnockedOut;
 		currentAnimation->Start();
 		break;
 	}
@@ -325,3 +364,46 @@ void Fighter::Fighter_SuperPressed()
 	}
 }
 
+Box* Fighter::Fighter_GetCurrentHitBox()
+{
+	std::vector<Box*>* boxlist = 0;
+	if( currentAnimation == animIdle )
+	{
+		boxlist = &collisionIdle;
+	}
+	if( currentAnimation == animJumpTakeOff )
+	{
+		boxlist = &collisionJumpTakeOff;
+	}
+	if( currentAnimation == animJumpFloat )
+	{
+		boxlist = &collisionJumpFloat;
+	}
+	if( currentAnimation == animJumpLand )
+	{
+		boxlist = &collisionJumpLand;
+	}
+	if( currentAnimation == animKick )
+	{
+		boxlist = &collisionKick;
+	}
+	if( boxlist == 0 )
+	{
+		return 0;
+	}
+
+	return CollisionBoxToScreenBox(boxlist->at( currentAnimation->GetCurrentFrame() ));
+}
+
+Box* Fighter::CollisionBoxToScreenBox(Box* Source)
+{
+	/*
+	int screenY = 432 - currentPosition->Y - spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Height;
+	int screenX = currentPosition->X;
+	screenX -= (currentFaceLeft ? -1 : 1) * (spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Width / 2);
+
+
+	Box* b = new Box(   )
+	*/
+	return Source;
+}

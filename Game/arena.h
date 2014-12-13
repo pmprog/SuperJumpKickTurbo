@@ -18,6 +18,9 @@ class Arena : public Stage
 		int arenaWidth;
 
   public:
+
+		Fighter* GetOpponent(Fighter* Current);
+
     // Stage control
     virtual void Begin();
     virtual void Pause();

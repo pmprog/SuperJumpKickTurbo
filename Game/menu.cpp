@@ -6,7 +6,7 @@ void Menu::Begin()
 {
 	imgSuper = al_load_bitmap( "resources/super.png" );
 	imgJumpKick = al_load_bitmap( "resources/jumpkick.png" );
-	imgTurbo = new SpriteSheet( "resources/turbo.png", 132, 30 );
+	imgTurbo = new SpriteSheet( "resources/turbo.png", 204, 64 );
 
 	fntTitle = al_load_font( "resources/titlefont.ttf", 24, 0 );
 
@@ -64,7 +64,7 @@ void Menu::Update()
 	{
 		TitleFighter->Fighter_SetState( Fighter::FighterStates::Kick );
 	}
-	TitleFighter->Fighter_Update();
+	TitleFighter->Fighter_Update( 0 );
 }
 
 void Menu::Render()
@@ -88,17 +88,20 @@ void Menu::Render()
 
 	if( menuTime > 260 )
 	{
-		imgTurbo->DrawSprite( 0, (DISPLAY->GetWidth() / 2) + (al_get_bitmap_width(imgJumpKick) / 2) - imgTurbo->GetFrame(0)->Width, 30 + al_get_bitmap_height( imgSuper ) );
+		int turboX = (int)((DISPLAY->GetWidth() / 4.0f) * 3.0f) - (imgTurbo->GetFrame(0)->Width / 2); // - imgTurbo->GetFrame(0)->Width - 30;
+		int turboY = 65 + al_get_bitmap_height( imgSuper ) - imgTurbo->GetFrame(0)->Height - 5;
 
-		if( (menuTime % 800) >= 300 && (menuTime % 800) <= 328 )
+		imgTurbo->DrawSprite( 0, turboX, turboY );
+
+		if( (menuTime % 800) >= 300 && (menuTime % 800) <= 300 + (imgTurbo->GetFrame(0)->Height / 4) )
 		{
-			int overlaypos = 28 - ((menuTime % 800) - 300);
-			imgTurbo->DrawSpritePortion( 1, (DISPLAY->GetWidth() / 2) + (al_get_bitmap_width(imgJumpKick) / 2) - imgTurbo->GetFrame(0)->Width, 30 + al_get_bitmap_height( imgSuper ) + overlaypos, 0, overlaypos, 132, 3 );
+			int overlaypos = (imgTurbo->GetFrame(0)->Height / 4) - ((menuTime % 800) - 300);
+			imgTurbo->DrawSpritePortion( 1, turboX, turboY + (overlaypos * 4), 0, overlaypos, imgTurbo->GetFrame(0)->Width, 12 );
 		}
 
-		al_draw_text( fntTitle, al_map_rgb( 255, 255, 0 ), 10, 270, 0, "Arcade" );
-		al_draw_text( fntTitle, al_map_rgb( 128, 128, 128 ), 10, 300, 0, "Network" );
-		al_draw_text( fntTitle, al_map_rgb( 255, 255, 255 ), 10, 330, 0, "Quit" );
+		al_draw_text( fntTitle, al_map_rgb( 255, 255, 0 ), 10, 330, 0, "Arcade" );
+		al_draw_text( fntTitle, al_map_rgb( 128, 128, 128 ), 10, 360, 0, "Network" );
+		al_draw_text( fntTitle, al_map_rgb( 255, 255, 255 ), 10, 390, 0, "Quit" );
 
 	}
 
