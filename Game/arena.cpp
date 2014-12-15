@@ -44,23 +44,6 @@ void Arena::EventOccurred(Event *e)
 			return;
 		}
 
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_LEFT )
-		{
-			CamXMove = -1;
-		}
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_RIGHT )
-		{
-			CamXMove = 1;
-		}
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_UP )
-		{
-			CamYMove = 1;
-		}
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_DOWN )
-		{
-			CamYMove = -1;
-		}
-
 		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_LSHIFT )
 		{
 			Player1->Fighter_JumpPressed();
@@ -79,17 +62,7 @@ void Arena::EventOccurred(Event *e)
 		}
 
 	}
-	if( e->Type == EVENT_KEY_UP )
-	{
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_LEFT || e->Data.Keyboard.KeyCode == ALLEGRO_KEY_RIGHT )
-		{
-			CamXMove = 0;
-		}
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_UP || e->Data.Keyboard.KeyCode == ALLEGRO_KEY_DOWN )
-		{
-			CamYMove = 0;
-		}
-	}
+
 }
 
 void Arena::Update()
@@ -98,6 +71,25 @@ void Arena::Update()
 	// Update players
 	Player1->Fighter_Update( this );
 	Player2->Fighter_Update( this );
+
+	// Update to knockdown after checking both players (double-ko possibility)
+	if( Player1->FighterHit )
+	{
+		Player1->Fighter_SetState( Fighter::Knockdown );
+	}
+	if( Player2->FighterHit )
+	{
+		Player2->Fighter_SetState( Fighter::Knockdown );
+	}
+
+	if( Player1->Fighter_GetState() == Fighter::Idle && (Player2->Fighter_GetState() == Fighter::Knockdown || Player2->Fighter_GetState() == Fighter::Loser) )
+	{
+		Player1->Fighter_SetState( Fighter::Victor );
+	}
+	if( Player2->Fighter_GetState() == Fighter::Idle && (Player1->Fighter_GetState() == Fighter::Knockdown || Player1->Fighter_GetState() == Fighter::Loser) )
+	{
+		Player2->Fighter_SetState( Fighter::Victor );
+	}
 
 	if( Player1->Fighter_GetPosition()->X < Player2->Fighter_GetPosition()->X )
 	{

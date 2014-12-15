@@ -66,6 +66,7 @@ class Fighter
 
 
 	public:
+		bool FighterHit;
 		std::string CharacterName;
 
 		Fighter( std::string Config, int ArenaWidth );

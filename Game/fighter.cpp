@@ -106,6 +106,7 @@ Fighter::Fighter( std::string Config, int ArenaWidth )
 	}
 
 	Fighter_SetState( Fighter::FighterStates::Idle );
+	FighterHit = false;
 }
 
 void Fighter::CharSelect_RenderProfileIcon(int ScreenX, int ScreenY)
@@ -183,7 +184,7 @@ void Fighter::Fighter_Update( Arena* Current )
 				kickarea = CollisionBoxToScreenBox( attackKick.at( currentAnimation->GetCurrentFrame() ) );
 				if( kickarea->Collides( collisionarea ) )
 				{
-					opponent->Fighter_SetState( Fighter::Knockdown );
+					opponent->FighterHit = true; // Fighter_SetState( Fighter::Knockdown );
 				}
 				delete kickarea;
 			}
@@ -194,6 +195,7 @@ void Fighter::Fighter_Update( Arena* Current )
 		break;
 
 	case Fighter::Knockdown:
+		FighterHit = false;
 		currentPosition->Y -= jumpSpeed;
 		if (currentPosition->Y <= 0)
 		{
