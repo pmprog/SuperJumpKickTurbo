@@ -117,6 +117,7 @@ void Fighter::Fighter_Update( Arena* Current )
 {
 	Fighter* opponent;
 	Box* collisionarea;
+	Box* kickarea;
 
 	currentAnimation->Update();
 	currentStateTime++;
@@ -179,11 +180,14 @@ void Fighter::Fighter_Update( Arena* Current )
 			collisionarea = opponent->Fighter_GetCurrentHitBox();
 			if( collisionarea != 0 )
 			{
-				if( attackKick.at( currentAnimation->GetCurrentFrame() )->Collides( collisionarea ) )
+				kickarea = CollisionBoxToScreenBox( attackKick.at( currentAnimation->GetCurrentFrame() ) );
+				if( kickarea->Collides( collisionarea ) )
 				{
 					opponent->Fighter_SetState( Fighter::Knockdown );
 				}
+				delete kickarea;
 			}
+			delete collisionarea;
 		}
 		break;
 	case Fighter::Super:
@@ -397,13 +401,19 @@ Box* Fighter::Fighter_GetCurrentHitBox()
 
 Box* Fighter::CollisionBoxToScreenBox(Box* Source)
 {
-	/*
 	int screenY = 432 - currentPosition->Y - spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Height;
 	int screenX = currentPosition->X;
-	screenX -= (currentFaceLeft ? -1 : 1) * (spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Width / 2);
 
+	if( currentFaceLeft )
+	{
+		screenX += (spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Width / 2);
+		screenX -= Source->GetRight();
+	} else {
+		screenX -= (spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Width / 2);
+		screenX += Source->GetLeft();
+	}
+	screenY += Source->GetTop();
 
-	Box* b = new Box(   )
-	*/
-	return Source;
+	Box* b = new Box( screenX, screenY, Source->GetWidth(), Source->GetHeight()  );
+	return b;
 }
