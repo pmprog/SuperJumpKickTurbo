@@ -80,7 +80,7 @@ KnockDownLand [
 
 KnockedOutFrameTime = 6
 KnockedOut [
-	512, 768, 516, 152
+	512, 768, 216, 152
 	]
 
 WinFrameTime = 8
