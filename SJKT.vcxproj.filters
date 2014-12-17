@@ -141,6 +141,12 @@
     <ClCompile Include="Game\fighter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Game\roundover.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\matchover.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\Display\animation.h">
@@ -288,6 +294,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\fighter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\roundover.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\matchover.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

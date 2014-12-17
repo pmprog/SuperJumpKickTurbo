@@ -5,11 +5,17 @@
 #include "../Framework/Display/spritesheet.h"
 #include "fighter.h"
 
+#define SLOWMODE_DELAY_FRAMES		2
+
 class Arena : public Stage
 {
 	private:
+		int CountdownTimer;
+
 		Fighter* Player1;
+		int Player1Wins;
 		Fighter* Player2;
+		int Player2Wins;
 		ALLEGRO_BITMAP* Background;
 		Vector2 Camera;
 
@@ -17,8 +23,16 @@ class Arena : public Stage
 		int CamYMove;
 		int arenaWidth;
 
+		int SlowMode;
+		int SlowModeDelay;
+
   public:
 
+		Arena();
+		Arena( std::string LocationImage, Fighter* P1, Fighter* P2 );
+		~Arena();
+
+		void ResetArena();
 		Fighter* GetOpponent(Fighter* Current);
 
     // Stage control

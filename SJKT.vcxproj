@@ -122,8 +122,10 @@
     <ClCompile Include="Game\arena.cpp" />
     <ClCompile Include="Game\boot.cpp" />
     <ClCompile Include="Game\fighter.cpp" />
+    <ClCompile Include="Game\matchover.cpp" />
     <ClCompile Include="Game\menu.cpp" />
     <ClCompile Include="Game\playerselect.cpp" />
+    <ClCompile Include="Game\roundover.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\configfile.h" />
@@ -173,8 +175,10 @@
     <ClInclude Include="Game\boot.h" />
     <ClInclude Include="Game\fighter.h" />
     <ClInclude Include="Game\includes.h" />
+    <ClInclude Include="Game\matchover.h" />
     <ClInclude Include="Game\menu.h" />
     <ClInclude Include="Game\playerselect.h" />
+    <ClInclude Include="Game\roundover.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

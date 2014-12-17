@@ -1,24 +1,36 @@
 
 #include "arena.h"
+#include "roundover.h"
+#include "matchover.h"
 
-void Arena::Begin()
+Arena::Arena()
 {
 	Background = al_load_bitmap( "resources/england.png" );
 	arenaWidth = al_get_bitmap_width(Background);
 
-	Camera.X = (arenaWidth / 2) - (DISPLAY->GetWidth() / 2);
-	Camera.Y = 0;
+	Player1 = new Fighter( "resources/akuma.txt", arenaWidth, false );
+	Player2 = new Fighter( "resources/ryu.txt", arenaWidth, false );
+}
 
-	Player1 = new Fighter( "resources/akuma.txt", arenaWidth );
-	Player2 = new Fighter( "resources/ryu.txt", arenaWidth );
+Arena::Arena( std::string LocationImage, Fighter* P1, Fighter* P2 )
+{
+	Background = al_load_bitmap( LocationImage.c_str() );
+	arenaWidth = al_get_bitmap_width(Background);
 
-	Player1->Fighter_SetPosition( al_get_bitmap_width(Background) / 3, 0 );
-	Player1->Fighter_SetFacing( false );
-	Player2->Fighter_SetPosition( (al_get_bitmap_width(Background) / 3) * 2, 0 );
-	Player2->Fighter_SetFacing( true );
+	Player1 = P1;
+	Player2 = P2;
+}
 
-	CamXMove = 0;
-	CamYMove = 0;
+Arena::~Arena()
+{
+	al_destroy_bitmap( Background );
+}
+
+void Arena::Begin()
+{
+	Player1Wins = 0;
+	Player2Wins = 0;
+	ResetArena();
 }
 
 void Arena::Pause()
@@ -27,11 +39,11 @@ void Arena::Pause()
 
 void Arena::Resume()
 {
+	ResetArena();
 }
 
 void Arena::Finish()
 {
-	al_destroy_bitmap( Background );
 }
 
 void Arena::EventOccurred(Event *e)
@@ -68,6 +80,24 @@ void Arena::EventOccurred(Event *e)
 void Arena::Update()
 {
 
+	if( SlowMode > 0 )
+	{
+		SlowModeDelay = (SlowModeDelay + 1) % (SLOWMODE_DELAY_FRAMES * SlowMode);
+		if( SlowModeDelay != 0 )
+		{
+			return;
+		} else {
+			SlowMode--;
+		}
+	}
+
+	if( CountdownTimer == 0 )
+	{
+		Player1->Fighter_SetState( Fighter::Knockdown );
+		Player2->Fighter_SetState( Fighter::Knockdown );
+	}
+
+
 	// Update players
 	Player1->Fighter_Update( this );
 	Player2->Fighter_Update( this );
@@ -76,19 +106,45 @@ void Arena::Update()
 	if( Player1->FighterHit )
 	{
 		Player1->Fighter_SetState( Fighter::Knockdown );
+		SlowMode = 8;
 	}
 	if( Player2->FighterHit )
 	{
 		Player2->Fighter_SetState( Fighter::Knockdown );
+		SlowMode = 8;
 	}
 
 	if( Player1->Fighter_GetState() == Fighter::Idle && (Player2->Fighter_GetState() == Fighter::Knockdown || Player2->Fighter_GetState() == Fighter::Loser) )
 	{
 		Player1->Fighter_SetState( Fighter::Victor );
+		Player1Wins++;
+		SlowMode = 0;
+		// Let Round/Match Over stages update the animations, but don't spawn millions of stages
+		if( FRAMEWORK->ProgramStages->Current() == this )
+		{
+			FRAMEWORK->ProgramStages->Push( new RoundOver( 1 ) );
+		}
 	}
 	if( Player2->Fighter_GetState() == Fighter::Idle && (Player1->Fighter_GetState() == Fighter::Knockdown || Player1->Fighter_GetState() == Fighter::Loser) )
 	{
 		Player2->Fighter_SetState( Fighter::Victor );
+		Player2Wins++;
+		SlowMode = 0;
+		// Let Round/Match Over stages update the animations, but don't spawn millions of stages
+		if( FRAMEWORK->ProgramStages->Current() == this )
+		{
+			FRAMEWORK->ProgramStages->Push( new RoundOver( 2 ) );
+		}
+	}
+	if( Player1->Fighter_GetState() == Fighter::Loser && Player2->Fighter_GetState() == Fighter::Loser )
+	{
+		// Draw
+		SlowMode = 0;
+		// Let Round/Match Over stages update the animations, but don't spawn millions of stages
+		if( FRAMEWORK->ProgramStages->Current() == this )
+		{
+			FRAMEWORK->ProgramStages->Push( new RoundOver( 0 ) );
+		}
 	}
 
 	if( Player1->Fighter_GetPosition()->X < Player2->Fighter_GetPosition()->X )
@@ -184,6 +240,26 @@ void Arena::Render()
 bool Arena::IsTransition()
 {
 	return false;
+}
+
+void Arena::ResetArena()
+{
+	CountdownTimer = 60;
+
+	Player1->Fighter_SetPosition( al_get_bitmap_width(Background) / 3, 0 );
+	Player1->Fighter_SetFacing( false );
+	Player1->Fighter_SetState( Fighter::Idle );
+	Player2->Fighter_SetPosition( (al_get_bitmap_width(Background) / 3) * 2, 0 );
+	Player2->Fighter_SetFacing( true );
+	Player2->Fighter_SetState( Fighter::Idle );
+
+	Camera.X = (arenaWidth / 2) - (DISPLAY->GetWidth() / 2);
+	Camera.Y = 0;
+	CamXMove = 0;
+	CamYMove = 0;
+
+	SlowMode = 0;
+	SlowModeDelay = 0;
 }
 
 Fighter* Arena::GetOpponent(Fighter* Current)

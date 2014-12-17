@@ -2,7 +2,7 @@
 #include "fighter.h"
 #include "arena.h"
 
-Fighter::Fighter( std::string Config, int ArenaWidth )
+Fighter::Fighter( std::string Config, int ArenaWidth, bool AlternativeSprites )
 {
 	ConfigFile* cfg = new ConfigFile( Config );
 	std::string* tmpstring;
@@ -14,7 +14,12 @@ Fighter::Fighter( std::string Config, int ArenaWidth )
 	CharacterName.clear();
 	CharacterName.append( cfg->GetQuickStringValue("Name", "Unknown")->c_str() );
 
-	tmpstring = cfg->GetQuickStringValue("Sprites", "");
+	if( !AlternativeSprites )
+	{
+		tmpstring = cfg->GetQuickStringValue("Sprites", "");
+	} else {
+		tmpstring = cfg->GetQuickStringValue("SpritesAlt", "");
+	}
 	spriteSheet = new SpriteSheet( *tmpstring );
 	delete tmpstring;
 

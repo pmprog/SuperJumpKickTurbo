@@ -69,7 +69,7 @@ class Fighter
 		bool FighterHit;
 		std::string CharacterName;
 
-		Fighter( std::string Config, int ArenaWidth );
+		Fighter( std::string Config, int ArenaWidth, bool AlternativeSprites );
 
 		void CharSelect_RenderProfileIcon( int ScreenX, int ScreenY );
 

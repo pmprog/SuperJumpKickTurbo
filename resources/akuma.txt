@@ -1,5 +1,6 @@
 Name = "Akuma"
 Sprites = "resources/akuma.png"
+SpritesAlt = "resources/akuma_alt.png"
 
 JumpFrames = 66.0
 JumpSpeed = 12.0
