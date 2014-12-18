@@ -424,3 +424,7 @@ Box* Fighter::CollisionBoxToScreenBox(Box* Source)
 	Box* b = new Box( screenX, screenY, Source->GetWidth(), Source->GetHeight()  );
 	return b;
 }
+
+void Fighter::AI_Update()
+{
+}

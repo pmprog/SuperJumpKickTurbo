@@ -10,7 +10,10 @@
 class Arena : public Stage
 {
 	private:
+		ALLEGRO_FONT* fntTimer;
 		int CountdownTimer;
+		int CountdownTimerTicker;
+		bool DisableTimer;
 
 		Fighter* Player1;
 		int Player1Wins;

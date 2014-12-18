@@ -5,11 +5,11 @@
 
 Arena::Arena()
 {
-	Background = al_load_bitmap( "resources/england.png" );
+	Background = al_load_bitmap( "resources/japan.png" );
 	arenaWidth = al_get_bitmap_width(Background);
 
 	Player1 = new Fighter( "resources/akuma.txt", arenaWidth, false );
-	Player2 = new Fighter( "resources/ryu.txt", arenaWidth, false );
+	Player2 = new Fighter( "resources/akuma.txt", arenaWidth, true );
 }
 
 Arena::Arena( std::string LocationImage, Fighter* P1, Fighter* P2 )
@@ -28,6 +28,7 @@ Arena::~Arena()
 
 void Arena::Begin()
 {
+	fntTimer = al_load_ttf_font( "resources/titlefont.ttf", 48, 0 );
 	Player1Wins = 0;
 	Player2Wins = 0;
 	ResetArena();
@@ -44,6 +45,7 @@ void Arena::Resume()
 
 void Arena::Finish()
 {
+	al_destroy_font( fntTimer );
 }
 
 void Arena::EventOccurred(Event *e)
@@ -91,10 +93,23 @@ void Arena::Update()
 		}
 	}
 
-	if( CountdownTimer == 0 )
+	if( !DisableTimer )
 	{
-		Player1->Fighter_SetState( Fighter::Knockdown );
-		Player2->Fighter_SetState( Fighter::Knockdown );
+		if( CountdownTimer > 0 )
+		{
+			CountdownTimerTicker = (CountdownTimerTicker + 1) % FRAMEWORK->GetFramesPerSecond();
+			if( CountdownTimerTicker == 0 )
+			{
+				CountdownTimer--;
+			}
+		}
+		if( CountdownTimer == 0 )
+		{
+			Player1->Fighter_SetState( Fighter::Knockdown );
+			Player2->Fighter_SetState( Fighter::Knockdown );
+			SlowMode = 2;
+			DisableTimer = true;
+		}
 	}
 
 
@@ -107,11 +122,13 @@ void Arena::Update()
 	{
 		Player1->Fighter_SetState( Fighter::Knockdown );
 		SlowMode = 8;
+		DisableTimer = true;
 	}
 	if( Player2->FighterHit )
 	{
 		Player2->Fighter_SetState( Fighter::Knockdown );
 		SlowMode = 8;
+		DisableTimer = true;
 	}
 
 	if( Player1->Fighter_GetState() == Fighter::Idle && (Player2->Fighter_GetState() == Fighter::Knockdown || Player2->Fighter_GetState() == Fighter::Loser) )
@@ -235,6 +252,10 @@ void Arena::Render()
 
 	Player1->Fighter_Render( Camera.X, Camera.Y );
 	Player2->Fighter_Render( Camera.X, Camera.Y );
+
+	al_draw_textf( fntTimer, al_map_rgb( 0, 0, 0 ), (DISPLAY->GetWidth() / 2) + 4, 14, ALLEGRO_ALIGN_CENTRE, "%d", CountdownTimer );
+	al_draw_textf( fntTimer, al_map_rgb( 255, 255, 0 ), DISPLAY->GetWidth() / 2, 10, ALLEGRO_ALIGN_CENTRE, "%d", CountdownTimer );
+
 }
 
 bool Arena::IsTransition()
@@ -244,7 +265,9 @@ bool Arena::IsTransition()
 
 void Arena::ResetArena()
 {
-	CountdownTimer = 60;
+	CountdownTimer = 20;
+	CountdownTimerTicker = 0;
+	DisableTimer = false;
 
 	Player1->Fighter_SetPosition( al_get_bitmap_width(Background) / 3, 0 );
 	Player1->Fighter_SetFacing( false );

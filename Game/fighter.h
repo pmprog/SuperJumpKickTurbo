@@ -91,4 +91,6 @@ class Fighter
 
 		Box* Fighter_GetCurrentHitBox();
 
+		void AI_Update();
+
 };
