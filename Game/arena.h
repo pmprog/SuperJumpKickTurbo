@@ -30,6 +30,7 @@ class Arena : public Stage
 		int SlowModeDelay;
 
   public:
+		long RoundFrameCount;
 
 		Arena();
 		Arena( std::string LocationImage, Fighter* P1, Fighter* P2 );
@@ -37,6 +38,8 @@ class Arena : public Stage
 
 		void ResetArena();
 		Fighter* GetOpponent(Fighter* Current);
+
+		bool State_Load(long FrameCount);
 
     // Stage control
     virtual void Begin();

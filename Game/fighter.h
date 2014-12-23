@@ -10,6 +10,8 @@
 class Arena;
 #endif
 
+#define FIGHTER_MAXIMUM_ROLLBACK_STATES		10
+
 class Fighter
 {
 	public:
@@ -26,6 +28,17 @@ class Fighter
 			Victor,
 			Loser
 		};
+
+		typedef struct FighterSaveState
+		{
+			long FrameCount;
+			FighterStates State;
+			int StateTime;
+			Animation* Anim;
+			float X;
+			float Y;
+			bool FaceLeft;
+		} FighterSaveState;
 
 	private:
 		SpriteSheet* spriteSheet;
@@ -46,6 +59,8 @@ class Fighter
 		Animation* animKnockedOut;
 		Animation* animWin;
 
+		Arena* currentArena;
+
 		float currentScale;
 		FighterStates currentState;
 		int currentStateTime;
@@ -62,6 +77,8 @@ class Fighter
 		float kickHSpeed;
 		int arenaWidth;
 
+		FighterSaveState RollbackStates[FIGHTER_MAXIMUM_ROLLBACK_STATES];
+
 		Box* CollisionBoxToScreenBox(Box* Source);
 
 
@@ -69,11 +86,11 @@ class Fighter
 		bool FighterHit;
 		std::string CharacterName;
 
-		Fighter( std::string Config, int ArenaWidth, bool AlternativeSprites );
+		Fighter( std::string Config, Arena* FightArena, int ArenaWidth, bool AlternativeSprites );
 
 		void CharSelect_RenderProfileIcon( int ScreenX, int ScreenY );
 
-		void Fighter_Update( Arena* Current );
+		void Fighter_Update( bool IgnoreCollisions );
 		int Fighter_GetState();
 		void Fighter_SetState( int NewState );
 
@@ -92,5 +109,9 @@ class Fighter
 		Box* Fighter_GetCurrentHitBox();
 
 		void AI_Update();
+
+		void State_Clear();
+		void State_Save(long FrameCount);
+		bool State_Load(long FrameCount);
 
 };

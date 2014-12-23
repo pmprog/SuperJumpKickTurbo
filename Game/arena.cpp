@@ -8,8 +8,8 @@ Arena::Arena()
 	Background = al_load_bitmap( "resources/japan.png" );
 	arenaWidth = al_get_bitmap_width(Background);
 
-	Player1 = new Fighter( "resources/akuma.txt", arenaWidth, false );
-	Player2 = new Fighter( "resources/bison.txt", arenaWidth, false );
+	Player1 = new Fighter( "resources/akuma.txt", this, arenaWidth, false );
+	Player2 = new Fighter( "resources/bison.txt", this, arenaWidth, false );
 }
 
 Arena::Arena( std::string LocationImage, Fighter* P1, Fighter* P2 )
@@ -75,12 +75,23 @@ void Arena::EventOccurred(Event *e)
 			Player2->Fighter_KickPressed();
 		}
 
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_F9 )
+		{
+			State_Load( RoundFrameCount - 20 );
+		}
+
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_F10 )
+		{
+			State_Load( RoundFrameCount / 2 );
+		}
+
 	}
 
 }
 
 void Arena::Update()
 {
+	RoundFrameCount++;
 
 	if( SlowMode > 0 )
 	{
@@ -114,8 +125,8 @@ void Arena::Update()
 
 
 	// Update players
-	Player1->Fighter_Update( this );
-	Player2->Fighter_Update( this );
+	Player1->Fighter_Update( false );
+	Player2->Fighter_Update( false );
 
 	// Update to knockdown after checking both players (double-ko possibility)
 	if( Player1->FighterHit )
@@ -265,6 +276,7 @@ bool Arena::IsTransition()
 
 void Arena::ResetArena()
 {
+	RoundFrameCount = 0;
 	CountdownTimer = 20;
 	CountdownTimerTicker = 0;
 	DisableTimer = false;
@@ -293,4 +305,18 @@ Fighter* Arena::GetOpponent(Fighter* Current)
 	} else {
 		return Player1;
 	}
+}
+
+bool Arena::State_Load(long FrameCount)
+{
+	RoundFrameCount = FrameCount;
+
+	if( !Player1->State_Load( RoundFrameCount ) || !Player2->State_Load( RoundFrameCount ) )
+	{
+		return false;
+	}
+
+	// TODO: Fix round timer
+
+	return true;
 }

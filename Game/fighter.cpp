@@ -2,11 +2,12 @@
 #include "fighter.h"
 #include "arena.h"
 
-Fighter::Fighter( std::string Config, int ArenaWidth, bool AlternativeSprites )
+Fighter::Fighter( std::string Config, Arena* FightArena, int ArenaWidth, bool AlternativeSprites )
 {
 	ConfigFile* cfg = new ConfigFile( Config );
 	std::string* tmpstring;
 
+	currentArena = FightArena;
 	arenaWidth = ArenaWidth;
 
 	currentPosition = new Vector2();
@@ -112,6 +113,8 @@ Fighter::Fighter( std::string Config, int ArenaWidth, bool AlternativeSprites )
 
 	Fighter_SetState( Fighter::FighterStates::Idle );
 	FighterHit = false;
+
+	State_Clear();
 }
 
 void Fighter::CharSelect_RenderProfileIcon(int ScreenX, int ScreenY)
@@ -119,7 +122,7 @@ void Fighter::CharSelect_RenderProfileIcon(int ScreenX, int ScreenY)
 	spriteSheet->DrawSprite( 0, ScreenX, ScreenY );
 }
 
-void Fighter::Fighter_Update( Arena* Current )
+void Fighter::Fighter_Update( bool IgnoreCollisions )
 {
 	Fighter* opponent;
 	Box* collisionarea;
@@ -180,9 +183,9 @@ void Fighter::Fighter_Update( Arena* Current )
 			currentPosition->Y = 0;
 			Fighter_SetState(Fighter::Idle);
 		}
-		if( Current != 0 )
+		if( currentArena != 0 && !IgnoreCollisions )
 		{
-			opponent = Current->GetOpponent( this );
+			opponent = currentArena->GetOpponent( this );
 			collisionarea = opponent->Fighter_GetCurrentHitBox();
 			if( collisionarea != 0 )
 			{
@@ -243,6 +246,7 @@ void Fighter::Fighter_Update( Arena* Current )
 	{
 		currentPosition->X = arenaWidth;
 	}
+
 }
 
 int Fighter::Fighter_GetState()
@@ -295,6 +299,11 @@ void Fighter::Fighter_SetState(int NewState)
 		currentAnimation->Start();
 		break;
 	}
+
+	if( currentArena != nullptr )
+	{
+		State_Save( currentArena->RoundFrameCount );
+	}
 }
 
 
@@ -307,12 +316,23 @@ void Fighter::Fighter_SetPosition(float X, float Y)
 {
 	currentPosition->X = X;
 	currentPosition->Y = Y;
+
+	if( currentArena != nullptr )
+	{
+		State_Save( currentArena->RoundFrameCount );
+	}
+
 }
 
 void Fighter::Fighter_SetPosition(Vector2* NewPosition)
 {
 	currentPosition->X = NewPosition->X;
 	currentPosition->Y = NewPosition->Y;
+
+	if( currentArena != nullptr )
+	{
+		State_Save( currentArena->RoundFrameCount );
+	}
 }
 
 void Fighter::Fighter_Render(int ScreenOffsetX, int ScreenOffsetY)
@@ -333,7 +353,14 @@ void Fighter::Fighter_SetFacing(bool FacingLeft)
 {
 	if (currentState == Fighter::Idle)
 	{
-		currentFaceLeft = FacingLeft;
+		if( currentFaceLeft != FacingLeft )
+		{
+			currentFaceLeft = FacingLeft;
+			if( currentArena != nullptr )
+			{
+				State_Save( currentArena->RoundFrameCount );
+			}
+		}
 	}
 }
 
@@ -427,4 +454,60 @@ Box* Fighter::CollisionBoxToScreenBox(Box* Source)
 
 void Fighter::AI_Update()
 {
+}
+
+void Fighter::State_Clear()
+{
+	// Clear all rollback states
+	memset( (void*)&RollbackStates, 0, sizeof(FighterSaveState) * FIGHTER_MAXIMUM_ROLLBACK_STATES );
+}
+
+void Fighter::State_Save(long FrameCount)
+{
+	FighterSaveState tempstates[FIGHTER_MAXIMUM_ROLLBACK_STATES - 1];
+
+	// Bulk copy states back one
+	memcpy( (void*)&tempstates, (void*)&RollbackStates, sizeof(FighterSaveState) * (FIGHTER_MAXIMUM_ROLLBACK_STATES - 1) );
+	memcpy( (void*)&RollbackStates[1], (void*)&tempstates, sizeof(FighterSaveState) * (FIGHTER_MAXIMUM_ROLLBACK_STATES - 1) );
+
+	RollbackStates[0].FrameCount = FrameCount;
+	RollbackStates[0].State = currentState;
+	RollbackStates[0].StateTime = currentStateTime;
+	RollbackStates[0].FaceLeft = currentFaceLeft;
+	RollbackStates[0].Anim = currentAnimation;
+	RollbackStates[0].X = currentPosition->X;
+	RollbackStates[0].Y = currentPosition->Y;
+}
+
+bool Fighter::State_Load(long FrameCount)
+{
+	FighterSaveState tempstates[FIGHTER_MAXIMUM_ROLLBACK_STATES];
+
+	bool foundState = false;
+	for( int i = 0; i < FIGHTER_MAXIMUM_ROLLBACK_STATES; i++ )
+	{
+		if( RollbackStates[i].FrameCount > 0 && RollbackStates[i].FrameCount <= FrameCount )
+		{
+			currentState = RollbackStates[i].State;
+			currentStateTime = RollbackStates[i].StateTime;
+			currentFaceLeft = RollbackStates[i].FaceLeft;
+			currentAnimation = RollbackStates[i].Anim;
+			currentPosition->X = RollbackStates[i].X;
+			currentPosition->Y = RollbackStates[i].Y;
+
+			for( long l = RollbackStates[i].FrameCount; l <= FrameCount; l++ )
+			{
+				Fighter_Update( true );
+			}
+
+			// Bulk copy states to hide rolled back future
+			memcpy( (void*)&tempstates, (void*)&RollbackStates[i], sizeof(FighterSaveState) * (FIGHTER_MAXIMUM_ROLLBACK_STATES - i) );
+			memcpy( (void*)&RollbackStates[0], (void*)&tempstates, sizeof(FighterSaveState) * (FIGHTER_MAXIMUM_ROLLBACK_STATES - i) );
+
+
+			foundState = true;
+			break;
+		}
+	}
+	return foundState;
 }
