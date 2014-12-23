@@ -9,7 +9,7 @@ Arena::Arena()
 	arenaWidth = al_get_bitmap_width(Background);
 
 	Player1 = new Fighter( "resources/akuma.txt", arenaWidth, false );
-	Player2 = new Fighter( "resources/ryu.txt", arenaWidth, true );
+	Player2 = new Fighter( "resources/bison.txt", arenaWidth, false );
 }
 
 Arena::Arena( std::string LocationImage, Fighter* P1, Fighter* P2 )
