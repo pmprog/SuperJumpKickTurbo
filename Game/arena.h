@@ -6,6 +6,7 @@
 #include "fighter.h"
 
 #define SLOWMODE_DELAY_FRAMES		2
+#define ROUND_TIME							20
 
 class Arena : public Stage
 {
@@ -28,6 +29,10 @@ class Arena : public Stage
 
 		int SlowMode;
 		int SlowModeDelay;
+
+		long ClockRoundFrameCount[ROUND_TIME];
+
+		void TickRoundClock();
 
   public:
 		long RoundFrameCount;

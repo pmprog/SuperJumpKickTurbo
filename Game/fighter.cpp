@@ -459,7 +459,7 @@ void Fighter::AI_Update()
 void Fighter::State_Clear()
 {
 	// Clear all rollback states
-	memset( (void*)&RollbackStates, 0, sizeof(FighterSaveState) * FIGHTER_MAXIMUM_ROLLBACK_STATES );
+	memset( (void*)&RollbackStates, -1, sizeof(FighterSaveState) * FIGHTER_MAXIMUM_ROLLBACK_STATES );
 }
 
 void Fighter::State_Save(long FrameCount)
@@ -486,7 +486,7 @@ bool Fighter::State_Load(long FrameCount)
 	bool foundState = false;
 	for( int i = 0; i < FIGHTER_MAXIMUM_ROLLBACK_STATES; i++ )
 	{
-		if( RollbackStates[i].FrameCount > 0 && RollbackStates[i].FrameCount <= FrameCount )
+		if( RollbackStates[i].FrameCount >= 0 && RollbackStates[i].FrameCount <= FrameCount )
 		{
 			currentState = RollbackStates[i].State;
 			currentStateTime = RollbackStates[i].StateTime;

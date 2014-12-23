@@ -106,21 +106,7 @@ void Arena::Update()
 
 	if( !DisableTimer )
 	{
-		if( CountdownTimer > 0 )
-		{
-			CountdownTimerTicker = (CountdownTimerTicker + 1) % FRAMEWORK->GetFramesPerSecond();
-			if( CountdownTimerTicker == 0 )
-			{
-				CountdownTimer--;
-			}
-		}
-		if( CountdownTimer == 0 )
-		{
-			Player1->Fighter_SetState( Fighter::Knockdown );
-			Player2->Fighter_SetState( Fighter::Knockdown );
-			SlowMode = 2;
-			DisableTimer = true;
-		}
+		TickRoundClock();
 	}
 
 
@@ -277,13 +263,16 @@ bool Arena::IsTransition()
 void Arena::ResetArena()
 {
 	RoundFrameCount = 0;
-	CountdownTimer = 20;
+	CountdownTimer = ROUND_TIME;
 	CountdownTimerTicker = 0;
 	DisableTimer = false;
 
+	Player1->State_Clear();
 	Player1->Fighter_SetPosition( al_get_bitmap_width(Background) / 3, 0 );
 	Player1->Fighter_SetFacing( false );
 	Player1->Fighter_SetState( Fighter::Idle );
+
+	Player2->State_Clear();
 	Player2->Fighter_SetPosition( (al_get_bitmap_width(Background) / 3) * 2, 0 );
 	Player2->Fighter_SetFacing( true );
 	Player2->Fighter_SetState( Fighter::Idle );
@@ -295,6 +284,11 @@ void Arena::ResetArena()
 
 	SlowMode = 0;
 	SlowModeDelay = 0;
+
+	for( int i = 0; i < ROUND_TIME; i++ )
+	{
+		ClockRoundFrameCount[i] = 0;
+	}
 }
 
 Fighter* Arena::GetOpponent(Fighter* Current)
@@ -316,7 +310,35 @@ bool Arena::State_Load(long FrameCount)
 		return false;
 	}
 
-	// TODO: Fix round timer
+	for( int i = 0; i < ROUND_TIME; i++ )
+	{
+		if( ClockRoundFrameCount[i] > 0 && ClockRoundFrameCount[i] <= FrameCount )
+		{
+			CountdownTimer = i;
+			CountdownTimerTicker = FrameCount - ClockRoundFrameCount[i];
+		}
+	}
 
 	return true;
+}
+
+void Arena::TickRoundClock()
+{
+	if( CountdownTimer > 0 )
+	{
+		CountdownTimerTicker = (CountdownTimerTicker + 1) % FRAMEWORK->GetFramesPerSecond();
+		if( CountdownTimerTicker == 0 )
+		{
+			CountdownTimer--;
+			// Save frame count of clock
+			ClockRoundFrameCount[CountdownTimer - 1] = RoundFrameCount;
+		}
+	}
+	if( CountdownTimer == 0 )
+	{
+		Player1->Fighter_SetState( Fighter::Knockdown );
+		Player2->Fighter_SetState( Fighter::Knockdown );
+		SlowMode = 2;
+		DisableTimer = true;
+	}
 }
