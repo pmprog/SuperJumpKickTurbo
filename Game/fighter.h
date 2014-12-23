@@ -15,9 +15,22 @@ class Arena;
 class Fighter
 {
 	public:
+		enum FighterController
+		{
+			NoControls,
+			LocalKeyboardP1,
+			LocalKeyboardP2,
+			LocalJoystickP1,
+			LocalJoystickP2,
+			NetworkClient,
+			CPU_Easy,
+			CPU_Medium,
+			CPU_Hard
+		};
+
 		enum FighterStates
 		{
-			Idle ,
+			Idle,
 			Jump,
 			Kick,
 			BackJump,
@@ -85,8 +98,9 @@ class Fighter
 	public:
 		bool FighterHit;
 		std::string CharacterName;
+		FighterController Controller;
 
-		Fighter( std::string Config, Arena* FightArena, int ArenaWidth, bool AlternativeSprites );
+		Fighter( FighterController Controls, std::string Config, Arena* FightArena, int ArenaWidth, bool AlternativeSprites );
 
 		void CharSelect_RenderProfileIcon( int ScreenX, int ScreenY );
 
@@ -108,7 +122,7 @@ class Fighter
 
 		Box* Fighter_GetCurrentHitBox();
 
-		void AI_Update();
+		void AI_Update( int Skill );
 
 		void State_Clear();
 		void State_Save(long FrameCount);

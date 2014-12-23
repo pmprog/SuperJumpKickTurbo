@@ -12,7 +12,7 @@ void Menu::Begin()
 
 	menuTime = 0;
 
-	TitleFighter = new Fighter( "resources/akuma.txt", nullptr, DISPLAY->GetWidth() * 2, false );
+	TitleFighter = new Fighter( Fighter::NoControls, "resources/akuma.txt", nullptr, DISPLAY->GetWidth() * 2, false );
 	TitleFighter->Fighter_SetPosition( 1000, 400 );
 	TitleFighter->Fighter_SetFacing( true );
 }

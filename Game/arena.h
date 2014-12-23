@@ -30,8 +30,11 @@ class Arena : public Stage
 		int SlowMode;
 		int SlowModeDelay;
 
+		bool DebugReverse;
+
 		long ClockRoundFrameCount[ROUND_TIME];
 
+		void FixCameraPosition();
 		void TickRoundClock();
 
   public:

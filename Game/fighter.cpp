@@ -2,10 +2,12 @@
 #include "fighter.h"
 #include "arena.h"
 
-Fighter::Fighter( std::string Config, Arena* FightArena, int ArenaWidth, bool AlternativeSprites )
+Fighter::Fighter( FighterController Controls, std::string Config, Arena* FightArena, int ArenaWidth, bool AlternativeSprites )
 {
 	ConfigFile* cfg = new ConfigFile( Config );
 	std::string* tmpstring;
+
+	Controller = Controls;
 
 	currentArena = FightArena;
 	arenaWidth = ArenaWidth;
@@ -127,6 +129,19 @@ void Fighter::Fighter_Update( bool IgnoreCollisions )
 	Fighter* opponent;
 	Box* collisionarea;
 	Box* kickarea;
+
+	if( Controller == FighterController::CPU_Easy )
+	{
+		AI_Update( 0 );
+	}
+	if( Controller == FighterController::CPU_Medium )
+	{
+		AI_Update( 1 );
+	}
+	if( Controller == FighterController::CPU_Hard )
+	{
+		AI_Update( 2 );
+	}
 
 	currentAnimation->Update();
 	currentStateTime++;
@@ -452,8 +467,19 @@ Box* Fighter::CollisionBoxToScreenBox(Box* Source)
 	return b;
 }
 
-void Fighter::AI_Update()
+void Fighter::AI_Update( int Skill )
 {
+	int randomkeys = rand() % 30;
+	
+	switch( randomkeys )
+	{
+		case 0:
+			Fighter_JumpPressed();
+			break;
+		case 1:
+			Fighter_KickPressed();
+			break;
+	}
 }
 
 void Fighter::State_Clear()

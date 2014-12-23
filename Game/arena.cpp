@@ -5,15 +5,19 @@
 
 Arena::Arena()
 {
+	DebugReverse = false;
+
 	Background = al_load_bitmap( "resources/japan.png" );
 	arenaWidth = al_get_bitmap_width(Background);
 
-	Player1 = new Fighter( "resources/akuma.txt", this, arenaWidth, false );
-	Player2 = new Fighter( "resources/bison.txt", this, arenaWidth, false );
+	Player1 = new Fighter( Fighter::CPU_Easy, "resources/akuma.txt", this, arenaWidth, false );
+	Player2 = new Fighter( Fighter::CPU_Easy, "resources/ryu.txt", this, arenaWidth, false );
 }
 
 Arena::Arena( std::string LocationImage, Fighter* P1, Fighter* P2 )
 {
+	DebugReverse = false;
+
 	Background = al_load_bitmap( LocationImage.c_str() );
 	arenaWidth = al_get_bitmap_width(Background);
 
@@ -75,22 +79,46 @@ void Arena::EventOccurred(Event *e)
 			Player2->Fighter_KickPressed();
 		}
 
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_F9 )
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_F9 && !DisableTimer )
 		{
 			State_Load( RoundFrameCount - 20 );
 		}
 
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_F10 )
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_F10 && !DisableTimer )
 		{
 			State_Load( RoundFrameCount / 2 );
 		}
 
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_F11 && !DisableTimer )
+		{
+			DebugReverse = true;
+		}
+		
+
 	}
 
+	if( e->Type == EVENT_KEY_UP )
+	{
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_F11 && !DisableTimer )
+		{
+			DebugReverse = false;
+		}
+	}
 }
 
 void Arena::Update()
 {
+
+	if( DebugReverse )
+	{
+		if( RoundFrameCount > 2 )
+		{
+			State_Load( RoundFrameCount - 2 );
+			FixCameraPosition();
+		}
+		return;
+	}
+
 	RoundFrameCount++;
 
 	if( SlowMode > 0 )
@@ -108,7 +136,6 @@ void Arena::Update()
 	{
 		TickRoundClock();
 	}
-
 
 	// Update players
 	Player1->Fighter_Update( false );
@@ -180,30 +207,7 @@ void Arena::Update()
 		Camera.Y += 2.0f * CamYMove;
 	}
 
-	int xmax = Maths::Max( Player1->Fighter_GetPosition()->X, Player2->Fighter_GetPosition()->X );
-	int xmin = Maths::Min( Player1->Fighter_GetPosition()->X, Player2->Fighter_GetPosition()->X );
-	Camera.X = xmin + ((xmax - xmin) / 2) - (DISPLAY->GetWidth() / 2);
-
-	int ymax = Maths::Max( Player1->Fighter_GetPosition()->Y, Player2->Fighter_GetPosition()->Y );
-	int ymin = Maths::Min( Player1->Fighter_GetPosition()->Y, Player2->Fighter_GetPosition()->Y );
-	Camera.Y = ymin + ((ymax - ymin) / 2);
-
-	if( Camera.X < 0 )
-	{
-		Camera.X = 0;
-	}
-	if( Camera.Y < 0 )
-	{
-		Camera.Y = 0;
-	}
-	if( Camera.X > arenaWidth - DISPLAY->GetWidth() )
-	{
-		Camera.X = arenaWidth - DISPLAY->GetWidth();
-	}
-	if( Camera.Y > al_get_bitmap_height(Background) - DISPLAY->GetHeight() )
-	{
-		Camera.Y = al_get_bitmap_height(Background) - DISPLAY->GetHeight();
-	}
+	FixCameraPosition();
 
 	// Lock players in screen
 	switch( Player1->Fighter_GetState() )
@@ -314,8 +318,10 @@ bool Arena::State_Load(long FrameCount)
 	{
 		if( ClockRoundFrameCount[i] > 0 && ClockRoundFrameCount[i] <= FrameCount )
 		{
-			CountdownTimer = i;
+			CountdownTimer = i + 1;
 			CountdownTimerTicker = FrameCount - ClockRoundFrameCount[i];
+		} else {
+			ClockRoundFrameCount[i] = 0;
 		}
 	}
 
@@ -340,5 +346,33 @@ void Arena::TickRoundClock()
 		Player2->Fighter_SetState( Fighter::Knockdown );
 		SlowMode = 2;
 		DisableTimer = true;
+	}
+}
+
+void Arena::FixCameraPosition()
+{
+	int xmax = Maths::Max( Player1->Fighter_GetPosition()->X, Player2->Fighter_GetPosition()->X );
+	int xmin = Maths::Min( Player1->Fighter_GetPosition()->X, Player2->Fighter_GetPosition()->X );
+	Camera.X = xmin + ((xmax - xmin) / 2) - (DISPLAY->GetWidth() / 2);
+
+	int ymax = Maths::Max( Player1->Fighter_GetPosition()->Y, Player2->Fighter_GetPosition()->Y );
+	int ymin = Maths::Min( Player1->Fighter_GetPosition()->Y, Player2->Fighter_GetPosition()->Y );
+	Camera.Y = ymin + ((ymax - ymin) / 2);
+
+	if( Camera.X < 0 )
+	{
+		Camera.X = 0;
+	}
+	if( Camera.Y < 0 )
+	{
+		Camera.Y = 0;
+	}
+	if( Camera.X > arenaWidth - DISPLAY->GetWidth() )
+	{
+		Camera.X = arenaWidth - DISPLAY->GetWidth();
+	}
+	if( Camera.Y > al_get_bitmap_height(Background) - DISPLAY->GetHeight() )
+	{
+		Camera.Y = al_get_bitmap_height(Background) - DISPLAY->GetHeight();
 	}
 }
