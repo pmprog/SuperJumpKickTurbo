@@ -16,8 +16,12 @@ class Menu : public Stage
 		ALLEGRO_FONT* fntTitle;
 
 		int menuTime;
+		int menuSelection;
 
-		Fighter* TitleFighter;
+		ALLEGRO_COLOR menuSelectedColour;
+		ALLEGRO_COLOR menuItemColour;
+
+		Fighter* TitleFighters[3];
 
   public:
     // Stage control

@@ -320,6 +320,7 @@ bool Arena::State_Load(long FrameCount)
 		{
 			CountdownTimer = i + 1;
 			CountdownTimerTicker = FrameCount - ClockRoundFrameCount[i];
+			break;
 		} else {
 			ClockRoundFrameCount[i] = 0;
 		}
@@ -337,7 +338,10 @@ void Arena::TickRoundClock()
 		{
 			CountdownTimer--;
 			// Save frame count of clock
-			ClockRoundFrameCount[CountdownTimer - 1] = RoundFrameCount;
+			if( CountdownTimer > 0 )
+			{
+				ClockRoundFrameCount[CountdownTimer - 1] = RoundFrameCount;
+			}
 		}
 	}
 	if( CountdownTimer == 0 )

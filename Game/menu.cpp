@@ -11,10 +11,22 @@ void Menu::Begin()
 	fntTitle = al_load_font( "resources/titlefont.ttf", 24, 0 );
 
 	menuTime = 0;
+	menuSelection = 0;
 
-	TitleFighter = new Fighter( Fighter::NoControls, "resources/akuma.txt", nullptr, DISPLAY->GetWidth() * 2, false );
-	TitleFighter->Fighter_SetPosition( 1000, 400 );
-	TitleFighter->Fighter_SetFacing( true );
+	menuSelectedColour = al_map_rgb( 255, 255, 0 );
+	menuItemColour = al_map_rgb( 220, 220, 220 );
+
+	TitleFighters[0] = new Fighter( Fighter::NoControls, "resources/akuma.txt", nullptr, DISPLAY->GetWidth() * 2, false );
+	TitleFighters[0]->Fighter_SetPosition( 0, 400 );
+	TitleFighters[0]->Fighter_SetFacing( false );
+
+	TitleFighters[1] = new Fighter( Fighter::NoControls, "resources/ryu.txt", nullptr, DISPLAY->GetWidth() * 2, false );
+	TitleFighters[1]->Fighter_SetPosition( 0, 265 );
+	TitleFighters[1]->Fighter_SetFacing( false );
+
+	TitleFighters[2] = new Fighter( Fighter::NoControls, "resources/bison.txt", nullptr, DISPLAY->GetWidth() * 2, false );
+	TitleFighters[2]->Fighter_SetPosition( 0, 510 );
+	TitleFighters[2]->Fighter_SetFacing( false );
 }
 
 void Menu::Pause()
@@ -36,11 +48,14 @@ void Menu::Finish()
 
 void Menu::EventOccurred(Event *e)
 {
+	bool rushedintro = false;
+
 	if( e->Type == EVENT_KEY_DOWN )
 	{
 		if( menuTime < 270 )
 		{
 			menuTime = 270;
+			rushedintro = true;
 		}
 
 		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ESCAPE )
@@ -49,10 +64,31 @@ void Menu::EventOccurred(Event *e)
 			return;
 		}
 
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ENTER )
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_UP && menuSelection > 0 )
 		{
-			// Testing
-			FRAMEWORK->ProgramStages->Push( new Arena() );
+			menuSelection--;
+		}
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_DOWN && menuSelection < 3 )
+		{
+			menuSelection++;
+		}
+
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ENTER && !rushedintro )
+		{
+			switch( menuSelection )
+			{
+				case 0:
+					// Testing
+					FRAMEWORK->ProgramStages->Push( new Arena() );
+					break;
+				case 1:
+					break;
+				case 2:
+					break;
+				case 3:
+					FRAMEWORK->ShutdownFramework();
+					break;
+			}
 		}
 	}
 }
@@ -62,9 +98,13 @@ void Menu::Update()
 	menuTime++;
 	if( menuTime == 275 )
 	{
-		TitleFighter->Fighter_SetState( Fighter::FighterStates::Kick );
+		TitleFighters[0]->Fighter_SetState( Fighter::FighterStates::Kick );
+		TitleFighters[1]->Fighter_SetState( Fighter::FighterStates::Kick );
+		TitleFighters[2]->Fighter_SetState( Fighter::FighterStates::Kick );
 	}
-	TitleFighter->Fighter_Update( true );
+	TitleFighters[0]->Fighter_Update( true );
+	TitleFighters[1]->Fighter_Update( true );
+	TitleFighters[2]->Fighter_Update( true );
 }
 
 void Menu::Render()
@@ -99,13 +139,16 @@ void Menu::Render()
 			imgTurbo->DrawSpritePortion( 1, turboX, turboY + (overlaypos * 4), 0, overlaypos, imgTurbo->GetFrame(0)->Width, 12 );
 		}
 
-		al_draw_text( fntTitle, al_map_rgb( 255, 255, 0 ), 10, 330, 0, "Arcade" );
-		al_draw_text( fntTitle, al_map_rgb( 128, 128, 128 ), 10, 360, 0, "Network" );
-		al_draw_text( fntTitle, al_map_rgb( 255, 255, 255 ), 10, 390, 0, "Quit" );
+		al_draw_text( fntTitle, ( menuSelection == 0 ? menuSelectedColour : menuItemColour ), DISPLAY->GetWidth() - 20, 310, ALLEGRO_ALIGN_RIGHT, "Arcade" );
+		al_draw_text( fntTitle, ( menuSelection == 1 ? menuSelectedColour : menuItemColour ), DISPLAY->GetWidth() - 20, 340, ALLEGRO_ALIGN_RIGHT, "Network" );
+		al_draw_text( fntTitle, ( menuSelection == 2 ? menuSelectedColour : menuItemColour ), DISPLAY->GetWidth() - 20, 370, ALLEGRO_ALIGN_RIGHT, "Settings" );
+		al_draw_text( fntTitle, ( menuSelection == 3 ? menuSelectedColour : menuItemColour ), DISPLAY->GetWidth() - 20, 400, ALLEGRO_ALIGN_RIGHT, "Quit" );
 
 	}
 
-	TitleFighter->Fighter_Render( 0, 0 );
+	TitleFighters[0]->Fighter_Render( 300, 0 );
+	TitleFighters[1]->Fighter_Render( 300, 0 );
+	TitleFighters[2]->Fighter_Render( 300, 0 );
 }
 
 bool Menu::IsTransition()
