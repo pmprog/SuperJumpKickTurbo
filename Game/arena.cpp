@@ -10,8 +10,10 @@ Arena::Arena()
 	Background = al_load_bitmap( "resources/japan.png" );
 	arenaWidth = al_get_bitmap_width(Background);
 
-	Player1 = new Fighter( Fighter::CPU_Easy, "resources/akuma.txt", this, arenaWidth, false );
-	Player2 = new Fighter( Fighter::CPU_Easy, "resources/ryu.txt", this, arenaWidth, false );
+	DemoMode = true;
+
+	Player1 = 0; // new Fighter( Fighter::CPU_Easy, "resources/akuma.txt", this, arenaWidth, false );
+	Player2 = 0; // new Fighter( Fighter::CPU_Easy, "resources/ryu.txt", this, arenaWidth, false );
 }
 
 Arena::Arena( std::string LocationImage, Fighter* P1, Fighter* P2 )
@@ -20,6 +22,8 @@ Arena::Arena( std::string LocationImage, Fighter* P1, Fighter* P2 )
 
 	Background = al_load_bitmap( LocationImage.c_str() );
 	arenaWidth = al_get_bitmap_width(Background);
+
+	DemoMode = false;
 
 	Player1 = P1;
 	Player2 = P2;
@@ -62,21 +66,50 @@ void Arena::EventOccurred(Event *e)
 			return;
 		}
 
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_LSHIFT )
+		if( Player1->Controller == Fighter::LocalKeyboardP1 )
 		{
-			Player1->Fighter_JumpPressed();
+			if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Jump", ALLEGRO_KEY_LSHIFT )  )
+			{
+				Player1->Fighter_JumpPressed();
+			}
+			if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Kick", ALLEGRO_KEY_LCTRL )  )
+			{
+				Player1->Fighter_KickPressed();
+			}
 		}
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_LCTRL )
+		if( Player1->Controller == Fighter::LocalKeyboardP2 )
 		{
-			Player1->Fighter_KickPressed();
+			if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Jump", ALLEGRO_KEY_RSHIFT )  )
+			{
+				Player1->Fighter_JumpPressed();
+			}
+			if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Kick", ALLEGRO_KEY_RCTRL )  )
+			{
+				Player1->Fighter_KickPressed();
+			}
 		}
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_RSHIFT )
+
+		if( Player2->Controller == Fighter::LocalKeyboardP1 )
 		{
-			Player2->Fighter_JumpPressed();
+			if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Jump", ALLEGRO_KEY_LSHIFT )  )
+			{
+				Player2->Fighter_JumpPressed();
+			}
+			if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Kick", ALLEGRO_KEY_LCTRL )  )
+			{
+				Player2->Fighter_KickPressed();
+			}
 		}
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_RCTRL )
+		if( Player2->Controller == Fighter::LocalKeyboardP2 )
 		{
-			Player2->Fighter_KickPressed();
+			if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Jump", ALLEGRO_KEY_RSHIFT )  )
+			{
+				Player2->Fighter_JumpPressed();
+			}
+			if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Kick", ALLEGRO_KEY_RCTRL )  )
+			{
+				Player2->Fighter_KickPressed();
+			}
 		}
 
 		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_F9 && !DisableTimer )
@@ -104,6 +137,13 @@ void Arena::EventOccurred(Event *e)
 			DebugReverse = false;
 		}
 	}
+
+	if( e->Type == EVENT_JOYSTICK_BUTTON_DOWN )
+	{
+		// TODO: Handle Joystick
+
+	}
+
 }
 
 void Arena::Update()
@@ -158,7 +198,12 @@ void Arena::Update()
 	if( Player1->Fighter_GetState() == Fighter::Idle && (Player2->Fighter_GetState() == Fighter::Knockdown || Player2->Fighter_GetState() == Fighter::Loser) )
 	{
 		Player1->Fighter_SetState( Fighter::Victor );
-		Player1Wins++;
+
+		if( !DemoMode )
+		{
+			Player1Wins++;
+		}
+
 		SlowMode = 0;
 		// Let Round/Match Over stages update the animations, but don't spawn millions of stages
 		if( FRAMEWORK->ProgramStages->Current() == this )
@@ -169,7 +214,10 @@ void Arena::Update()
 	if( Player2->Fighter_GetState() == Fighter::Idle && (Player1->Fighter_GetState() == Fighter::Knockdown || Player1->Fighter_GetState() == Fighter::Loser) )
 	{
 		Player2->Fighter_SetState( Fighter::Victor );
-		Player2Wins++;
+		if( !DemoMode )
+		{
+			Player2Wins++;
+		}
 		SlowMode = 0;
 		// Let Round/Match Over stages update the animations, but don't spawn millions of stages
 		if( FRAMEWORK->ProgramStages->Current() == this )
@@ -270,6 +318,53 @@ void Arena::ResetArena()
 	CountdownTimer = ROUND_TIME;
 	CountdownTimerTicker = 0;
 	DisableTimer = false;
+
+	if( DemoMode )
+	{
+		if( Player1 != 0 )
+		{
+			delete Player1;
+		}
+		if( Player2 != 0 )
+		{
+			delete Player2;
+		}
+
+		int p1char = rand() % 3;
+		int p1skin = rand() % 2;
+		int p2char = rand() % 3;
+		int p2skin = rand() % 2;
+		
+		if( p1char == p2char && p1skin == p2skin )
+		{
+			p2skin = 1 - p2skin;
+		}
+
+		switch( p1char )
+		{
+			case 0:
+				Player1 = new Fighter( Fighter::CPU_Easy, "resources/ryu.txt", this, arenaWidth, (p1skin == 0) );
+				break;
+			case 1:
+				Player1 = new Fighter( Fighter::CPU_Easy, "resources/akuma.txt", this, arenaWidth, (p1skin == 0) );
+				break;
+			case 2:
+				Player1 = new Fighter( Fighter::CPU_Easy, "resources/bison.txt", this, arenaWidth, (p1skin == 0) );
+				break;
+		}
+		switch( p2char )
+		{
+			case 0:
+				Player2 = new Fighter( Fighter::CPU_Easy, "resources/ryu.txt", this, arenaWidth, (p2skin == 0) );
+				break;
+			case 1:
+				Player2 = new Fighter( Fighter::CPU_Easy, "resources/akuma.txt", this, arenaWidth, (p2skin == 0) );
+				break;
+			case 2:
+				Player2 = new Fighter( Fighter::CPU_Easy, "resources/bison.txt", this, arenaWidth, (p2skin == 0) );
+				break;
+		}
+	}
 
 	Player1->State_Clear();
 	Player1->Fighter_SetPosition( al_get_bitmap_width(Background) / 3, 0 );

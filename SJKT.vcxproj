@@ -126,6 +126,7 @@
     <ClCompile Include="Game\menu.cpp" />
     <ClCompile Include="Game\playerselect.cpp" />
     <ClCompile Include="Game\roundover.cpp" />
+    <ClCompile Include="Game\settingsmenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\configfile.h" />
@@ -179,6 +180,7 @@
     <ClInclude Include="Game\menu.h" />
     <ClInclude Include="Game\playerselect.h" />
     <ClInclude Include="Game\roundover.h" />
+    <ClInclude Include="Game\settingsmenu.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

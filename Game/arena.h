@@ -38,6 +38,7 @@ class Arena : public Stage
 		void TickRoundClock();
 
   public:
+		bool DemoMode;
 		long RoundFrameCount;
 
 		Arena();

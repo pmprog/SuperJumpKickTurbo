@@ -4,6 +4,7 @@
 RoundOver::RoundOver(int PlayerWhoWon)
 {
 	winner = PlayerWhoWon;
+	stagetime = 0;
 }
 
 void RoundOver::Begin()
@@ -45,6 +46,7 @@ void RoundOver::Begin()
 	textXv = ( textXposition - ((DISPLAY->GetWidth() - textWidth) / 2) ) / ROUNDOVER_STEPSINOUT;
 
 	textXposition -= textXv;
+	stagetime = 0;
 
 }
 
@@ -78,6 +80,12 @@ void RoundOver::Update()
 		overbanner[4] += overbannerXv;
 		overbanner[6] += overbannerXv;
 		textXposition -= textXv;
+	}
+
+	stagetime++;
+	if( stagetime >= ROUNDOVER_STAGETIME )
+	{
+		leaving = true;
 	}
 
 	if( leaving )

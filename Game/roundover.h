@@ -5,6 +5,7 @@
 #include "arena.h"
 
 #define ROUNDOVER_STEPSINOUT		20
+#define ROUNDOVER_STAGETIME			60
 
 class RoundOver : public Stage
 {
@@ -21,6 +22,8 @@ class RoundOver : public Stage
 
 		ALLEGRO_FONT* fntTitle;
 		int fntTitleHeight;
+
+		int stagetime;
 		
 
   public:

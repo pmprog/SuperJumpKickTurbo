@@ -1,6 +1,7 @@
 
 #include "menu.h"
 #include "arena.h"
+#include "settingsmenu.h"
 
 void Menu::Begin()
 {
@@ -68,7 +69,7 @@ void Menu::EventOccurred(Event *e)
 		{
 			menuSelection--;
 		}
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_DOWN && menuSelection < 3 )
+		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_DOWN && menuSelection < 4 )
 		{
 			menuSelection++;
 		}
@@ -84,8 +85,13 @@ void Menu::EventOccurred(Event *e)
 				case 1:
 					break;
 				case 2:
+					// Demo
+					FRAMEWORK->ProgramStages->Push( new Arena() );
 					break;
 				case 3:
+					FRAMEWORK->ProgramStages->Push( new SettingsMenu() );
+					break;
+				case 4:
 					FRAMEWORK->ShutdownFramework();
 					break;
 			}
@@ -141,8 +147,11 @@ void Menu::Render()
 
 		al_draw_text( fntTitle, ( menuSelection == 0 ? menuSelectedColour : menuItemColour ), DISPLAY->GetWidth() - 20, 310, ALLEGRO_ALIGN_RIGHT, "Arcade" );
 		al_draw_text( fntTitle, ( menuSelection == 1 ? menuSelectedColour : menuItemColour ), DISPLAY->GetWidth() - 20, 340, ALLEGRO_ALIGN_RIGHT, "Network" );
-		al_draw_text( fntTitle, ( menuSelection == 2 ? menuSelectedColour : menuItemColour ), DISPLAY->GetWidth() - 20, 370, ALLEGRO_ALIGN_RIGHT, "Settings" );
-		al_draw_text( fntTitle, ( menuSelection == 3 ? menuSelectedColour : menuItemColour ), DISPLAY->GetWidth() - 20, 400, ALLEGRO_ALIGN_RIGHT, "Quit" );
+		al_draw_text( fntTitle, ( menuSelection == 2 ? menuSelectedColour : menuItemColour ), DISPLAY->GetWidth() - 20, 370, ALLEGRO_ALIGN_RIGHT, "Demo" );
+		al_draw_text( fntTitle, ( menuSelection == 3 ? menuSelectedColour : menuItemColour ), DISPLAY->GetWidth() - 20, 400, ALLEGRO_ALIGN_RIGHT, "Settings" );
+		al_draw_text( fntTitle, ( menuSelection == 4 ? menuSelectedColour : menuItemColour ), DISPLAY->GetWidth() - 20, 430, ALLEGRO_ALIGN_RIGHT, "Quit" );
+
+
 
 	}
 
