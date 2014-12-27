@@ -18,7 +18,7 @@ Framework::Framework( int Width, int Height, int Framerate, bool DropFrames )
 	}
 	
 	al_init_font_addon();
-	if( !al_install_keyboard() || !al_install_mouse() || !al_init_primitives_addon() || !al_init_ttf_addon() || !al_init_image_addon() )
+	if( !al_install_keyboard() || !al_install_mouse() || !al_install_joystick() || !al_init_primitives_addon() || !al_init_ttf_addon() || !al_init_image_addon() )
 	{
 		printf( "Framework: Error: Cannot init Allegro plugin\n" );
 		quitProgram = true;
@@ -81,7 +81,13 @@ Framework::Framework( int Width, int Height, int Framerate, bool DropFrames )
 	RegisterEventSource( DISPLAY->GetEventSource() );
 	RegisterEventSource( al_get_keyboard_event_source() );
 	RegisterEventSource( al_get_mouse_event_source() );
+	RegisterEventSource( al_get_joystick_event_source() );
 	RegisterEventSource( al_get_timer_event_source( frameTimer ) );
+
+#ifdef WRITE_LOG
+	printf( "Framework: Startup: Joystick IDs\n" );
+#endif
+	GetJoystickIDs();
 
 	System = this;
 }
@@ -242,6 +248,7 @@ void Framework::TranslateAllegroEvents()
 				break;
 			case ALLEGRO_EVENT_JOYSTICK_CONFIGURATION:
 				al_reconfigure_joysticks();
+				GetJoystickIDs();
 				break;
 			case ALLEGRO_EVENT_TIMER:
 				if( e.timer.source == frameTimer )
@@ -259,6 +266,53 @@ void Framework::TranslateAllegroEvents()
 					fwE->Data.Timer.TimerObject = (void*)e.timer.source;
 					PushEvent( fwE );
 				}
+				break;
+			case ALLEGRO_EVENT_JOYSTICK_AXIS:
+				fwE = new Event();
+				fwE->Type = EVENT_JOYSTICK_AXIS;
+				fwE->Data.Joystick.ID = -1;
+				for( int i = 0; i < al_get_num_joysticks(); i++ )
+				{
+					if( joystickIDs.at( i ) == e.joystick.id )
+					{
+						fwE->Data.Joystick.ID = i;
+						break;
+					}
+				}
+				fwE->Data.Joystick.Stick = e.joystick.stick;
+				fwE->Data.Joystick.Axis = e.joystick.axis;
+				fwE->Data.Joystick.Position = e.joystick.pos;
+				PushEvent( fwE );
+				break;
+			case ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN:
+				fwE = new Event();
+				fwE->Type = EVENT_JOYSTICK_BUTTON_DOWN;
+				fwE->Data.Joystick.ID = -1;
+				for( int i = 0; i < al_get_num_joysticks(); i++ )
+				{
+					if( joystickIDs.at( i ) == e.joystick.id )
+					{
+						fwE->Data.Joystick.ID = i;
+						break;
+					}
+				}
+				fwE->Data.Joystick.Button = e.joystick.button;
+				PushEvent( fwE );
+				break;
+			case ALLEGRO_EVENT_JOYSTICK_BUTTON_UP:
+				fwE = new Event();
+				fwE->Type = EVENT_JOYSTICK_BUTTON_UP;
+				fwE->Data.Joystick.ID = -1;
+				for( int i = 0; i < al_get_num_joysticks(); i++ )
+				{
+					if( joystickIDs.at( i ) == e.joystick.id )
+					{
+						fwE->Data.Joystick.ID = i;
+						break;
+					}
+				}
+				fwE->Data.Joystick.Button = e.joystick.button;
+				PushEvent( fwE );
 				break;
 			case ALLEGRO_EVENT_KEY_DOWN:
 				fwE = new Event();
@@ -410,5 +464,18 @@ void Framework::UnregisterEventSource( ALLEGRO_EVENT_SOURCE* Source )
 	if( Source != nullptr )
 	{
 		al_unregister_event_source( eventAllegro, Source );
+	}
+}
+
+void Framework::GetJoystickIDs()
+{
+#ifdef WRITE_LOG
+	printf( "Framework: Joysticks: Learn Joystick IDs\n" );
+#endif
+	// Record joystick IDs in a list for ID conversion
+	joystickIDs.clear();
+	for( int i = 0; i < al_get_num_joysticks(); i++ )
+	{
+		joystickIDs.push_back( al_get_joystick( i ) );
 	}
 }

@@ -72,8 +72,6 @@ class Fighter
 		Animation* animKnockedOut;
 		Animation* animWin;
 
-		Arena* currentArena;
-
 		float currentScale;
 		FighterStates currentState;
 		int currentStateTime;
@@ -88,7 +86,6 @@ class Fighter
 		float jumpBackHSpeed;
 		float kickVSpeed;
 		float kickHSpeed;
-		int arenaWidth;
 
 		FighterSaveState RollbackStates[FIGHTER_MAXIMUM_ROLLBACK_STATES];
 
@@ -96,11 +93,13 @@ class Fighter
 
 
 	public:
+		Arena* currentArena;
+
 		bool FighterHit;
 		std::string CharacterName;
 		FighterController Controller;
 
-		Fighter( FighterController Controls, std::string Config, Arena* FightArena, int ArenaWidth, bool AlternativeSprites );
+		Fighter( FighterController Controls, std::string Config, Arena* FightArena, bool AlternativeSprites );
 
 		void CharSelect_RenderProfileIcon( int ScreenX, int ScreenY );
 

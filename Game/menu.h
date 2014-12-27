@@ -24,6 +24,10 @@ class Menu : public Stage
 		Fighter* TitleFighters[3];
 
   public:
+
+		static int Player1Joystick;
+		static int Player2Joystick;
+
     // Stage control
     virtual void Begin();
     virtual void Pause();

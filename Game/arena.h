@@ -16,16 +16,13 @@ class Arena : public Stage
 		int CountdownTimerTicker;
 		bool DisableTimer;
 
-		Fighter* Player1;
 		int Player1Wins;
-		Fighter* Player2;
 		int Player2Wins;
 		ALLEGRO_BITMAP* Background;
 		Vector2 Camera;
 
 		int CamXMove;
 		int CamYMove;
-		int arenaWidth;
 
 		int SlowMode;
 		int SlowModeDelay;
@@ -40,6 +37,11 @@ class Arena : public Stage
   public:
 		bool DemoMode;
 		long RoundFrameCount;
+
+		Fighter* Player1;
+		Fighter* Player2;
+
+		int ArenaWidth;
 
 		Arena();
 		Arena( std::string LocationImage, Fighter* P1, Fighter* P2 );

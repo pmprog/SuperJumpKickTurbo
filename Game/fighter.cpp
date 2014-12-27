@@ -2,7 +2,7 @@
 #include "fighter.h"
 #include "arena.h"
 
-Fighter::Fighter( FighterController Controls, std::string Config, Arena* FightArena, int ArenaWidth, bool AlternativeSprites )
+Fighter::Fighter( FighterController Controls, std::string Config, Arena* FightArena, bool AlternativeSprites )
 {
 	ConfigFile* cfg = new ConfigFile( Config );
 	std::string* tmpstring;
@@ -10,7 +10,6 @@ Fighter::Fighter( FighterController Controls, std::string Config, Arena* FightAr
 	Controller = Controls;
 
 	currentArena = FightArena;
-	arenaWidth = ArenaWidth;
 
 	currentPosition = new Vector2();
 
@@ -257,9 +256,9 @@ void Fighter::Fighter_Update( bool IgnoreCollisions )
 	{
 		currentPosition->X = 0;
 	}
-	if( currentPosition->X > arenaWidth )
+	if( currentArena != 0 && currentPosition->X > currentArena->ArenaWidth )
 	{
-		currentPosition->X = arenaWidth;
+		currentPosition->X = currentArena->ArenaWidth;
 	}
 
 }

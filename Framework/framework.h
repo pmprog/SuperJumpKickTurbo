@@ -35,7 +35,10 @@ class Framework
 		ALLEGRO_EVENT_QUEUE* eventAllegro;
 		std::list<Event*> eventQueue;
 		ALLEGRO_MUTEX* eventMutex;
+
+		std::vector<ALLEGRO_JOYSTICK*> joystickIDs;
 		
+		void GetJoystickIDs();
 
   public:
     static Framework* System;

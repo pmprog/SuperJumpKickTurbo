@@ -2,6 +2,10 @@
 #include "menu.h"
 #include "arena.h"
 #include "settingsmenu.h"
+#include "playerselect.h"
+
+int Menu::Player1Joystick = -1;
+int Menu::Player2Joystick = -1;
 
 void Menu::Begin()
 {
@@ -17,17 +21,19 @@ void Menu::Begin()
 	menuSelectedColour = al_map_rgb( 255, 255, 0 );
 	menuItemColour = al_map_rgb( 220, 220, 220 );
 
-	TitleFighters[0] = new Fighter( Fighter::NoControls, "resources/akuma.txt", nullptr, DISPLAY->GetWidth() * 2, false );
+	TitleFighters[0] = new Fighter( Fighter::NoControls, "resources/akuma.txt", nullptr, false );
 	TitleFighters[0]->Fighter_SetPosition( 0, 400 );
 	TitleFighters[0]->Fighter_SetFacing( false );
 
-	TitleFighters[1] = new Fighter( Fighter::NoControls, "resources/ryu.txt", nullptr, DISPLAY->GetWidth() * 2, false );
+	TitleFighters[1] = new Fighter( Fighter::NoControls, "resources/ryu.txt", nullptr, false );
 	TitleFighters[1]->Fighter_SetPosition( 0, 265 );
 	TitleFighters[1]->Fighter_SetFacing( false );
 
-	TitleFighters[2] = new Fighter( Fighter::NoControls, "resources/bison.txt", nullptr, DISPLAY->GetWidth() * 2, false );
+	TitleFighters[2] = new Fighter( Fighter::NoControls, "resources/bison.txt", nullptr, false );
 	TitleFighters[2]->Fighter_SetPosition( 0, 510 );
 	TitleFighters[2]->Fighter_SetFacing( false );
+
+	AUDIO->PlayMusic( "resources/naildown55-demo_riffs_3_loopedit.ogg", true );
 }
 
 void Menu::Pause()
@@ -50,6 +56,8 @@ void Menu::Finish()
 void Menu::EventOccurred(Event *e)
 {
 	bool rushedintro = false;
+	bool activateoption = false;
+	bool wasp1active = true;
 
 	if( e->Type == EVENT_KEY_DOWN )
 	{
@@ -76,27 +84,85 @@ void Menu::EventOccurred(Event *e)
 
 		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ENTER && !rushedintro )
 		{
-			switch( menuSelection )
-			{
-				case 0:
-					// Testing
-					FRAMEWORK->ProgramStages->Push( new Arena() );
-					break;
-				case 1:
-					break;
-				case 2:
-					// Demo
-					FRAMEWORK->ProgramStages->Push( new Arena() );
-					break;
-				case 3:
-					FRAMEWORK->ProgramStages->Push( new SettingsMenu() );
-					break;
-				case 4:
-					FRAMEWORK->ShutdownFramework();
-					break;
-			}
+			activateoption = true;
 		}
 	}
+
+	if( e->Type == EVENT_JOYSTICK_BUTTON_DOWN )
+	{
+		if( menuTime < 270 )
+		{
+			menuTime = 270;
+			rushedintro = true;
+		} else {
+			activateoption = true;
+		}
+
+		if( Player1Joystick != -1 )
+		{
+			Player1Joystick = e->Data.Joystick.ID;
+		} else if( Player2Joystick != -1 ) {
+			Player2Joystick = e->Data.Joystick.ID;
+			wasp1active = false;
+		}
+
+	}
+
+	if( e->Type == EVENT_JOYSTICK_AXIS )
+	{
+		if( e->Data.Joystick.Axis == 1 )
+		{
+			if( e->Data.Joystick.Position < 0 && menuSelection > 0 )
+			{
+				menuSelection--;
+			}
+			if( e->Data.Joystick.Position > 0 && menuSelection < 4 )
+			{
+				menuSelection++;
+			}
+		}
+
+		if( Player1Joystick != -1 )
+		{
+			Player1Joystick = e->Data.Joystick.ID;
+		} else if( Player2Joystick != -1 ) {
+			Player2Joystick = e->Data.Joystick.ID;
+			wasp1active = false;
+		}
+	}
+
+	Arena* ingame;
+	if( activateoption )
+	{
+		switch( menuSelection )
+		{
+			case 0:
+				// Testing
+				ingame =  new Arena( "resources/japan.png", new Fighter( Fighter::LocalKeyboardP1, "resources/akuma.txt", nullptr, false ), new Fighter( Fighter::CPU_Easy, "resources/akuma.txt", nullptr, true ) );
+				ingame->Player1->currentArena = ingame;
+				ingame->Player2->currentArena = ingame;
+				FRAMEWORK->ProgramStages->Push( ingame );
+				break;
+			case 1:
+				ingame =  new Arena( "resources/england.png", new Fighter( Fighter::LocalKeyboardP1, "resources/ryu.txt", nullptr, false ), new Fighter( Fighter::LocalKeyboardP2, "resources/ryu.txt", nullptr, true ) );
+				ingame->Player1->currentArena = ingame;
+				ingame->Player2->currentArena = ingame;
+				FRAMEWORK->ProgramStages->Push( ingame );
+				break;
+			case 2:
+				// Demo
+				FRAMEWORK->ProgramStages->Push( new Arena() );
+				break;
+			case 3:
+				FRAMEWORK->ProgramStages->Push( new SettingsMenu() );
+				break;
+			case 4:
+				AUDIO->StopMusic();
+				FRAMEWORK->ShutdownFramework();
+				break;
+		}
+	}
+
 }
 
 void Menu::Update()

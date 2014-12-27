@@ -8,12 +8,12 @@ Arena::Arena()
 	DebugReverse = false;
 
 	Background = al_load_bitmap( "resources/japan.png" );
-	arenaWidth = al_get_bitmap_width(Background);
+	ArenaWidth = al_get_bitmap_width(Background);
 
 	DemoMode = true;
 
-	Player1 = 0; // new Fighter( Fighter::CPU_Easy, "resources/akuma.txt", this, arenaWidth, false );
-	Player2 = 0; // new Fighter( Fighter::CPU_Easy, "resources/ryu.txt", this, arenaWidth, false );
+	Player1 = 0;
+	Player2 = 0;
 }
 
 Arena::Arena( std::string LocationImage, Fighter* P1, Fighter* P2 )
@@ -21,7 +21,7 @@ Arena::Arena( std::string LocationImage, Fighter* P1, Fighter* P2 )
 	DebugReverse = false;
 
 	Background = al_load_bitmap( LocationImage.c_str() );
-	arenaWidth = al_get_bitmap_width(Background);
+	ArenaWidth = al_get_bitmap_width(Background);
 
 	DemoMode = false;
 
@@ -141,6 +141,7 @@ void Arena::EventOccurred(Event *e)
 	if( e->Type == EVENT_JOYSTICK_BUTTON_DOWN )
 	{
 		// TODO: Handle Joystick
+		//e->Data.Joystick.ID
 
 	}
 
@@ -343,25 +344,25 @@ void Arena::ResetArena()
 		switch( p1char )
 		{
 			case 0:
-				Player1 = new Fighter( Fighter::CPU_Easy, "resources/ryu.txt", this, arenaWidth, (p1skin == 0) );
+				Player1 = new Fighter( Fighter::CPU_Easy, "resources/ryu.txt", this, (p1skin == 0) );
 				break;
 			case 1:
-				Player1 = new Fighter( Fighter::CPU_Easy, "resources/akuma.txt", this, arenaWidth, (p1skin == 0) );
+				Player1 = new Fighter( Fighter::CPU_Easy, "resources/akuma.txt", this, (p1skin == 0) );
 				break;
 			case 2:
-				Player1 = new Fighter( Fighter::CPU_Easy, "resources/bison.txt", this, arenaWidth, (p1skin == 0) );
+				Player1 = new Fighter( Fighter::CPU_Easy, "resources/bison.txt", this, (p1skin == 0) );
 				break;
 		}
 		switch( p2char )
 		{
 			case 0:
-				Player2 = new Fighter( Fighter::CPU_Easy, "resources/ryu.txt", this, arenaWidth, (p2skin == 0) );
+				Player2 = new Fighter( Fighter::CPU_Easy, "resources/ryu.txt", this, (p2skin == 0) );
 				break;
 			case 1:
-				Player2 = new Fighter( Fighter::CPU_Easy, "resources/akuma.txt", this, arenaWidth, (p2skin == 0) );
+				Player2 = new Fighter( Fighter::CPU_Easy, "resources/akuma.txt", this, (p2skin == 0) );
 				break;
 			case 2:
-				Player2 = new Fighter( Fighter::CPU_Easy, "resources/bison.txt", this, arenaWidth, (p2skin == 0) );
+				Player2 = new Fighter( Fighter::CPU_Easy, "resources/bison.txt", this, (p2skin == 0) );
 				break;
 		}
 	}
@@ -376,7 +377,7 @@ void Arena::ResetArena()
 	Player2->Fighter_SetFacing( true );
 	Player2->Fighter_SetState( Fighter::Idle );
 
-	Camera.X = (arenaWidth / 2) - (DISPLAY->GetWidth() / 2);
+	Camera.X = (ArenaWidth / 2) - (DISPLAY->GetWidth() / 2);
 	Camera.Y = 0;
 	CamXMove = 0;
 	CamYMove = 0;
@@ -466,9 +467,9 @@ void Arena::FixCameraPosition()
 	{
 		Camera.Y = 0;
 	}
-	if( Camera.X > arenaWidth - DISPLAY->GetWidth() )
+	if( Camera.X > ArenaWidth - DISPLAY->GetWidth() )
 	{
-		Camera.X = arenaWidth - DISPLAY->GetWidth();
+		Camera.X = ArenaWidth - DISPLAY->GetWidth();
 	}
 	if( Camera.Y > al_get_bitmap_height(Background) - DISPLAY->GetHeight() )
 	{
