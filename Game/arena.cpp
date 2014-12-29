@@ -14,6 +14,8 @@ Arena::Arena()
 
 	Player1 = 0;
 	Player2 = 0;
+
+	AUDIO->PlayMusic( "resources/naildown55-demo_riffs_4.ogg", true );
 }
 
 Arena::Arena( std::string LocationImage, Fighter* P1, Fighter* P2 )
@@ -27,6 +29,8 @@ Arena::Arena( std::string LocationImage, Fighter* P1, Fighter* P2 )
 
 	Player1 = P1;
 	Player2 = P2;
+
+	AUDIO->PlayMusic( "resources/naildown55-demo_riffs_4.ogg", true );
 }
 
 Arena::~Arena()
@@ -54,6 +58,7 @@ void Arena::Resume()
 void Arena::Finish()
 {
 	al_destroy_font( fntTimer );
+	AUDIO->PlayMusic( "resources/naildown55-demo_riffs_3_loopedit.ogg", true );
 }
 
 void Arena::EventOccurred(Event *e)
