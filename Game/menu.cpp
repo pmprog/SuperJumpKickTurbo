@@ -58,6 +58,8 @@ void Menu::EventOccurred(Event *e)
 	bool rushedintro = false;
 	bool activateoption = false;
 	bool wasp1active = true;
+	Fighter::FighterController source1 = Fighter::FighterController::NoControls;
+	Fighter::FighterController source2 = Fighter::FighterController::NoControls;
 
 	if( e->Type == EVENT_KEY_DOWN )
 	{
@@ -85,6 +87,17 @@ void Menu::EventOccurred(Event *e)
 		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ENTER && !rushedintro )
 		{
 			activateoption = true;
+			source1 = Fighter::FighterController::LocalKeyboardP1;
+		}
+		if( (e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Jump", ALLEGRO_KEY_LSHIFT ) || e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Kick", ALLEGRO_KEY_LCTRL )) && !rushedintro )
+		{
+			activateoption = true;
+			source1 = Fighter::FighterController::LocalKeyboardP1;
+		}
+		if( (e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Jump", ALLEGRO_KEY_RSHIFT ) || e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Kick", ALLEGRO_KEY_RCTRL )) && !rushedintro )
+		{
+			activateoption = true;
+			source2 = Fighter::FighterController::LocalKeyboardP2;
 		}
 	}
 
@@ -103,7 +116,15 @@ void Menu::EventOccurred(Event *e)
 			Player1Joystick = e->Data.Joystick.ID;
 		} else if( Player2Joystick != -1 ) {
 			Player2Joystick = e->Data.Joystick.ID;
-			wasp1active = false;
+		}
+
+		if( Player1Joystick == e->Data.Joystick.ID )
+		{
+			source1 = Fighter::FighterController::LocalJoystickP1;
+		}
+		if( Player2Joystick == e->Data.Joystick.ID )
+		{
+			source2 = Fighter::FighterController::LocalJoystickP2;
 		}
 
 	}
@@ -137,17 +158,11 @@ void Menu::EventOccurred(Event *e)
 		switch( menuSelection )
 		{
 			case 0:
-				// Testing
-				ingame =  new Arena( "resources/japan.png", new Fighter( Fighter::LocalKeyboardP1, "resources/akuma.txt", nullptr, false ), new Fighter( Fighter::CPU_Easy, "resources/akuma.txt", nullptr, true ) );
-				ingame->Player1->currentArena = ingame;
-				ingame->Player2->currentArena = ingame;
-				FRAMEWORK->ProgramStages->Push( ingame );
+				// Player Select
+				FRAMEWORK->ProgramStages->Push( new PlayerSelect( source1, source2 ) );
 				break;
 			case 1:
-				ingame =  new Arena( "resources/england.png", new Fighter( Fighter::LocalKeyboardP1, "resources/ryu.txt", nullptr, false ), new Fighter( Fighter::LocalKeyboardP2, "resources/ryu.txt", nullptr, true ) );
-				ingame->Player1->currentArena = ingame;
-				ingame->Player2->currentArena = ingame;
-				FRAMEWORK->ProgramStages->Push( ingame );
+				// Open Network Hub
 				break;
 			case 2:
 				// Demo

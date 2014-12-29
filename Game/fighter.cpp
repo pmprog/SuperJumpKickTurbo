@@ -206,7 +206,7 @@ void Fighter::Fighter_Update( bool IgnoreCollisions )
 				kickarea = CollisionBoxToScreenBox( attackKick.at( currentAnimation->GetCurrentFrame() ) );
 				if( kickarea->Collides( collisionarea ) )
 				{
-					opponent->FighterHit = true; // Fighter_SetState( Fighter::Knockdown );
+					opponent->FighterHit = true;
 				}
 				delete kickarea;
 			}
@@ -355,7 +355,6 @@ void Fighter::Fighter_Render(int ScreenOffsetX, int ScreenOffsetY)
 	int screenX = currentPosition->X - ScreenOffsetX;
 	screenX -= (currentFaceLeft ? -1 : 1) * (spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Width / 2);
 	currentAnimation->DrawFrame( screenX, screenY, currentFaceLeft, false );
-
 }
 
 bool Fighter::Fighter_IsFacingLeft()
