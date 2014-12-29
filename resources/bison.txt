@@ -2,13 +2,13 @@ Name = "Bison"
 Sprites = "resources/bison.png"
 SpritesAlt = "resources/bison_alt.png"
 
-JumpFrames = 75.0
-JumpSpeed = 8.0
-JumpBackFrames = 20.0
-JumpBackVSpeed = 12.0
-JumpBackHSpeed = 8.0
-KickVSpeed = 9.0
-KickHSpeed = 11.0
+JumpFrames = 85.0
+JumpSpeed = 9.5
+JumpBackFrames = 30.0
+JumpBackVSpeed = 10.0
+JumpBackHSpeed = 7.0
+KickVSpeed = 15.0
+KickHSpeed = 19.0
 
 Profile [ 1408, 64, 64, 64 ]
 
@@ -83,17 +83,17 @@ Super [
 
 KnockDownFrameTime = 6
 KnockDown [
-	72, 768, 216, 160
+	34, 570, 220, 118
 	]
 	
 KnockDownLandFrameTime = 6
 KnockDownLand [
-	296, 768, 200, 152
+	262, 548, 200, 148
 	]
 
 KnockedOutFrameTime = 6
 KnockedOut [
-	512, 768, 216, 152
+	470, 592, 256, 104
 	]
 
 WinFrameTime = 8

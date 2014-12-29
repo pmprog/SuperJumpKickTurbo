@@ -3,12 +3,12 @@ Sprites = "resources/ryu.png"
 SpritesAlt = "resources/ryu_alt.png"
 
 JumpFrames = 64.0
-JumpSpeed = 10.6
+JumpSpeed = 12.2
 JumpBackFrames = 20.0
-JumpBackVSpeed = 8.5
-JumpBackHSpeed = 6.5
+JumpBackVSpeed = 14.0
+JumpBackHSpeed = 6.0
 KickVSpeed = 8.0
-KickHSpeed = 15.0
+KickHSpeed = 16.0
 
 Profile [ 1536, 32, 64, 64 ]
 
