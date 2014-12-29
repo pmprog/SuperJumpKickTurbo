@@ -152,7 +152,6 @@ void Menu::EventOccurred(Event *e)
 		}
 	}
 
-	Arena* ingame;
 	if( activateoption )
 	{
 		switch( menuSelection )

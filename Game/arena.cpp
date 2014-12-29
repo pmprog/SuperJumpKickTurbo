@@ -369,13 +369,13 @@ void Arena::ResetArena()
 
 	Player1->State_Clear();
 	Player1->Fighter_SetPosition( al_get_bitmap_width(Background) / 3, 0 );
-	Player1->Fighter_SetFacing( false );
 	Player1->Fighter_SetState( Fighter::Idle );
+	Player1->Fighter_SetFacing( false );
 
 	Player2->State_Clear();
 	Player2->Fighter_SetPosition( (al_get_bitmap_width(Background) / 3) * 2, 0 );
-	Player2->Fighter_SetFacing( true );
 	Player2->Fighter_SetState( Fighter::Idle );
+	Player2->Fighter_SetFacing( true );
 
 	Camera.X = (ArenaWidth / 2) - (DISPLAY->GetWidth() / 2);
 	Camera.Y = 0;
@@ -457,7 +457,7 @@ void Arena::FixCameraPosition()
 
 	int ymax = Maths::Max( Player1->Fighter_GetPosition()->Y, Player2->Fighter_GetPosition()->Y );
 	int ymin = Maths::Min( Player1->Fighter_GetPosition()->Y, Player2->Fighter_GetPosition()->Y );
-	Camera.Y = ymin + ((ymax - ymin) / 2);
+	Camera.Y = ymin + ((ymax - ymin) / 2) - 68;
 
 	if( Camera.X < 0 )
 	{

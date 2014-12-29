@@ -174,15 +174,15 @@ void PlayerSelect::ConstructPlayer1( Fighter::FighterController Controller, std:
 {
 	p1char = new Fighter( Controller, Character.c_str(), 0, false );
 	p1char->Fighter_SetPosition( DISPLAY->GetWidth() / 4, 0 );
-	p1char->Fighter_SetFacing( false );
 	p1char->Fighter_SetState( Fighter::Idle );
+	p1char->Fighter_SetFacing( false );
 }
 
 void PlayerSelect::ConstructPlayer2( Fighter::FighterController Controller, std::string Character )
 {
 	p2char = new Fighter( Controller, Character.c_str(), 0, true );
 	p2char->Fighter_SetPosition( (DISPLAY->GetWidth() / 4) * 3, 0 );
-	p2char->Fighter_SetFacing( true );
 	p2char->Fighter_SetState( Fighter::Idle );
+	p2char->Fighter_SetFacing( true );
 }
 
