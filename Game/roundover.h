@@ -24,6 +24,8 @@ class RoundOver : public Stage
 		int fntTitleHeight;
 
 		int stagetime;
+
+		Arena* currentArena;
 		
 
   public:

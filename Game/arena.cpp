@@ -2,6 +2,7 @@
 #include "arena.h"
 #include "roundover.h"
 #include "matchover.h"
+#include "menu.h"
 
 Arena::Arena()
 {
@@ -52,7 +53,7 @@ void Arena::Pause()
 
 void Arena::Resume()
 {
-	ResetArena();
+	//ResetArena();
 }
 
 void Arena::Finish()
@@ -63,6 +64,10 @@ void Arena::Finish()
 
 void Arena::EventOccurred(Event *e)
 {
+
+	Fighter::FighterController source = Fighter::FighterController::NoControls;
+	bool sourceisjump = false;
+
 	if( e->Type == EVENT_KEY_DOWN )
 	{
 		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ESCAPE )
@@ -71,83 +76,86 @@ void Arena::EventOccurred(Event *e)
 			return;
 		}
 
-		if( Player1->Controller == Fighter::LocalKeyboardP1 )
+		if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Keyboard.Jump", ALLEGRO_KEY_LSHIFT ) )
 		{
-			if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Jump", ALLEGRO_KEY_LSHIFT )  )
-			{
-				Player1->Fighter_JumpPressed();
-			}
-			if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Kick", ALLEGRO_KEY_LCTRL )  )
-			{
-				Player1->Fighter_KickPressed();
-			}
+			source = Fighter::FighterController::LocalKeyboardP1;
+			sourceisjump = true;
 		}
-		if( Player1->Controller == Fighter::LocalKeyboardP2 )
+		if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Keyboard.Kick", ALLEGRO_KEY_LCTRL ) )
 		{
-			if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Jump", ALLEGRO_KEY_RSHIFT )  )
-			{
-				Player1->Fighter_JumpPressed();
-			}
-			if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Kick", ALLEGRO_KEY_RCTRL )  )
-			{
-				Player1->Fighter_KickPressed();
-			}
+			source = Fighter::FighterController::LocalKeyboardP1;
+			sourceisjump = false;
 		}
 
-		if( Player2->Controller == Fighter::LocalKeyboardP1 )
+		if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Keyboard.Jump", ALLEGRO_KEY_RSHIFT ) )
 		{
-			if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Jump", ALLEGRO_KEY_LSHIFT )  )
-			{
-				Player2->Fighter_JumpPressed();
-			}
-			if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Kick", ALLEGRO_KEY_LCTRL )  )
-			{
-				Player2->Fighter_KickPressed();
-			}
+			source = Fighter::FighterController::LocalKeyboardP2;
+			sourceisjump = true;
 		}
-		if( Player2->Controller == Fighter::LocalKeyboardP2 )
+		if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Keyboard.Kick", ALLEGRO_KEY_RCTRL ) )
 		{
-			if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Jump", ALLEGRO_KEY_RSHIFT )  )
-			{
-				Player2->Fighter_JumpPressed();
-			}
-			if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Kick", ALLEGRO_KEY_RCTRL )  )
-			{
-				Player2->Fighter_KickPressed();
-			}
-		}
-
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_F9 && !DisableTimer )
-		{
-			State_Load( RoundFrameCount - 20 );
-		}
-
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_F10 && !DisableTimer )
-		{
-			State_Load( RoundFrameCount / 2 );
-		}
-
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_F11 && !DisableTimer )
-		{
-			DebugReverse = true;
-		}
-		
-
-	}
-
-	if( e->Type == EVENT_KEY_UP )
-	{
-		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_F11 && !DisableTimer )
-		{
-			DebugReverse = false;
+			source = Fighter::FighterController::LocalKeyboardP2;
+			sourceisjump = false;
 		}
 	}
 
 	if( e->Type == EVENT_JOYSTICK_BUTTON_DOWN )
 	{
-		// TODO: Handle Joystick
-		//e->Data.Joystick.ID
+		Menu* menustage = (Menu*)FRAMEWORK->ProgramStages->Previous();
 
+		// Setup joystick controls
+		if( menustage->Player1Joystick != e->Data.Joystick.ID && menustage->Player2Joystick != e->Data.Joystick.ID )
+		{
+			if( menustage->Player1Joystick == -1 )
+			{
+				menustage->Player1Joystick = e->Data.Joystick.ID;
+			} else if ( menustage->Player2Joystick == -1 ) {
+				menustage->Player2Joystick = e->Data.Joystick.ID;
+			}
+		}
+
+		if( e->Data.Joystick.ID == menustage->Player1Joystick )
+		{
+			if( e->Data.Joystick.Button == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Joystick.Jump", 0 ) )
+			{
+				source = Fighter::FighterController::LocalJoystickP1;
+				sourceisjump = true;
+			}
+			if( e->Data.Joystick.Button == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Joystick.Kick", 1 ) )
+			{
+				source = Fighter::FighterController::LocalJoystickP1;
+				sourceisjump = false;
+			}
+		}
+		if( e->Data.Joystick.ID == menustage->Player2Joystick )
+		{
+			if( e->Data.Joystick.Button == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Joystick.Jump", 0 ) )
+			{
+				source = Fighter::FighterController::LocalJoystickP2;
+				sourceisjump = true;
+			}
+			if( e->Data.Joystick.Button == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Joystick.Kick", 1 ) )
+			{
+				source = Fighter::FighterController::LocalJoystickP2;
+				sourceisjump = false;
+			}
+		}
+	}
+
+
+	if( source != Fighter::FighterController::NoControls )
+	{
+		Fighter* f = GetPlayerWithControls( source );
+
+		if( f == nullptr )
+		{
+			// A new challenger?
+
+		} else if( sourceisjump ) {
+			f->Fighter_JumpPressed();
+		} else {
+			f->Fighter_KickPressed();
+		}
 	}
 
 }
@@ -480,4 +488,17 @@ void Arena::FixCameraPosition()
 	{
 		Camera.Y = al_get_bitmap_height(Background) - DISPLAY->GetHeight();
 	}
+}
+
+Fighter* Arena::GetPlayerWithControls( Fighter::FighterController Controller )
+{
+	if( Player1->Controller == Controller )
+	{
+		return Player1;
+	}
+	if( Player2->Controller == Controller )
+	{
+		return Player2;
+	}
+	return nullptr;
 }

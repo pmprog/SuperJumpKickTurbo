@@ -10,11 +10,9 @@ class PlayerSelect : public Stage
 	private:
 		ConfigFile* datalists;
 
-		bool p1active;
 		int p1charidx;
 		Fighter* p1char;
 
-		bool p2active;
 		int p2charidx;
 		Fighter* p2char;
 
@@ -22,6 +20,8 @@ class PlayerSelect : public Stage
 
 		void ConstructPlayer1( Fighter::FighterController Controller, std::string Character );
 		void ConstructPlayer2( Fighter::FighterController Controller, std::string Character );
+
+		int GetPlayerWithControls( Fighter::FighterController Controller );
 
   public:
 

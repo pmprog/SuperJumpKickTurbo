@@ -34,6 +34,8 @@ class Arena : public Stage
 		void FixCameraPosition();
 		void TickRoundClock();
 
+		Fighter* GetPlayerWithControls( Fighter::FighterController Controller );
+
   public:
 		bool DemoMode;
 		long RoundFrameCount;

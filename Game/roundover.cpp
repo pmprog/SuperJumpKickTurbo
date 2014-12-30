@@ -9,6 +9,8 @@ RoundOver::RoundOver(int PlayerWhoWon)
 
 void RoundOver::Begin()
 {
+	currentArena = (Arena*)FRAMEWORK->ProgramStages->Previous();
+
 	fntTitle = al_load_ttf_font( "resources/titlefont.ttf", 48, 0 );
 	fntTitleHeight = al_get_font_line_height( fntTitle );
 
@@ -61,6 +63,7 @@ void RoundOver::Resume()
 void RoundOver::Finish()
 {
 	al_destroy_font( fntTitle );
+	currentArena->ResetArena();
 }
 
 void RoundOver::EventOccurred(Event *e)
