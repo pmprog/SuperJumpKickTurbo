@@ -10,6 +10,9 @@ class SettingsMenu : public Stage
 		ALLEGRO_FONT* fontTitle;
 		int fontHeight;
 
+		ALLEGRO_FONT* fontCredits;
+		int fontCreditsHeight;
+
 		int menuSelection;
 
 		ALLEGRO_COLOR menuSelectedColour;

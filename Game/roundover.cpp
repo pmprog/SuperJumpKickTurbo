@@ -7,6 +7,11 @@ RoundOver::RoundOver(int PlayerWhoWon)
 	stagetime = 0;
 }
 
+RoundOver::~RoundOver()
+{
+	currentArena->ResetArena();
+}
+
 void RoundOver::Begin()
 {
 	currentArena = (Arena*)FRAMEWORK->ProgramStages->Previous();
@@ -63,7 +68,6 @@ void RoundOver::Resume()
 void RoundOver::Finish()
 {
 	al_destroy_font( fntTitle );
-	currentArena->ResetArena();
 }
 
 void RoundOver::EventOccurred(Event *e)

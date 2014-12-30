@@ -11,6 +11,7 @@ class Menu : public Stage
 	private:
 		ALLEGRO_BITMAP* imgSuper;
 		ALLEGRO_BITMAP* imgJumpKick;
+		ALLEGRO_BITMAP* imgBackground;
 		SpriteSheet* imgTurbo;
 
 		ALLEGRO_FONT* fntTitle;
@@ -22,6 +23,8 @@ class Menu : public Stage
 		ALLEGRO_COLOR menuItemColour;
 
 		Fighter* TitleFighters[3];
+
+		int backgroundX;
 
   public:
 

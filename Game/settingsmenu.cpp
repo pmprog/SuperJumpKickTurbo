@@ -6,6 +6,9 @@ void SettingsMenu::Begin()
 	fontTitle = al_load_font( "resources/titlefont.ttf", 24, 0 );
 	fontHeight = al_get_font_line_height( fontTitle );
 
+	fontCredits = al_load_font( "resources/titlefont.ttf", 12, 0 );
+	fontCreditsHeight = al_get_font_line_height( fontCredits );
+
 	menuSelection = 0;
 
 	menuSelectedColour = al_map_rgb( 255, 255, 0 );
@@ -23,6 +26,7 @@ void SettingsMenu::Resume()
 void SettingsMenu::Finish()
 {
 	al_destroy_font( fontTitle );
+	al_destroy_font( fontCredits );
 }
 
 void SettingsMenu::EventOccurred(Event *e)
@@ -59,7 +63,7 @@ void SettingsMenu::EventOccurred(Event *e)
 				case 4:
 					break;
 				case 5:
-					FRAMEWORK->Settings->Save( "settings.cfg" );
+					FRAMEWORK->Settings->Save( "settings.cfg", false );
 					delete FRAMEWORK->ProgramStages->Pop();
 					break;
 				case 6:
@@ -90,6 +94,17 @@ void SettingsMenu::Render()
 	curY = DrawMenuItem( 5, curY, "Save and Return" );
 	curY = DrawMenuItem( 6, curY, "Cancel" );
 
+	curY = DISPLAY->GetHeight() - (fontCreditsHeight * 12);
+	curY = DrawMenuItem( 99, curY, "Credits:" );
+	curY = DrawMenuItem( 100, curY, " Programming:" );
+	curY = DrawMenuItem( 99, curY, "  Marq Watkin, Polymath Programming" );
+	curY = DrawMenuItem( 99, curY, "  www.pmprog.co.uk" );
+	curY = DrawMenuItem( 100, curY, " Music: " );
+	curY = DrawMenuItem( 99, curY, "  Naildown55" );
+	curY = DrawMenuItem( 99, curY, "  naildown55.newgrounds.com" );
+	curY = DrawMenuItem( 100, curY, " Graphics: " );
+	curY = DrawMenuItem( 99, curY, "  Ripped from SNK vs Capcom" );
+
 }
 
 bool SettingsMenu::IsTransition()
@@ -99,6 +114,6 @@ bool SettingsMenu::IsTransition()
 
 int SettingsMenu::DrawMenuItem( int MenuID, int CurrentY, std::string Text )
 {
-	al_draw_text( fontTitle, ( menuSelection == MenuID ? menuSelectedColour : menuItemColour ), 20, CurrentY, ALLEGRO_ALIGN_LEFT, Text.c_str() );
-	return CurrentY + fontHeight;
+	al_draw_text( ( MenuID < 99 ? fontTitle : fontCredits ), ( menuSelection == MenuID || MenuID == 100 ? menuSelectedColour : menuItemColour ), 20, CurrentY, ALLEGRO_ALIGN_LEFT, Text.c_str() );
+	return CurrentY + ( MenuID < 99 ? fontHeight : fontCreditsHeight );
 }

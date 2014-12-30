@@ -9,9 +9,11 @@ int Menu::Player2Joystick = -1;
 
 void Menu::Begin()
 {
+	backgroundX = 0;
 	imgSuper = al_load_bitmap( "resources/super.png" );
 	imgJumpKick = al_load_bitmap( "resources/jumpkick.png" );
 	imgTurbo = new SpriteSheet( "resources/turbo.png", 204, 64 );
+	imgBackground = al_load_bitmap( "resources/cloudback.png" );
 
 	fntTitle = al_load_font( "resources/titlefont.ttf", 24, 0 );
 
@@ -191,11 +193,20 @@ void Menu::Update()
 	TitleFighters[0]->Fighter_Update( true );
 	TitleFighters[1]->Fighter_Update( true );
 	TitleFighters[2]->Fighter_Update( true );
+
+	backgroundX--;
+	if( backgroundX <= -800 )
+	{
+		backgroundX = 0;
+	}
 }
 
 void Menu::Render()
 {
-	al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
+	// al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
+
+	al_draw_bitmap( imgBackground, backgroundX, 0, 0 );
+	al_draw_bitmap( imgBackground, backgroundX + 800, 0, 0 );
 
 
 	if( menuTime > 73 )

@@ -3,6 +3,7 @@
 #include "roundover.h"
 #include "matchover.h"
 #include "menu.h"
+#include "roundcountin.h"
 
 Arena::Arena()
 {
@@ -402,6 +403,8 @@ void Arena::ResetArena()
 	{
 		ClockRoundFrameCount[i] = 0;
 	}
+
+	FRAMEWORK->ProgramStages->Push( new RoundCountIn() );
 }
 
 Fighter* Arena::GetOpponent(Fighter* Current)

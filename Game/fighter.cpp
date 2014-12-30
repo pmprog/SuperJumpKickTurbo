@@ -129,17 +129,21 @@ void Fighter::Fighter_Update( bool IgnoreCollisions )
 	Box* collisionarea;
 	Box* kickarea;
 
-	if( Controller == FighterController::CPU_Easy )
+	// Only process AI if checking for collisions (ie, playing the game)
+	if( !IgnoreCollisions )
 	{
-		AI_Update( 0 );
-	}
-	if( Controller == FighterController::CPU_Medium )
-	{
-		AI_Update( 1 );
-	}
-	if( Controller == FighterController::CPU_Hard )
-	{
-		AI_Update( 2 );
+		if( Controller == FighterController::CPU_Easy )
+		{
+			AI_Update( 0 );
+		}
+		if( Controller == FighterController::CPU_Medium )
+		{
+			AI_Update( 1 );
+		}
+		if( Controller == FighterController::CPU_Hard )
+		{
+			AI_Update( 2 );
+		}
 	}
 
 	currentAnimation->Update();
