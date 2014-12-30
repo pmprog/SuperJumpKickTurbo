@@ -37,5 +37,7 @@ class TextEdit : public Control
 
 		std::string GetText();
 		void SetText( std::string Text );
+
+		void BeginEdit();
 };
 

@@ -44,6 +44,13 @@ void TextEdit::EventOccured( Event* e )
 			RaiseEvent( FormEventType::TextEditFinish );
 		}
 
+		if( e->Data.Forms.EventFlag == FormEventType::KeyPress && !editting && IsFocused() )
+		{
+			editting = true;
+			e->Handled = true;
+			return;
+		}
+
 		if( e->Data.Forms.EventFlag == FormEventType::KeyPress && editting )
 		{
 			switch( e->Data.Forms.KeyInfo.KeyCode )
@@ -97,6 +104,7 @@ void TextEdit::EventOccured( Event* e )
 					break;
 
 				case ALLEGRO_KEY_ENTER:
+				case ALLEGRO_KEY_ESCAPE:
 					editting = false;
 					RaiseEvent( FormEventType::TextEditFinish );
 					break;
@@ -225,4 +233,9 @@ void TextEdit::RaiseEvent( FormEventType Type )
 	ce->Data.Forms.RaisedBy = this;
 	ce->Data.Forms.EventFlag = FormEventType::TextChanged;
 	FRAMEWORK->PushEvent( ce );
+}
+
+void TextEdit::BeginEdit()
+{
+	editting = true;
 }

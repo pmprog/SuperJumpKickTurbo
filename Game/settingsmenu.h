@@ -7,11 +7,15 @@
 class SettingsMenu : public Stage
 {
 	private:
+		Form* uiForm;
+
 		ALLEGRO_FONT* fontTitle;
 		int fontHeight;
 
 		ALLEGRO_FONT* fontCredits;
 		int fontCreditsHeight;
+
+		TTFFont* fontUI;
 
 		int menuSelection;
 
@@ -19,6 +23,8 @@ class SettingsMenu : public Stage
 		ALLEGRO_COLOR menuItemColour;
 
 		int DrawMenuItem( int MenuID, int CurrentY, std::string Text );
+
+		void CreateVideoForm();
 
   public:
     // Stage control
