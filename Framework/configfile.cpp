@@ -494,14 +494,17 @@ bool ConfigFile::SetStringValue( std::string Key, std::string* Value )
 		cd->Contents = new std::vector<std::string*>();
 		Contents.push_back( cd );
 	}
+
+	std::string* s;
 	if( cd->Contents->empty() )
 	{
-		cd->Contents->push_back( Value );
+		s = new std::string();
+		cd->Contents->push_back( s );
 	} else {
-		std::string* s = cd->Contents->at( 0 );
-		s->clear();
-		s->append( *Value );
+		s = cd->Contents->at( 0 );
 	}
+	s->clear();
+	s->append( *Value );
 	Dirty = true;
 	return true;
 }

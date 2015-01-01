@@ -28,6 +28,12 @@ class SettingsMenu : public Stage
 		void ProcessVideoFormEvents(Event *e);
 		void CreateAudioForm();
 		void ProcessAudioFormEvents(Event *e);
+		void CreateInputForm();
+		void ProcessInputFormEvents(Event *e);
+		void CreateNetworkForm();
+		void ProcessNetworkFormEvents(Event *e);
+		void CreateSpecialsForm();
+		void ProcessSpecialsFormEvents(Event *e);
 
   public:
     // Stage control

@@ -32,7 +32,7 @@ void Menu::Begin()
 	TitleFighters[1]->Fighter_SetFacing( false );
 
 	TitleFighters[2] = new Fighter( Fighter::NoControls, "resources/bison.txt", nullptr, false );
-	TitleFighters[2]->Fighter_SetPosition( 0, 510 );
+	TitleFighters[2]->Fighter_SetPosition( 0, 530 );
 	TitleFighters[2]->Fighter_SetFacing( false );
 
 	AUDIO->PlayMusic( "resources/naildown55-demo_riffs_3_loopedit.ogg", true );
@@ -80,10 +80,12 @@ void Menu::EventOccurred(Event *e)
 		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_UP && menuSelection > 0 )
 		{
 			menuSelection--;
+			AUDIO->PlaySoundEffect( "resources/collision.wav" );
 		}
 		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_DOWN && menuSelection < 4 )
 		{
 			menuSelection++;
+			AUDIO->PlaySoundEffect( "resources/collision.wav" );
 		}
 
 		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ENTER && !rushedintro )
@@ -246,9 +248,9 @@ void Menu::Render()
 
 	}
 
-	TitleFighters[0]->Fighter_Render( 300, 0 );
-	TitleFighters[1]->Fighter_Render( 300, 0 );
-	TitleFighters[2]->Fighter_Render( 300, 0 );
+	TitleFighters[0]->Fighter_Render( 300, 20 );
+	TitleFighters[1]->Fighter_Render( 300, 20 );
+	TitleFighters[2]->Fighter_Render( 300, 20 );
 }
 
 bool Menu::IsTransition()

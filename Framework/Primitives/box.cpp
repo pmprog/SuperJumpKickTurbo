@@ -60,3 +60,8 @@ bool Box::Collides( Box* CheckAgainst )
 	return ( GetLeft() <= CheckAgainst->GetRight() && GetRight() >= CheckAgainst->GetLeft() &&
 			GetTop() <= CheckAgainst->GetBottom() && GetBottom() >= CheckAgainst->GetTop() );
 }
+
+Vector2* Box::GetCentre()
+{
+	return new Vector2( TopLeft->X + (GetWidth() / 2), TopLeft->Y + (GetHeight() / 2) );
+}

@@ -18,6 +18,15 @@ Arena::Arena()
 	Player2 = 0;
 
 	AUDIO->PlayMusic( "resources/naildown55-demo_riffs_4.ogg", true );
+
+	CollisionGraphics = new SpriteSheet( "resources/collision.png", 72, 72 );
+	CollisionAnimation = new Animation( CollisionGraphics, false, 5 );
+	CollisionAnimation->AddFrame( 0 );
+	CollisionAnimation->AddFrame( 1 );
+	CollisionAnimation->AddFrame( 1 );
+	CollisionAnimation->AddFrame( 1 );
+	CollisionAnimation->AddFrame( 0 );
+	CollisionAnimation->AddFrame( 0 );
 }
 
 Arena::Arena( std::string LocationImage, Fighter* P1, Fighter* P2 )
@@ -33,11 +42,22 @@ Arena::Arena( std::string LocationImage, Fighter* P1, Fighter* P2 )
 	Player2 = P2;
 
 	AUDIO->PlayMusic( "resources/naildown55-demo_riffs_4.ogg", true );
+
+	CollisionGraphics = new SpriteSheet( "resources/collision.png", 72, 72 );
+	CollisionAnimation = new Animation( CollisionGraphics, false, 5 );
+	CollisionAnimation->AddFrame( 0 );
+	CollisionAnimation->AddFrame( 1 );
+	CollisionAnimation->AddFrame( 1 );
+	CollisionAnimation->AddFrame( 1 );
+	CollisionAnimation->AddFrame( 0 );
+	CollisionAnimation->AddFrame( 0 );
 }
 
 Arena::~Arena()
 {
 	al_destroy_bitmap( Background );
+	delete CollisionAnimation;
+	delete CollisionGraphics;
 }
 
 void Arena::Begin()
@@ -175,6 +195,23 @@ void Arena::Update()
 	}
 
 	RoundFrameCount++;
+
+	// Update collision animations (Ignore slow mode)
+	if( CollisionsAt[0] != nullptr || CollisionsAt[1] != nullptr )
+	{
+		CollisionAnimation->Update();
+		if( CollisionAnimation->HasEnded() )
+		{
+			for( int i = 0; i < 2; i++ )
+			{
+				if( CollisionsAt[i] != nullptr )
+				{
+					delete CollisionsAt[i];
+					CollisionsAt[i] = nullptr;
+				}
+			}
+		}
+	}
 
 	if( SlowMode > 0 )
 	{
@@ -314,12 +351,34 @@ void Arena::Render()
 	// Fix background drawing
 	al_draw_bitmap( Background, -Camera.X, DISPLAY->GetHeight() - al_get_bitmap_height(Background) + Camera.Y, 0 );
 
-	Player1->Fighter_Render( Camera.X, Camera.Y );
-	Player2->Fighter_Render( Camera.X, Camera.Y );
+	// Draw Fighters
 
+	switch( Player2->Fighter_GetState() )
+	{
+		case Fighter::FighterStates::Knockdown:
+		case Fighter::FighterStates::Loser:
+		case Fighter::FighterStates::Floored:
+			Player2->Fighter_Render( Camera.X, Camera.Y );
+			Player1->Fighter_Render( Camera.X, Camera.Y );
+			break;
+		default:
+			Player1->Fighter_Render( Camera.X, Camera.Y );
+			Player2->Fighter_Render( Camera.X, Camera.Y );
+			break;
+	}
+
+	// Draw collision graphics
+	for( int i = 0; i < 2; i++ )
+	{
+		if( CollisionsAt[i] != nullptr )
+		{
+			CollisionAnimation->DrawFrame( CollisionsAt[i]->X - 36 - Camera.X, CollisionsAt[i]->Y - 36 + Camera.Y );
+		}
+	}
+
+	// Draw timer
 	al_draw_textf( fntTimer, al_map_rgb( 0, 0, 0 ), (DISPLAY->GetWidth() / 2) + 4, 14, ALLEGRO_ALIGN_CENTRE, "%d", CountdownTimer );
 	al_draw_textf( fntTimer, al_map_rgb( 255, 255, 0 ), DISPLAY->GetWidth() / 2, 10, ALLEGRO_ALIGN_CENTRE, "%d", CountdownTimer );
-
 }
 
 bool Arena::IsTransition()
@@ -398,6 +457,9 @@ void Arena::ResetArena()
 
 	SlowMode = 0;
 	SlowModeDelay = 0;
+
+	CollisionsAt[0] = nullptr;
+	CollisionsAt[1] = nullptr;
 
 	for( int i = 0; i < ROUND_TIME; i++ )
 	{
@@ -504,4 +566,15 @@ Fighter* Arena::GetPlayerWithControls( Fighter::FighterController Controller )
 		return Player2;
 	}
 	return nullptr;
+}
+
+void Arena::AddCollisionAt( Vector2* Location )
+{
+	if( CollisionsAt[0] == nullptr )
+	{
+		CollisionsAt[0] = Location;
+	} else {
+		CollisionsAt[1] = Location;
+	}
+	CollisionAnimation->Start();
 }

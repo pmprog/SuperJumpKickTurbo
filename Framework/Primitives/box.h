@@ -22,5 +22,7 @@ class Box
 		float GetWidth();
 		float GetHeight();
 
+		Vector2* GetCentre();
+
 		bool Collides( Box* CheckAgainst );
 };

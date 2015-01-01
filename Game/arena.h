@@ -11,6 +11,10 @@
 class Arena : public Stage
 {
 	private:
+		SpriteSheet* CollisionGraphics;
+		Animation* CollisionAnimation;
+		Vector2* CollisionsAt[2];
+
 		ALLEGRO_FONT* fntTimer;
 		int CountdownTimer;
 		int CountdownTimerTicker;
@@ -53,6 +57,7 @@ class Arena : public Stage
 		Fighter* GetOpponent(Fighter* Current);
 
 		bool State_Load(long FrameCount);
+		void AddCollisionAt( Vector2* Location );
 
     // Stage control
     virtual void Begin();

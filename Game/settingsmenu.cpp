@@ -71,10 +71,12 @@ void SettingsMenu::EventOccurred(Event *e)
 		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_UP && menuSelection > 0 )
 		{
 			menuSelection--;
+			AUDIO->PlaySoundEffect( "resources/collision.wav" );
 		}
 		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_DOWN && menuSelection < 6 )
 		{
 			menuSelection++;
+			AUDIO->PlaySoundEffect( "resources/collision.wav" );
 		}
 
 		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ENTER )
@@ -88,10 +90,13 @@ void SettingsMenu::EventOccurred(Event *e)
 					CreateAudioForm();
 					break;
 				case 2:
+					CreateInputForm();
 					break;
 				case 3:
+					CreateNetworkForm();
 					break;
 				case 4:
+					CreateSpecialsForm();
 					break;
 				case 5:
 					FRAMEWORK->Settings->Save( "settings.cfg", false );
@@ -108,8 +113,32 @@ void SettingsMenu::EventOccurred(Event *e)
 
 	if( e->Type == EVENT_FORM_INTERACTION && e->Data.Forms.RaisedBy != nullptr )
 	{
-		ProcessVideoFormEvents( e );
-		ProcessAudioFormEvents( e );
+		Form* f = e->Data.Forms.RaisedBy->GetForm();
+		if( f->Name == "Video Settings" )
+		{
+			ProcessVideoFormEvents( e );
+			return;
+		}
+		if( f->Name == "Audio Settings" )
+		{
+			ProcessAudioFormEvents( e );
+			return;
+		}
+		if( f->Name == "Input Settings" )
+		{
+			ProcessInputFormEvents( e );
+			return;
+		}
+		if( f->Name == "Network Settings" )
+		{
+			ProcessNetworkFormEvents( e );
+			return;
+		}
+		if( f->Name == "Special Settings" )
+		{
+			ProcessSpecialsFormEvents( e );
+			return;
+		}
 	}
 }
 
@@ -129,9 +158,9 @@ void SettingsMenu::Render()
 
 	curY = DrawMenuItem( 0, curY, "Configure Video" );
 	curY = DrawMenuItem( 1, curY, "Configure Audio" );
-	curY = DrawMenuItem( 2, curY, "Configure Player 1 Input" );
-	curY = DrawMenuItem( 3, curY, "Configure Player 2 Input" );
-	curY = DrawMenuItem( 4, curY, "Configure Network" );
+	curY = DrawMenuItem( 2, curY, "Configure Input" );
+	curY = DrawMenuItem( 3, curY, "Configure Network" );
+	curY = DrawMenuItem( 4, curY, "Configure Specials" );
 	curY = DrawMenuItem( 5, curY, "Save and Return" );
 	curY = DrawMenuItem( 6, curY, "Cancel" );
 
@@ -258,29 +287,30 @@ void SettingsMenu::CreateVideoForm()
 
 void SettingsMenu::ProcessVideoFormEvents(Event *e)
 {
-		if( (e->Data.Forms.RaisedBy->Name == "Video.Width" || e->Data.Forms.RaisedBy->Name == "Video.Height") && e->Data.Forms.EventFlag == FormEventType::TextChanged )
+	if( (e->Data.Forms.RaisedBy->Name == "Video.Width" || e->Data.Forms.RaisedBy->Name == "Video.Height") && e->Data.Forms.EventFlag == FormEventType::TextChanged )
+	{
+		if( FRAMEWORK->Settings->IsNumber( ((TextEdit*)e->Data.Forms.RaisedBy)->GetText() ) )
 		{
-			if( FRAMEWORK->Settings->IsNumber( ((TextEdit*)e->Data.Forms.RaisedBy)->GetText() ) )
-			{
-				FRAMEWORK->Settings->SetStringValue( e->Data.Forms.RaisedBy->Name, &((TextEdit*)e->Data.Forms.RaisedBy)->GetText() );
-			}
+			FRAMEWORK->Settings->SetStringValue( e->Data.Forms.RaisedBy->Name, &((TextEdit*)e->Data.Forms.RaisedBy)->GetText() );
 		}
-		if( e->Data.Forms.RaisedBy->Name == "Video.Fullscreen" && e->Data.Forms.EventFlag == FormEventType::CheckBoxChange )
-		{
-			FRAMEWORK->Settings->SetBooleanValue( e->Data.Forms.RaisedBy->Name, ((CheckBox*)e->Data.Forms.RaisedBy)->Checked );
-		}
-		if( e->Data.Forms.RaisedBy->Name == "Video.ScaleMode" && e->Data.Forms.EventFlag == FormEventType::CheckBoxChange )
-		{
-			FRAMEWORK->Settings->SetIntegerValue( e->Data.Forms.RaisedBy->Name, ( ((CheckBox*)e->Data.Forms.RaisedBy)->Checked ? 1 : 0 ) );
-		}
+	}
+	if( e->Data.Forms.RaisedBy->Name == "Video.Fullscreen" && e->Data.Forms.EventFlag == FormEventType::CheckBoxChange )
+	{
+		FRAMEWORK->Settings->SetBooleanValue( e->Data.Forms.RaisedBy->Name, ((CheckBox*)e->Data.Forms.RaisedBy)->Checked );
+	}
+	if( e->Data.Forms.RaisedBy->Name == "Video.ScaleMode" && e->Data.Forms.EventFlag == FormEventType::CheckBoxChange )
+	{
+		FRAMEWORK->Settings->SetIntegerValue( e->Data.Forms.RaisedBy->Name, ( ((CheckBox*)e->Data.Forms.RaisedBy)->Checked ? 1 : 0 ) );
+	}
 
-		// Visual settings edited
-		if( e->Data.Forms.RaisedBy->Name == "Video.Ok" && e->Data.Forms.EventFlag == FormEventType::ButtonClick )
-		{
-			FRAMEWORK->ProcessEvents();
-			delete uiForm;
-			uiForm = nullptr;
-		}
+	// Visual settings edited
+	if( e->Data.Forms.RaisedBy->Name == "Video.Ok" && e->Data.Forms.EventFlag == FormEventType::ButtonClick )
+	{
+		AUDIO->PlaySoundEffect( "resources/collision.wav" );
+		FRAMEWORK->ProcessEvents();
+		delete uiForm;
+		uiForm = nullptr;
+	}
 }
 
 void SettingsMenu::CreateAudioForm()
@@ -345,16 +375,155 @@ void SettingsMenu::CreateAudioForm()
 
 void SettingsMenu::ProcessAudioFormEvents(Event *e)
 {
-		if( (e->Data.Forms.RaisedBy->Name == "Audio.Music" || e->Data.Forms.RaisedBy->Name == "Audio.Sound") && e->Data.Forms.EventFlag == FormEventType::CheckBoxChange )
-		{
-			FRAMEWORK->Settings->SetBooleanValue( e->Data.Forms.RaisedBy->Name, ((CheckBox*)e->Data.Forms.RaisedBy)->Checked );
-		}
+	if( (e->Data.Forms.RaisedBy->Name == "Audio.Music" || e->Data.Forms.RaisedBy->Name == "Audio.Sound") && e->Data.Forms.EventFlag == FormEventType::CheckBoxChange )
+	{
+		FRAMEWORK->Settings->SetBooleanValue( e->Data.Forms.RaisedBy->Name, ((CheckBox*)e->Data.Forms.RaisedBy)->Checked );
+	}
 
-		// Visual settings edited
-		if( e->Data.Forms.RaisedBy->Name == "Audio.Ok" && e->Data.Forms.EventFlag == FormEventType::ButtonClick )
-		{
-			FRAMEWORK->ProcessEvents();
-			delete uiForm;
-			uiForm = nullptr;
-		}
+	// Visual settings edited
+	if( e->Data.Forms.RaisedBy->Name == "Audio.Ok" && e->Data.Forms.EventFlag == FormEventType::ButtonClick )
+	{
+		AUDIO->PlaySoundEffect( "resources/collision.wav" );
+		FRAMEWORK->ProcessEvents();
+		delete uiForm;
+		uiForm = nullptr;
+	}
 }
+
+void SettingsMenu::CreateInputForm()
+{
+}
+
+void SettingsMenu::ProcessInputFormEvents(Event *e)
+{
+}
+
+void SettingsMenu::CreateNetworkForm()
+{
+	Control* c;
+	Label* l;
+	TextEdit* te;
+	TextButton* tb;
+
+	uiForm = new Form();
+	uiForm->BackgroundColour = al_map_rgb( 0, 0, 0 );
+	uiForm->Location.X = 200;
+	uiForm->Location.Y = 150;
+	uiForm->Size.X = 400;
+	uiForm->Size.Y = 200;
+	uiForm->Name= "Network Settings";
+
+	c = new Control( uiForm );
+	c->Location.X = 4;
+	c->Location.Y = 4;
+	c->Size.X = uiForm->Size.X - 8;
+	c->Size.Y = uiForm->Size.Y - 8;
+
+	l = new Label( c, "UDP Port:", fontUI );
+	l->Location.X = 10;
+	l->Location.Y = 10;
+	l->Size.X = 380;
+	l->Size.Y = fontUI->GetFontHeight();
+
+	te = new TextEdit( c, "", fontUI );
+	te->AllowTab = false;
+	te->Location.X = 10;
+	te->Location.Y = l->Location.Y + l->Size.Y + 4;
+	te->Size.X = 380;
+	te->Size.Y = fontUI->GetFontHeight();
+	te->Name = "Network.Port";
+	te->SetText( *FRAMEWORK->Settings->GetQuickStringValue( "Network.Port", "9090" ) );
+	
+	tb = new TextButton( c, "Ok", fontUI );
+	tb->Size.X = 80;
+	tb->Size.Y = 40;
+	tb->Location.X = c->Size.X - 90;
+	tb->Location.Y = c->Size.Y - 50;
+	tb->Name = "Network.Ok";
+
+	// Have to force process the Enter key events before I can set focus...
+	FRAMEWORK->ProcessEvents();
+	te->Focus();
+}
+
+void SettingsMenu::ProcessNetworkFormEvents(Event *e)
+{
+	if( e->Data.Forms.RaisedBy->Name == "Network.Port" && e->Data.Forms.EventFlag == FormEventType::TextChanged )
+	{
+		if( FRAMEWORK->Settings->IsNumber( ((TextEdit*)e->Data.Forms.RaisedBy)->GetText() ) )
+		{
+			FRAMEWORK->Settings->SetStringValue( e->Data.Forms.RaisedBy->Name, &((TextEdit*)e->Data.Forms.RaisedBy)->GetText() );
+		}
+	}
+
+	if( e->Data.Forms.RaisedBy->Name == "Network.Ok" && e->Data.Forms.EventFlag == FormEventType::ButtonClick )
+	{
+		AUDIO->PlaySoundEffect( "resources/collision.wav" );
+		FRAMEWORK->ProcessEvents();
+		delete uiForm;
+		uiForm = nullptr;
+	}
+}
+
+void SettingsMenu::CreateSpecialsForm()
+{
+	Control* c;
+	Label* l;
+	CheckBox* cbm;
+	TextButton* tb;
+
+	uiForm = new Form();
+	uiForm->BackgroundColour = al_map_rgb( 0, 0, 0 );
+	uiForm->Location.X = 200;
+	uiForm->Location.Y = 150;
+	uiForm->Size.X = 400;
+	uiForm->Size.Y = 200;
+	uiForm->Name= "Special Settings";
+
+	c = new Control( uiForm );
+	c->Location.X = 4;
+	c->Location.Y = 4;
+	c->Size.X = uiForm->Size.X - 8;
+	c->Size.Y = uiForm->Size.Y - 8;
+
+	l = new Label( c, "Show Collision Boxes:", fontUI );
+	l->Location.X = 10;
+	l->Location.Y = 10;
+	l->Size.X = 380;
+	l->Size.Y = fontUI->GetFontHeight();
+
+	cbm = new CheckBox( c );
+	cbm->Location.X = 10;
+	cbm->Location.Y = l->Location.Y + l->Size.Y + 4;
+	cbm->Size.X = 24;
+	cbm->Size.Y = 24;
+	cbm->Name = "Debug.ShowCollisionBoxes";
+	cbm->Checked = FRAMEWORK->Settings->GetQuickBooleanValue( "Debug.ShowCollisionBoxes", false );
+	
+	tb = new TextButton( c, "Ok", fontUI );
+	tb->Size.X = 80;
+	tb->Size.Y = 40;
+	tb->Location.X = c->Size.X - 90;
+	tb->Location.Y = c->Size.Y - 50;
+	tb->Name = "Specials.Ok";
+
+	cbm->Focus();
+}
+
+void SettingsMenu::ProcessSpecialsFormEvents(Event *e)
+{
+	if( e->Data.Forms.RaisedBy->Name == "Debug.ShowCollisionBoxes" && e->Data.Forms.EventFlag == FormEventType::CheckBoxChange )
+	{
+		FRAMEWORK->Settings->SetBooleanValue( e->Data.Forms.RaisedBy->Name, ((CheckBox*)e->Data.Forms.RaisedBy)->Checked );
+	}
+
+	// Visual settings edited
+	if( e->Data.Forms.RaisedBy->Name == "Specials.Ok" && e->Data.Forms.EventFlag == FormEventType::ButtonClick )
+	{
+		AUDIO->PlaySoundEffect( "resources/collision.wav" );
+		FRAMEWORK->ProcessEvents();
+		delete uiForm;
+		uiForm = nullptr;
+	}
+}
+

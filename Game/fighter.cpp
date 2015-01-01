@@ -211,6 +211,7 @@ void Fighter::Fighter_Update( bool IgnoreCollisions )
 				if( kickarea->Collides( collisionarea ) )
 				{
 					opponent->FighterHit = true;
+					currentArena->AddCollisionAt( kickarea->GetCentre() );
 				}
 				delete kickarea;
 			}
@@ -228,6 +229,7 @@ void Fighter::Fighter_Update( bool IgnoreCollisions )
 			currentPosition->Y = 0;
 			if( currentAnimation != animKnockDownLand )
 			{
+				AUDIO->PlaySoundEffect( "resources/collision.wav" );
 				currentAnimation = animKnockDownLand;
 				currentAnimation->Start();
 			}
@@ -293,10 +295,12 @@ void Fighter::Fighter_SetState(int NewState)
 		break;
 	case Fighter::Jump:
 	case Fighter::BackJump:
+		AUDIO->PlaySoundEffect( "resources/jump.wav" );
 		currentAnimation = animJumpTakeOff;
 		currentAnimation->Start();
 		break;
 	case Fighter::Kick:
+		AUDIO->PlaySoundEffect( "resources/jump.wav" );
 		currentAnimation = animKick;
 		currentAnimation->Start();
 		break;
@@ -305,6 +309,7 @@ void Fighter::Fighter_SetState(int NewState)
 		currentAnimation->Start();
 		break;
 	case Fighter::Knockdown:
+		AUDIO->PlaySoundEffect( "resources/collision.wav" );
 		currentAnimation = animKnockDown;
 		currentAnimation->Start();
 		break;
@@ -359,6 +364,26 @@ void Fighter::Fighter_Render(int ScreenOffsetX, int ScreenOffsetY)
 	int screenX = currentPosition->X - ScreenOffsetX;
 	screenX -= (currentFaceLeft ? -1 : 1) * (spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Width / 2);
 	currentAnimation->DrawFrame( screenX, screenY, currentFaceLeft, false );
+
+	if( FRAMEWORK->Settings->GetQuickBooleanValue( "Debug.ShowCollisionBoxes", false ) )
+	{
+		Box* collisionarea = Fighter_GetCurrentHitBox();
+		if( collisionarea != 0 )
+		{
+			al_draw_filled_rectangle( collisionarea->GetLeft() - ScreenOffsetX, collisionarea->GetTop() + ScreenOffsetY, collisionarea->GetRight() - ScreenOffsetX, collisionarea->GetBottom() + ScreenOffsetY, al_map_rgba( 255, 0, 0, 128 ) );
+		}
+		delete collisionarea;
+		if( currentState == Fighter::Kick )
+		{
+			Box* kickarea = CollisionBoxToScreenBox( attackKick.at( currentAnimation->GetCurrentFrame() ) );
+			if( kickarea != 0 )
+			{
+				al_draw_filled_rectangle( kickarea->GetLeft() - ScreenOffsetX, kickarea->GetTop() + ScreenOffsetY, kickarea->GetRight() - ScreenOffsetX, kickarea->GetBottom() + ScreenOffsetY, al_map_rgba( 0, 0, 255, 128 ) );
+			}
+			delete kickarea;
+		}
+	}
+
 }
 
 bool Fighter::Fighter_IsFacingLeft()
