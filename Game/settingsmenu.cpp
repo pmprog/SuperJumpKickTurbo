@@ -6,7 +6,7 @@ void SettingsMenu::Begin()
 	fontTitle = al_load_font( "resources/titlefont.ttf", 24, 0 );
 	fontHeight = al_get_font_line_height( fontTitle );
 
-	fontCredits = al_load_font( "resources/titlefont.ttf", 12, 0 );
+	fontCredits = al_load_font( "resources/silkscreen.ttf", 16, 0 );
 	fontCreditsHeight = al_get_font_line_height( fontCredits );
 
 	fontUI = new TTFFont( "resources/titlefont.ttf", 16 );
@@ -42,6 +42,7 @@ void SettingsMenu::EventOccurred(Event *e)
 
 		if( e->Type == EVENT_KEY_DOWN && e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ESCAPE )
 		{
+			FRAMEWORK->ProcessEvents();
 			delete uiForm;
 			uiForm = nullptr;
 			return;
@@ -57,6 +58,12 @@ void SettingsMenu::EventOccurred(Event *e)
 	{
 		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ESCAPE )
 		{
+			if( uiForm != nullptr )
+			{
+				FRAMEWORK->ProcessEvents();
+				delete uiForm;
+				uiForm = nullptr;
+			}
 			delete FRAMEWORK->ProgramStages->Pop();
 			return;
 		}
@@ -78,6 +85,7 @@ void SettingsMenu::EventOccurred(Event *e)
 					CreateVideoForm();
 					break;
 				case 1:
+					CreateAudioForm();
 					break;
 				case 2:
 					break;
@@ -96,6 +104,12 @@ void SettingsMenu::EventOccurred(Event *e)
 					break;
 			}
 		}
+	}
+
+	if( e->Type == EVENT_FORM_INTERACTION && e->Data.Forms.RaisedBy != nullptr )
+	{
+		ProcessVideoFormEvents( e );
+		ProcessAudioFormEvents( e );
 	}
 }
 
@@ -121,14 +135,14 @@ void SettingsMenu::Render()
 	curY = DrawMenuItem( 5, curY, "Save and Return" );
 	curY = DrawMenuItem( 6, curY, "Cancel" );
 
-	curY = DISPLAY->GetHeight() - (fontCreditsHeight * 12);
+	curY = DISPLAY->GetHeight() - (fontCreditsHeight * 11);
 	curY = DrawMenuItem( 99, curY, "Credits:" );
 	curY = DrawMenuItem( 100, curY, " Programming:" );
 	curY = DrawMenuItem( 99, curY, "  Marq Watkin, Polymath Programming" );
 	curY = DrawMenuItem( 99, curY, "  www.pmprog.co.uk" );
 	curY = DrawMenuItem( 100, curY, " Music: " );
 	curY = DrawMenuItem( 99, curY, "  Naildown55" );
-	curY = DrawMenuItem( 99, curY, "  naildown55.newgrounds.com" );
+	curY = DrawMenuItem( 99, curY, "  naildown55.newgrounds.com/audio/" );
 	curY = DrawMenuItem( 100, curY, " Graphics: " );
 	curY = DrawMenuItem( 99, curY, "  Ripped from SNK vs Capcom" );
 
@@ -184,7 +198,8 @@ void SettingsMenu::CreateVideoForm()
 	tew->Location.Y = l->Location.Y + l->Size.Y + 4;
 	tew->Size.X = 380;
 	tew->Size.Y = fontUI->GetFontHeight();
-	tew->Name = "Screen.Width";
+	tew->Name = "Video.Width";
+	tew->SetText( *FRAMEWORK->Settings->GetQuickStringValue( "Video.Width", "800" ) );
 
 	l = new Label( c, "Screen Height:", fontUI );
 	l->Location.X = 10;
@@ -198,7 +213,8 @@ void SettingsMenu::CreateVideoForm()
 	teh->Location.Y = l->Location.Y + l->Size.Y + 4;
 	teh->Size.X = 380;
 	teh->Size.Y = fontUI->GetFontHeight();
-	teh->Name = "Screen.Height";
+	teh->Name = "Video.Height";
+	teh->SetText( *FRAMEWORK->Settings->GetQuickStringValue( "Video.Height", "480" ) );
 
 	l = new Label( c, "Fullscreen:", fontUI );
 	l->Location.X = 10;
@@ -211,14 +227,134 @@ void SettingsMenu::CreateVideoForm()
 	cb->Location.Y = l->Location.Y + l->Size.Y + 4;
 	cb->Size.X = 24;
 	cb->Size.Y = 24;
-	cb->Name = "Screen.Fullscreen";
+	cb->Name = "Video.Fullscreen";
+	cb->Checked = FRAMEWORK->Settings->GetQuickBooleanValue( "Video.Fullscreen", false );
+
+	l = new Label( c, "Stretch to fill screen:", fontUI );
+	l->Location.X = 10;
+	l->Location.Y = 160;
+	l->Size.X = 380;
+	l->Size.Y = fontUI->GetFontHeight();
+
+	cb = new CheckBox( c );
+	cb->Location.X = 10;
+	cb->Location.Y = l->Location.Y + l->Size.Y + 4;
+	cb->Size.X = 24;
+	cb->Size.Y = 24;
+	cb->Name = "Video.ScaleMode";
+	cb->Checked = ( FRAMEWORK->Settings->GetQuickIntegerValue( "Video.ScaleMode", 0 ) == 1 ? true : false );
 	
 	tb = new TextButton( c, "Ok", fontUI );
 	tb->Size.X = 80;
 	tb->Size.Y = 40;
 	tb->Location.X = c->Size.X - 90;
 	tb->Location.Y = c->Size.Y - 50;
+	tb->Name = "Video.Ok";
 
+	// Have to force process the Enter key events before I can set focus...
+	FRAMEWORK->ProcessEvents();
 	tew->Focus();
-	tew->BeginEdit();
+}
+
+void SettingsMenu::ProcessVideoFormEvents(Event *e)
+{
+		if( (e->Data.Forms.RaisedBy->Name == "Video.Width" || e->Data.Forms.RaisedBy->Name == "Video.Height") && e->Data.Forms.EventFlag == FormEventType::TextChanged )
+		{
+			if( FRAMEWORK->Settings->IsNumber( ((TextEdit*)e->Data.Forms.RaisedBy)->GetText() ) )
+			{
+				FRAMEWORK->Settings->SetStringValue( e->Data.Forms.RaisedBy->Name, &((TextEdit*)e->Data.Forms.RaisedBy)->GetText() );
+			}
+		}
+		if( e->Data.Forms.RaisedBy->Name == "Video.Fullscreen" && e->Data.Forms.EventFlag == FormEventType::CheckBoxChange )
+		{
+			FRAMEWORK->Settings->SetBooleanValue( e->Data.Forms.RaisedBy->Name, ((CheckBox*)e->Data.Forms.RaisedBy)->Checked );
+		}
+		if( e->Data.Forms.RaisedBy->Name == "Video.ScaleMode" && e->Data.Forms.EventFlag == FormEventType::CheckBoxChange )
+		{
+			FRAMEWORK->Settings->SetIntegerValue( e->Data.Forms.RaisedBy->Name, ( ((CheckBox*)e->Data.Forms.RaisedBy)->Checked ? 1 : 0 ) );
+		}
+
+		// Visual settings edited
+		if( e->Data.Forms.RaisedBy->Name == "Video.Ok" && e->Data.Forms.EventFlag == FormEventType::ButtonClick )
+		{
+			FRAMEWORK->ProcessEvents();
+			delete uiForm;
+			uiForm = nullptr;
+		}
+}
+
+void SettingsMenu::CreateAudioForm()
+{
+	Control* c;
+	Label* l;
+	CheckBox* cbm;
+	CheckBox* cbs;
+	TextButton* tb;
+
+	uiForm = new Form();
+	uiForm->BackgroundColour = al_map_rgb( 0, 0, 0 );
+	uiForm->Location.X = 200;
+	uiForm->Location.Y = 150;
+	uiForm->Size.X = 400;
+	uiForm->Size.Y = 200;
+	uiForm->Name= "Audio Settings";
+
+	c = new Control( uiForm );
+	c->Location.X = 4;
+	c->Location.Y = 4;
+	c->Size.X = uiForm->Size.X - 8;
+	c->Size.Y = uiForm->Size.Y - 8;
+
+	l = new Label( c, "Music On:", fontUI );
+	l->Location.X = 10;
+	l->Location.Y = 10;
+	l->Size.X = 380;
+	l->Size.Y = fontUI->GetFontHeight();
+
+	cbm = new CheckBox( c );
+	cbm->Location.X = 10;
+	cbm->Location.Y = l->Location.Y + l->Size.Y + 4;
+	cbm->Size.X = 24;
+	cbm->Size.Y = 24;
+	cbm->Name = "Audio.Music";
+	cbm->Checked = FRAMEWORK->Settings->GetQuickBooleanValue( "Audio.Music", true );
+
+	l = new Label( c, "Sound FX On:", fontUI );
+	l->Location.X = 10;
+	l->Location.Y = 60;
+	l->Size.X = 380;
+	l->Size.Y = fontUI->GetFontHeight();
+
+	cbs = new CheckBox( c );
+	cbs->Location.X = 10;
+	cbs->Location.Y = l->Location.Y + l->Size.Y + 4;
+	cbs->Size.X = 24;
+	cbs->Size.Y = 24;
+	cbs->Name = "Audio.Sound";
+	cbs->Checked = FRAMEWORK->Settings->GetQuickBooleanValue( "Audio.Sound", true );
+	
+	tb = new TextButton( c, "Ok", fontUI );
+	tb->Size.X = 80;
+	tb->Size.Y = 40;
+	tb->Location.X = c->Size.X - 90;
+	tb->Location.Y = c->Size.Y - 50;
+	tb->Name = "Audio.Ok";
+
+	cbm->Focus();
+}
+
+void SettingsMenu::ProcessAudioFormEvents(Event *e)
+{
+		if( (e->Data.Forms.RaisedBy->Name == "Audio.Music" || e->Data.Forms.RaisedBy->Name == "Audio.Sound") && e->Data.Forms.EventFlag == FormEventType::CheckBoxChange )
+		{
+			FRAMEWORK->Settings->SetBooleanValue( e->Data.Forms.RaisedBy->Name, ((CheckBox*)e->Data.Forms.RaisedBy)->Checked );
+		}
+
+		// Visual settings edited
+		if( e->Data.Forms.RaisedBy->Name == "Audio.Ok" && e->Data.Forms.EventFlag == FormEventType::ButtonClick )
+		{
+			FRAMEWORK->ProcessEvents();
+			delete uiForm;
+			uiForm = nullptr;
+		}
 }

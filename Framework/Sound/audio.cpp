@@ -82,20 +82,26 @@ void Audio::PlayMusic( std::string Filename, bool Loop )
 		StopMusic();
 	}
 
-#ifdef WRITE_LOG
-	printf( "Framework: Start audio file %s\n", Filename.c_str() );
-#endif
-	musicStream = al_load_audio_stream( Filename.c_str(), 4, 2048 );
-	if( musicStream != nullptr )
+	// Only play if Music is set
+	if( FRAMEWORK->Settings->GetQuickBooleanValue( "Audio.Music", true ) )
 	{
-		al_attach_audio_stream_to_mixer( musicStream, audioMixer );
-		al_set_audio_stream_playmode( musicStream, ( Loop ? ALLEGRO_PLAYMODE_LOOP : ALLEGRO_PLAYMODE_ONCE ) );
-		FRAMEWORK->RegisterEventSource( al_get_audio_stream_event_source( musicStream ) );
-		al_set_audio_stream_playing( musicStream, true );
-	} else {
+
 #ifdef WRITE_LOG
-		printf( "Framework: Could not load music '%s'\n", Filename.c_str() );
+		printf( "Framework: Start audio file %s\n", Filename.c_str() );
 #endif
+		musicStream = al_load_audio_stream( Filename.c_str(), 4, 2048 );
+		if( musicStream != nullptr )
+		{
+			al_attach_audio_stream_to_mixer( musicStream, audioMixer );
+			al_set_audio_stream_playmode( musicStream, ( Loop ? ALLEGRO_PLAYMODE_LOOP : ALLEGRO_PLAYMODE_ONCE ) );
+			FRAMEWORK->RegisterEventSource( al_get_audio_stream_event_source( musicStream ) );
+			al_set_audio_stream_playing( musicStream, true );
+		} else {
+#ifdef WRITE_LOG
+			printf( "Framework: Could not load music '%s'\n", Filename.c_str() );
+#endif
+		}
+
 	}
 }
 
@@ -127,5 +133,9 @@ ALLEGRO_MIXER* Audio::GetMixer()
 
 void Audio::PlaySoundEffect( std::string Filename )
 {
-	al_play_sample( SoundEffectsCache::LoadSFX( Filename ), 1.0f, 0.0f, 1.0f, ALLEGRO_PLAYMODE_ONCE, nullptr );
+	// Only play if Music is set
+	if( FRAMEWORK->Settings->GetQuickBooleanValue( "Audio.Sound", true ) )
+	{
+		al_play_sample( SoundEffectsCache::LoadSFX( Filename ), 1.0f, 0.0f, 1.0f, ALLEGRO_PLAYMODE_ONCE, nullptr );
+	}
 }

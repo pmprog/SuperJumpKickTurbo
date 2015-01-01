@@ -25,6 +25,9 @@ class SettingsMenu : public Stage
 		int DrawMenuItem( int MenuID, int CurrentY, std::string Text );
 
 		void CreateVideoForm();
+		void ProcessVideoFormEvents(Event *e);
+		void CreateAudioForm();
+		void ProcessAudioFormEvents(Event *e);
 
   public:
     // Stage control

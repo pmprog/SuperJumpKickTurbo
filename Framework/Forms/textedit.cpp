@@ -147,6 +147,8 @@ void TextEdit::OnRender()
 	int ypos;
 	int xadjust = 3;
 
+	al_draw_line( 0, Size.Y - 1, Size.X, Size.Y - 1, ForegroundColour, 1 );
+
 	switch( TextHAlign )
 	{
 		case HorizontalAlignment::Left:
