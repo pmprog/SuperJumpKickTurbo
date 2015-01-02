@@ -7,6 +7,9 @@ PlayerSelect::PlayerSelect( Fighter::FighterController Player1Controls, Fighter:
 {
 	datalists = new ConfigFile( "resources/data.txt" );
 
+	imgBackground = al_load_bitmap( "resources/cloudback.png" );
+	backgroundX = 0;
+
 	p1charidx = 0;
 	p1char = nullptr;
 	if( Player1Controls != Fighter::FighterController::NoControls )
@@ -21,6 +24,11 @@ PlayerSelect::PlayerSelect( Fighter::FighterController Player1Controls, Fighter:
 		ConstructPlayer2( Player2Controls, *datalists->GetQuickStringValue( "Characters", p2charidx, "" ) );
 	}
 
+	fntName = al_load_ttf_font( "resources/titlefont.ttf", 32, 0 );
+	fntControls = al_load_ttf_font( "resources/titlefont.ttf", 24, 0 );
+
+	stageTime = 0;
+	blinkOn = false;
 }
 
 void PlayerSelect::Begin()
@@ -37,6 +45,9 @@ void PlayerSelect::Resume()
 
 void PlayerSelect::Finish()
 {
+	al_destroy_bitmap( imgBackground );
+	al_destroy_font( fntName );
+	al_destroy_font( fntControls );
 }
 
 void PlayerSelect::EventOccurred(Event *e)
@@ -162,6 +173,12 @@ void PlayerSelect::Update()
 {
 	Arena* ingame;
 
+	stageTime = (stageTime + 1) % FRAMEWORK->GetFramesPerSecond();
+	if( stageTime == 0 )
+	{
+		blinkOn = !blinkOn;
+	}
+
 	if( p1char != 0 )
 	{
 		p1char->Fighter_Update( true );
@@ -215,20 +232,47 @@ void PlayerSelect::Update()
 		}
 	}
 
+	backgroundX--;
+	if( backgroundX <= -800 )
+	{
+		backgroundX = 0;
+	}
 }
 
 void PlayerSelect::Render()
 {
-	al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
+	// al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
+
+	al_draw_bitmap( imgBackground, backgroundX, 0, 0 );
+	al_draw_bitmap( imgBackground, backgroundX + 800, 0, 0 );
+
+	al_draw_text( fntControls, al_map_rgb( 128, 255, 128 ), 400, 10, ALLEGRO_ALIGN_CENTRE, "Jump: Change Character" );
+	al_draw_text( fntControls, al_map_rgb( 128, 255, 128 ), 400, 40, ALLEGRO_ALIGN_CENTRE, "Kick: Ready!" );
+
 
 	if( p1char != 0 )
 	{
 		p1char->Fighter_Render( 0, 0 );
+		al_draw_text( fntName, al_map_rgb( 255, 255, 255 ), 10, 90, ALLEGRO_ALIGN_LEFT, p1char->CharacterName.c_str() );
+	} else {
+		if( !blinkOn )
+		{
+			al_draw_text( fntName, al_map_rgb( 255, 255, 0 ), 220, 200, ALLEGRO_ALIGN_CENTRE, "Press" );
+			al_draw_text( fntName, al_map_rgb( 255, 255, 0 ), 220, 240, ALLEGRO_ALIGN_CENTRE, "Button!" );
+		}
+		
 	}
 
 	if( p2char != 0 )
 	{
 		p2char->Fighter_Render( 0, 0 );
+		al_draw_text( fntName, al_map_rgb( 255, 255, 255 ), 790, 90, ALLEGRO_ALIGN_RIGHT, p2char->CharacterName.c_str() );
+	} else {
+		if( !blinkOn )
+		{
+			al_draw_text( fntName, al_map_rgb( 255, 255, 0 ), 580, 200, ALLEGRO_ALIGN_CENTRE, "Press" );
+			al_draw_text( fntName, al_map_rgb( 255, 255, 0 ), 580, 240, ALLEGRO_ALIGN_CENTRE, "Button!" );
+		}
 	}
 }
 

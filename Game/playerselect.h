@@ -10,6 +10,15 @@ class PlayerSelect : public Stage
 	private:
 		ConfigFile* datalists;
 
+		ALLEGRO_BITMAP* imgBackground;
+		int backgroundX;
+
+		int stageTime;
+		bool blinkOn;
+
+		ALLEGRO_FONT* fntName;
+		ALLEGRO_FONT* fntControls;
+
 		int p1charidx;
 		Fighter* p1char;
 
