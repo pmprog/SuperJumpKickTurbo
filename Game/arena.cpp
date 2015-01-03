@@ -5,6 +5,10 @@
 #include "menu.h"
 #include "roundcountin.h"
 
+int Arena::Player1TotalWins = 0;
+int Arena::Player2TotalWins = 0;
+
+
 Arena::Arena()
 {
 	DebugReverse = false;
@@ -27,6 +31,8 @@ Arena::Arena()
 	CollisionAnimation->AddFrame( 1 );
 	CollisionAnimation->AddFrame( 0 );
 	CollisionAnimation->AddFrame( 0 );
+
+	RoundMarkers = new SpriteSheet( "resources/roundmarkers.png", 48, 48 );
 }
 
 Arena::Arena( std::string LocationImage, Fighter* P1, Fighter* P2 )
@@ -51,6 +57,8 @@ Arena::Arena( std::string LocationImage, Fighter* P1, Fighter* P2 )
 	CollisionAnimation->AddFrame( 1 );
 	CollisionAnimation->AddFrame( 0 );
 	CollisionAnimation->AddFrame( 0 );
+
+	RoundMarkers = new SpriteSheet( "resources/roundmarkers.png", 48, 48 );
 }
 
 Arena::~Arena()
@@ -58,6 +66,8 @@ Arena::~Arena()
 	al_destroy_bitmap( Background );
 	delete CollisionAnimation;
 	delete CollisionGraphics;
+
+	delete RoundMarkers;
 }
 
 void Arena::Begin()
@@ -374,6 +384,12 @@ void Arena::Render()
 		{
 			CollisionAnimation->DrawFrame( CollisionsAt[i]->X - 36 - Camera.X, CollisionsAt[i]->Y - 36 + Camera.Y );
 		}
+	}
+
+	for( int r = 0; r < 4; r++ )
+	{
+		RoundMarkers->DrawSprite( ( Player1Wins > r ? 1 : 0 ), 10 + (r * 52), 10 );
+		RoundMarkers->DrawSprite( ( Player2Wins > r ? 1 : 0 ), 790 - (r * 52) - 48, 10 );
 	}
 
 	// Draw timer

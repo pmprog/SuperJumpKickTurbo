@@ -1,5 +1,6 @@
 
 #include "roundover.h"
+#include "matchover.h"
 
 RoundOver::RoundOver(int PlayerWhoWon)
 {
@@ -10,6 +11,19 @@ RoundOver::RoundOver(int PlayerWhoWon)
 RoundOver::~RoundOver()
 {
 	currentArena->ResetArena();
+
+	if( currentArena->Player1Wins == 4 )
+	{
+		Arena::Player1TotalWins++;
+		FRAMEWORK->ProgramStages->Push( new MatchOver() );
+		return;
+	}
+	if( currentArena->Player2Wins == 4 )
+	{
+		Arena::Player2TotalWins++;
+		FRAMEWORK->ProgramStages->Push( new MatchOver() );
+		return;
+	}
 }
 
 void RoundOver::Begin()

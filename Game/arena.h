@@ -20,8 +20,7 @@ class Arena : public Stage
 		int CountdownTimerTicker;
 		bool DisableTimer;
 
-		int Player1Wins;
-		int Player2Wins;
+		SpriteSheet* RoundMarkers;
 		ALLEGRO_BITMAP* Background;
 		Vector2 Camera;
 
@@ -41,11 +40,17 @@ class Arena : public Stage
 		Fighter* GetPlayerWithControls( Fighter::FighterController Controller );
 
   public:
+
+		static int Player1TotalWins;
+		static int Player2TotalWins;
+
 		bool DemoMode;
 		long RoundFrameCount;
 
 		Fighter* Player1;
+		int Player1Wins;
 		Fighter* Player2;
+		int Player2Wins;
 
 		int ArenaWidth;
 
