@@ -124,6 +124,7 @@
     <ClCompile Include="Game\fighter.cpp" />
     <ClCompile Include="Game\matchover.cpp" />
     <ClCompile Include="Game\menu.cpp" />
+    <ClCompile Include="Game\networkmenu.cpp" />
     <ClCompile Include="Game\playerselect.cpp" />
     <ClCompile Include="Game\roundcountin.cpp" />
     <ClCompile Include="Game\roundover.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="Game\includes.h" />
     <ClInclude Include="Game\matchover.h" />
     <ClInclude Include="Game\menu.h" />
+    <ClInclude Include="Game\networkmenu.h" />
     <ClInclude Include="Game\playerselect.h" />
     <ClInclude Include="Game\roundcountin.h" />
     <ClInclude Include="Game\roundover.h" />

@@ -402,7 +402,8 @@ void SettingsMenu::CreateNetworkForm()
 {
 	Control* c;
 	Label* l;
-	TextEdit* te;
+	TextEdit* ten;
+	TextEdit* tep;
 	TextButton* tb;
 
 	uiForm = new Form();
@@ -419,20 +420,36 @@ void SettingsMenu::CreateNetworkForm()
 	c->Size.X = uiForm->Size.X - 8;
 	c->Size.Y = uiForm->Size.Y - 8;
 
-	l = new Label( c, "UDP Port:", fontUI );
+	l = new Label( c, "Your Name:", fontUI );
 	l->Location.X = 10;
 	l->Location.Y = 10;
 	l->Size.X = 380;
 	l->Size.Y = fontUI->GetFontHeight();
 
-	te = new TextEdit( c, "", fontUI );
-	te->AllowTab = false;
-	te->Location.X = 10;
-	te->Location.Y = l->Location.Y + l->Size.Y + 4;
-	te->Size.X = 380;
-	te->Size.Y = fontUI->GetFontHeight();
-	te->Name = "Network.Port";
-	te->SetText( *FRAMEWORK->Settings->GetQuickStringValue( "Network.Port", "9090" ) );
+	ten = new TextEdit( c, "", fontUI );
+	ten->AllowTab = false;
+	ten->Location.X = 10;
+	ten->Location.Y = l->Location.Y + l->Size.Y + 4;
+	ten->Size.X = 380;
+	ten->Size.Y = fontUI->GetFontHeight();
+	ten->Name = "Network.PlayerName";
+	ten->SetText( *FRAMEWORK->Settings->GetQuickStringValue( "Network.PlayerName", "NetPlayer" ) );
+
+
+	l = new Label( c, "UDP Port:", fontUI );
+	l->Location.X = 10;
+	l->Location.Y = 60;
+	l->Size.X = 380;
+	l->Size.Y = fontUI->GetFontHeight();
+
+	tep = new TextEdit( c, "", fontUI );
+	tep->AllowTab = false;
+	tep->Location.X = 10;
+	tep->Location.Y = l->Location.Y + l->Size.Y + 4;
+	tep->Size.X = 380;
+	tep->Size.Y = fontUI->GetFontHeight();
+	tep->Name = "Network.Port";
+	tep->SetText( *FRAMEWORK->Settings->GetQuickStringValue( "Network.Port", "9090" ) );
 	
 	tb = new TextButton( c, "Ok", fontUI );
 	tb->Size.X = 80;
@@ -443,7 +460,7 @@ void SettingsMenu::CreateNetworkForm()
 
 	// Have to force process the Enter key events before I can set focus...
 	FRAMEWORK->ProcessEvents();
-	te->Focus();
+	ten->Focus();
 }
 
 void SettingsMenu::ProcessNetworkFormEvents(Event *e)
@@ -454,6 +471,10 @@ void SettingsMenu::ProcessNetworkFormEvents(Event *e)
 		{
 			FRAMEWORK->Settings->SetStringValue( e->Data.Forms.RaisedBy->Name, &((TextEdit*)e->Data.Forms.RaisedBy)->GetText() );
 		}
+	}
+	if( e->Data.Forms.RaisedBy->Name == "Network.PlayerName" && e->Data.Forms.EventFlag == FormEventType::TextChanged )
+	{
+		FRAMEWORK->Settings->SetStringValue( e->Data.Forms.RaisedBy->Name, &((TextEdit*)e->Data.Forms.RaisedBy)->GetText() );
 	}
 
 	if( e->Data.Forms.RaisedBy->Name == "Network.Ok" && e->Data.Forms.EventFlag == FormEventType::ButtonClick )

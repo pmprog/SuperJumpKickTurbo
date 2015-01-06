@@ -3,6 +3,7 @@
 #include "arena.h"
 #include "settingsmenu.h"
 #include "playerselect.h"
+#include "networkmenu.h"
 
 int Menu::Player1Joystick = -1;
 int Menu::Player2Joystick = -1;
@@ -166,6 +167,7 @@ void Menu::EventOccurred(Event *e)
 				break;
 			case 1:
 				// Open Network Hub
+				FRAMEWORK->ProgramStages->Push( new NetworkMenu( ( source1 != Fighter::FighterController::NoControls ? source1 : source2 ) ) );
 				break;
 			case 2:
 				// Demo
