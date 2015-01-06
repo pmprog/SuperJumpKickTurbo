@@ -8,10 +8,14 @@ class NetworkMenu : public Stage
 {
 	private:
 		Fighter::FighterController localController;
+		Form* netForm;
+		TTFFont* fontForm;
+		TextEdit* te;
 
 	public:
 
 		NetworkMenu(Fighter::FighterController Controller);
+		~NetworkMenu();
 
     // Stage control
     virtual void Begin();
