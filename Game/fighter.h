@@ -98,6 +98,7 @@ class Fighter
 		bool FighterHit;
 		std::string CharacterName;
 		FighterController Controller;
+		static Network* NetworkController;
 
 		Fighter( FighterController Controls, std::string Config, Arena* FightArena, bool AlternativeSprites );
 

@@ -44,6 +44,12 @@ class Network
 		~Network();
 
 		/*
+			Function: AcceptConnection
+			Accepts an incoming connection
+		*/
+		void AcceptConnection( ENetPeer* From );
+
+		/*
 			Function: Disconnect
 			Disconnects the current client, not really much use because you can't reconnect without creating a new object yet
     */
@@ -70,6 +76,18 @@ class Network
 			Let's enet process all packets and pushes them into the framework event list
     */
 		void Update();
+
+		/*
+			Function: Send
+			Sends a data packet to the other side
+    */
+		void Send( Memory* Packet, bool Reliable );
+
+		/*
+			Function: Send
+			Sends a data packet to the other side
+    */
+		void Send( void* Packet, int PacketLength, bool Reliable );
 
 };
 

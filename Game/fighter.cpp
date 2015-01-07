@@ -2,6 +2,8 @@
 #include "fighter.h"
 #include "arena.h"
 
+Network* Fighter::NetworkController = nullptr;
+
 Fighter::Fighter( FighterController Controls, std::string Config, Arena* FightArena, bool AlternativeSprites )
 {
 	ConfigFile* cfg = new ConfigFile( Config );

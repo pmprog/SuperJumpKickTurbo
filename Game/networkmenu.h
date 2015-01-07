@@ -11,6 +11,8 @@ class NetworkMenu : public Stage
 		Form* netForm;
 		TTFFont* fontForm;
 		TextEdit* te;
+		bool hideForm;
+		Angle* waitAngle;
 
 	public:
 

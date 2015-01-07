@@ -6,6 +6,8 @@ NetworkMenu::NetworkMenu(Fighter::FighterController Controller)
 {
 	localController = Controller;
 
+	hideForm = false;
+
 	fontForm = new TTFFont( "resources/titlefont.ttf", 16 );
 
 	netForm = new Form();
@@ -58,6 +60,7 @@ NetworkMenu::NetworkMenu(Fighter::FighterController Controller)
 	b->Location.X = c->Size.X - b->Size.X - 4;
 	b->Location.Y = c->Size.Y - b->Size.Y - 4;
 
+	waitAngle = new Angle( 0 );
 }
 
 NetworkMenu::~NetworkMenu()
@@ -93,7 +96,10 @@ void NetworkMenu::EventOccurred(Event *e)
 		return;
 	}
 
-	netForm->EventOccured(e);
+	if( !hideForm )
+	{
+		netForm->EventOccured(e);
+	}
 
 	if( e->Type == EVENT_FORM_INTERACTION )
 	{
@@ -104,9 +110,39 @@ void NetworkMenu::EventOccurred(Event *e)
 		}
 		if( e->Data.Forms.EventFlag == FormEventType::ButtonClick && e->Data.Forms.RaisedBy->Name == "Start" )
 		{
-			delete FRAMEWORK->ProgramStages->Pop();
-			return;
+			if( te->GetText() == "" )
+			{
+				// Server
+				Fighter::NetworkController = new Network( FRAMEWORK->Settings->GetQuickIntegerValue( "Network.Port", 9090 ) );
+			} else {
+				// Client
+				Fighter::NetworkController = new Network( te->GetText(), FRAMEWORK->Settings->GetQuickIntegerValue( "Network.Port", 9090 ) );
+			}
+			hideForm = true;
 		}
+	}
+
+	if( e->Type == EVENT_NETWORK_CONNECTION_REQUEST )
+	{
+		if( !Fighter::NetworkController->IsConnected() )
+		{
+			Fighter::NetworkController->AcceptConnection( e->Data.Network.Traffic.peer );
+		}
+	}
+	if( e->Type == EVENT_NETWORK_CONNECTED )
+	{
+		// Fighter::NetworkController->Send("")
+	}
+	if( e->Type == EVENT_NETWORK_DISCONNECTED )
+	{
+		delete Fighter::NetworkController;
+		Fighter::NetworkController = nullptr;
+
+		hideForm = false;
+	}
+	if( e->Type == EVENT_NETWORK_PACKET_RECEIVED )
+	{
+		// TODO: Parse command
 	}
 
 }
@@ -114,13 +150,37 @@ void NetworkMenu::EventOccurred(Event *e)
 void NetworkMenu::Update()
 {
 	FRAMEWORK->ProgramStages->Previous()->Update();
-	netForm->Update();
+	if( !hideForm )
+	{
+		netForm->Update();
+	}
+
+	if( Fighter::NetworkController != nullptr )
+	{
+		Fighter::NetworkController->Update();
+	}
+	
+	waitAngle->Add( 5 );
 }
 
 void NetworkMenu::Render()
 {
 	FRAMEWORK->ProgramStages->Previous()->Render();
-	netForm->Render();
+	if( !hideForm )
+	{
+		netForm->Render();
+	} else {
+		al_draw_filled_rounded_rectangle( 360, 200, 440, 280, 6, 6, al_map_rgb( 128, 192, 128 ) );
+
+		// waitAngle->Add( -40 );
+		for( int i = 0; i <= 8; i++ )
+		{
+			al_draw_filled_pieslice( 400, 240, 30, waitAngle->ToRadians(), 0.2f, al_map_rgb( i * 30, i * 30, i * 30 ) );
+			// waitAngle->Add( 5 );
+		}
+
+		
+	}
 }
 
 bool NetworkMenu::IsTransition()

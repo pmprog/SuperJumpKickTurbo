@@ -49,6 +49,12 @@ Network::Network( std::string Server, int Port )
 	ENetEvent ev;
 	if( enet_host_service( localHost, &ev, 6000 ) > 0 && ev.type == ENET_EVENT_TYPE_CONNECT )
 	{
+		Event* fwEvent;
+		fwEvent = new Event();
+		fwEvent->Type = EVENT_NETWORK_CONNECTED;
+		memset( &fwEvent->Data.Network.Traffic, 0, sizeof(ENetEvent) );
+		fwEvent->Data.Network.Traffic.peer = networkPeer;
+		Framework::System->PushEvent( fwEvent );
 	} else {
 		enet_peer_reset( networkPeer );
 		networkPeer = 0;
@@ -69,6 +75,18 @@ Network::~Network()
 		enet_host_destroy( localHost );
 		localHost = 0;
 	}
+}
+
+void Network::AcceptConnection( ENetPeer* From )
+{
+	networkPeer = From;
+
+	Event* fwEvent;
+	fwEvent = new Event();
+	fwEvent->Type = EVENT_NETWORK_CONNECTED;
+	memset( &fwEvent->Data.Network.Traffic, 0, sizeof(ENetEvent) );
+	fwEvent->Data.Network.Traffic.peer = From;
+	Framework::System->PushEvent( fwEvent );
 }
 
 void Network::Disconnect()
@@ -95,6 +113,11 @@ void Network::Update()
 {
 	ENetEvent netEvent;
 	Event* fwEvent;
+
+	if( !IsActive() )
+	{
+		return;
+	}
 
 	while( enet_host_service( localHost, &netEvent, 0 ) > 0 )
 	{
@@ -123,6 +146,30 @@ void Network::Update()
 				break;
 		}
 	}
+}
+
+void Network::Send( Memory* Packet, bool Reliable )
+{
+	if( !IsConnected() )
+	{
+		return;
+	}
+
+	ENetPacket * packet = enet_packet_create( Packet->GetData(), Packet->GetSize(), ( Reliable ? ENET_PACKET_FLAG_RELIABLE : 0 ));
+	enet_peer_send( networkPeer, 0, packet );
+	enet_host_flush( localHost );
+}
+
+void Network::Send( void* Packet, int PacketLength, bool Reliable )
+{
+	if( !IsConnected() )
+	{
+		return;
+	}
+
+	ENetPacket * packet = enet_packet_create( Packet, PacketLength, ( Reliable ? ENET_PACKET_FLAG_RELIABLE : 0 ));
+	enet_peer_send( networkPeer, 0, packet );
+	enet_host_flush( localHost );
 }
 
 #endif
