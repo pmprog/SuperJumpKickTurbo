@@ -14,6 +14,10 @@ class NetworkMenu : public Stage
 		bool hideForm;
 		Angle* waitAngle;
 
+		bool isNetworkHost;
+		bool setP1Name;
+		bool setP2Name;
+
 	public:
 
 		NetworkMenu(Fighter::FighterController Controller);

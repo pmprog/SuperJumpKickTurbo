@@ -94,9 +94,11 @@ class Fighter
 
 	public:
 		Arena* currentArena;
-
 		bool FighterHit;
+
 		std::string CharacterName;
+		std::string PlayerName;
+
 		FighterController Controller;
 		static Network* NetworkController;
 

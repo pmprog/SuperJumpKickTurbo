@@ -33,6 +33,8 @@ class PlayerSelect : public Stage
 		int GetPlayerWithControls( Fighter::FighterController Controller );
 
   public:
+		static std::string Player1Name;
+		static std::string Player2Name;
 
 		PlayerSelect( Fighter::FighterController Player1Controls, Fighter::FighterController Player2Controls );
 

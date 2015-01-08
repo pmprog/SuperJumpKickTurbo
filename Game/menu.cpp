@@ -162,6 +162,8 @@ void Menu::EventOccurred(Event *e)
 		switch( menuSelection )
 		{
 			case 0:
+				PlayerSelect::Player1Name = "Player 1";
+				PlayerSelect::Player2Name = "Player 2";
 				// Player Select
 				FRAMEWORK->ProgramStages->Push( new PlayerSelect( source1, source2 ) );
 				break;
@@ -170,6 +172,8 @@ void Menu::EventOccurred(Event *e)
 				FRAMEWORK->ProgramStages->Push( new NetworkMenu( ( source1 != Fighter::FighterController::NoControls ? source1 : source2 ) ) );
 				break;
 			case 2:
+				PlayerSelect::Player1Name = "Player 1";
+				PlayerSelect::Player2Name = "Player 2";
 				// Demo
 				FRAMEWORK->ProgramStages->Push( new Arena() );
 				break;

@@ -3,6 +3,10 @@
 #include "arena.h"
 #include "menu.h"
 
+std::string PlayerSelect::Player1Name = "Player 1";
+std::string PlayerSelect::Player2Name = "Player 2";
+
+
 PlayerSelect::PlayerSelect( Fighter::FighterController Player1Controls, Fighter::FighterController Player2Controls )
 {
 	datalists = new ConfigFile( "resources/data.txt" );
@@ -287,6 +291,7 @@ void PlayerSelect::ConstructPlayer1( Fighter::FighterController Controller, std:
 	p1char->Fighter_SetPosition( DISPLAY->GetWidth() / 4, 0 );
 	p1char->Fighter_SetState( Fighter::Idle );
 	p1char->Fighter_SetFacing( false );
+	p1char->PlayerName = PlayerSelect::Player1Name;
 }
 
 void PlayerSelect::ConstructPlayer2( Fighter::FighterController Controller, std::string Character )
@@ -295,6 +300,7 @@ void PlayerSelect::ConstructPlayer2( Fighter::FighterController Controller, std:
 	p2char->Fighter_SetPosition( (DISPLAY->GetWidth() / 4) * 3, 0 );
 	p2char->Fighter_SetState( Fighter::Idle );
 	p2char->Fighter_SetFacing( true );
+	p2char->PlayerName = PlayerSelect::Player2Name;
 }
 
 int PlayerSelect::GetPlayerWithControls( Fighter::FighterController Controller )

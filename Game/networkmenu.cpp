@@ -1,12 +1,15 @@
 
 #include "networkmenu.h"
-
+#include "playerselect.h"
 
 NetworkMenu::NetworkMenu(Fighter::FighterController Controller)
 {
 	localController = Controller;
 
 	hideForm = false;
+	isNetworkHost = false;
+	setP1Name = false;
+	setP2Name = false;
 
 	fontForm = new TTFFont( "resources/titlefont.ttf", 16 );
 
@@ -90,6 +93,8 @@ void NetworkMenu::Finish()
 
 void NetworkMenu::EventOccurred(Event *e)
 {
+	byte nullterm = 0;
+
 	if( e->Type == EVENT_KEY_DOWN && e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ESCAPE )
 	{
 		delete FRAMEWORK->ProgramStages->Pop();
@@ -114,9 +119,11 @@ void NetworkMenu::EventOccurred(Event *e)
 			{
 				// Server
 				Fighter::NetworkController = new Network( FRAMEWORK->Settings->GetQuickIntegerValue( "Network.Port", 9090 ) );
+				isNetworkHost = true;
 			} else {
 				// Client
 				Fighter::NetworkController = new Network( te->GetText(), FRAMEWORK->Settings->GetQuickIntegerValue( "Network.Port", 9090 ) );
+				isNetworkHost = false;
 			}
 			hideForm = true;
 		}
@@ -131,7 +138,25 @@ void NetworkMenu::EventOccurred(Event *e)
 	}
 	if( e->Type == EVENT_NETWORK_CONNECTED )
 	{
-		// Fighter::NetworkController->Send("")
+		std::string* plyName = FRAMEWORK->Settings->GetQuickStringValue( "Network.PlayerName", "NetPlayer" );
+		Memory* plyNamePacket = new Memory( 0 );
+		plyNamePacket->AppendData( (void*)plyName->c_str(), plyName->length() );
+		plyNamePacket->AppendData( (void*)&nullterm, 1 );
+		Fighter::NetworkController->Send( plyNamePacket, true );
+		delete plyNamePacket;
+
+		if( isNetworkHost )
+		{
+			PlayerSelect::Player1Name.clear();
+			PlayerSelect::Player1Name.append( *plyName );
+			setP1Name = true;
+		} else {
+			PlayerSelect::Player2Name.clear();
+			PlayerSelect::Player2Name.append( *plyName );
+			setP2Name = true;
+		}
+		delete plyName;
+
 	}
 	if( e->Type == EVENT_NETWORK_DISCONNECTED )
 	{
@@ -143,6 +168,20 @@ void NetworkMenu::EventOccurred(Event *e)
 	if( e->Type == EVENT_NETWORK_PACKET_RECEIVED )
 	{
 		// TODO: Parse command
+		//Memory* packetData = new Memory( 0 );
+		//packetData->AppendData( e->Data.Network.Traffic.packet->data, e->Data.Network.Traffic.packet->dataLength );
+		std::string* plyName = new std::string( (char*)e->Data.Network.Traffic.packet->data );
+		if( !isNetworkHost )
+		{
+			PlayerSelect::Player1Name.clear();
+			PlayerSelect::Player1Name.append( *plyName );
+			setP1Name = true;
+		} else {
+			PlayerSelect::Player2Name.clear();
+			PlayerSelect::Player2Name.append( *plyName );
+			setP2Name = true;
+		}
+		delete plyName;
 	}
 
 }
@@ -161,6 +200,16 @@ void NetworkMenu::Update()
 	}
 	
 	waitAngle->Add( 5 );
+
+	if( setP1Name && setP2Name )
+	{
+		// TODO: Start player select
+		std::string temp = PlayerSelect::Player1Name;
+		temp = PlayerSelect::Player2Name;
+		delete FRAMEWORK->ProgramStages->Pop();
+		return;
+	}
+
 }
 
 void NetworkMenu::Render()
