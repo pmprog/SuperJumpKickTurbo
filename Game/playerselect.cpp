@@ -29,6 +29,7 @@ PlayerSelect::PlayerSelect( Fighter::FighterController Player1Controls, Fighter:
 	}
 
 	fntName = al_load_ttf_font( "resources/titlefont.ttf", 32, 0 );
+	fntNameHeight = al_get_font_line_height( fntName );
 	fntControls = al_load_ttf_font( "resources/titlefont.ttf", 24, 0 );
 
 	stageTime = 0;
@@ -258,6 +259,7 @@ void PlayerSelect::Render()
 	{
 		p1char->Fighter_Render( 0, 0 );
 		al_draw_text( fntName, al_map_rgb( 255, 255, 255 ), 10, 90, ALLEGRO_ALIGN_LEFT, p1char->CharacterName.c_str() );
+		al_draw_text( fntName, al_map_rgb( 255, 255, 255 ), 10, 470 - fntNameHeight, ALLEGRO_ALIGN_LEFT, p1char->PlayerName.c_str() );
 	} else {
 		if( !blinkOn )
 		{
@@ -271,6 +273,7 @@ void PlayerSelect::Render()
 	{
 		p2char->Fighter_Render( 0, 0 );
 		al_draw_text( fntName, al_map_rgb( 255, 255, 255 ), 790, 90, ALLEGRO_ALIGN_RIGHT, p2char->CharacterName.c_str() );
+		al_draw_text( fntName, al_map_rgb( 255, 255, 255 ), 790, 470 - fntNameHeight, ALLEGRO_ALIGN_RIGHT, p2char->PlayerName.c_str() );
 	} else {
 		if( !blinkOn )
 		{

@@ -207,6 +207,7 @@ void NetworkMenu::Update()
 		std::string temp = PlayerSelect::Player1Name;
 		temp = PlayerSelect::Player2Name;
 		delete FRAMEWORK->ProgramStages->Pop();
+		FRAMEWORK->ProgramStages->Push( new PlayerSelect( ( isNetworkHost ? localController : Fighter::FighterController::NetworkClient ), ( !isNetworkHost ? localController : Fighter::FighterController::NetworkClient ) ) );
 		return;
 	}
 

@@ -17,6 +17,7 @@ class PlayerSelect : public Stage
 		bool blinkOn;
 
 		ALLEGRO_FONT* fntName;
+		int fntNameHeight;
 		ALLEGRO_FONT* fntControls;
 
 		int p1charidx;
