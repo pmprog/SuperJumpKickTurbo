@@ -203,7 +203,6 @@ void NetworkMenu::Update()
 
 	if( setP1Name && setP2Name )
 	{
-		// TODO: Start player select
 		std::string temp = PlayerSelect::Player1Name;
 		temp = PlayerSelect::Player2Name;
 		delete FRAMEWORK->ProgramStages->Pop();

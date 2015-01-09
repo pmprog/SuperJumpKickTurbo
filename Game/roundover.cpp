@@ -15,12 +15,14 @@ RoundOver::~RoundOver()
 	if( currentArena->Player1Wins == 4 )
 	{
 		Arena::Player1TotalWins++;
+		delete FRAMEWORK->ProgramStages->Pop();
 		FRAMEWORK->ProgramStages->Push( new MatchOver() );
 		return;
 	}
 	if( currentArena->Player2Wins == 4 )
 	{
 		Arena::Player2TotalWins++;
+		delete FRAMEWORK->ProgramStages->Pop();
 		FRAMEWORK->ProgramStages->Push( new MatchOver() );
 		return;
 	}

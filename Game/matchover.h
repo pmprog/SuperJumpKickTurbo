@@ -7,6 +7,12 @@
 class MatchOver : public Stage
 {
 	private:
+		Arena* gameArena;
+
+		float overbannerL[8];
+		float overbannerR[8];
+		float bannerspeed;
+
 
   public:
     // Stage control
