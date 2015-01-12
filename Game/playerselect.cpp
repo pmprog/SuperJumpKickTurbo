@@ -59,6 +59,7 @@ void PlayerSelect::EventOccurred(Event *e)
 {
 	Fighter::FighterController source = Fighter::FighterController::NoControls;
 	bool sourceisjump = false;
+	bool transmitinput = false;
 
 	if( e->Type == EVENT_KEY_DOWN )
 	{
@@ -72,22 +73,26 @@ void PlayerSelect::EventOccurred(Event *e)
 		{
 			source = Fighter::FighterController::LocalKeyboardP1;
 			sourceisjump = true;
+			transmitinput = true;
 		}
 		if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Keyboard.Kick", ALLEGRO_KEY_LCTRL ) )
 		{
 			source = Fighter::FighterController::LocalKeyboardP1;
 			sourceisjump = false;
+			transmitinput = true;
 		}
 
 		if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Keyboard.Jump", ALLEGRO_KEY_RSHIFT ) )
 		{
 			source = Fighter::FighterController::LocalKeyboardP2;
 			sourceisjump = true;
+			transmitinput = true;
 		}
 		if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Keyboard.Kick", ALLEGRO_KEY_RCTRL ) )
 		{
 			source = Fighter::FighterController::LocalKeyboardP2;
 			sourceisjump = false;
+			transmitinput = true;
 		}
 	}
 
@@ -112,11 +117,13 @@ void PlayerSelect::EventOccurred(Event *e)
 			{
 				source = Fighter::FighterController::LocalJoystickP1;
 				sourceisjump = true;
+				transmitinput = true;
 			}
 			if( e->Data.Joystick.Button == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Joystick.Kick", 1 ) )
 			{
 				source = Fighter::FighterController::LocalJoystickP1;
 				sourceisjump = false;
+				transmitinput = true;
 			}
 		}
 		if( e->Data.Joystick.ID == menustage->Player2Joystick )
@@ -125,12 +132,59 @@ void PlayerSelect::EventOccurred(Event *e)
 			{
 				source = Fighter::FighterController::LocalJoystickP2;
 				sourceisjump = true;
+				transmitinput = true;
 			}
 			if( e->Data.Joystick.Button == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Joystick.Kick", 1 ) )
 			{
 				source = Fighter::FighterController::LocalJoystickP2;
 				sourceisjump = false;
+				transmitinput = true;
 			}
+		}
+	}
+
+	GamePacket netpacket;
+
+	if( e->Type == EVENT_NETWORK_PACKET_RECEIVED )
+	{
+		if( e->Data.Network.Traffic.packet->dataLength != sizeof( netpacket ) )
+		{
+#ifdef WRITE_LOG
+			printf("Error: Invalid network packet length of %d, expecting %d", e->Data.Network.Traffic.packet->dataLength, sizeof( netpacket ) );
+#endif
+			delete FRAMEWORK->ProgramStages->Pop();
+			return;
+		}
+		memcpy((void*)&netpacket, e->Data.Network.Traffic.packet->data, e->Data.Network.Traffic.packet->dataLength );
+
+		if( netpacket.Type == PACKET_TYPE_INPUT && (netpacket.Data.Input.JumpPressed || netpacket.Data.Input.KickPressed) )
+		{
+			source = Fighter::FighterController::NetworkClient;
+			sourceisjump = netpacket.Data.Input.JumpPressed;
+		}
+
+	}
+
+	// Network game
+	if( p1char->Controller == Fighter::FighterController::NetworkClient || p2char->Controller == Fighter::FighterController::NetworkClient )
+	{
+
+		// Player disconnected
+		if( e->Type == EVENT_NETWORK_DISCONNECTED )
+		{
+			delete FRAMEWORK->ProgramStages->Pop();
+			return;
+		}
+
+		// Send player local input
+		if( transmitinput && source != Fighter::FighterController::NetworkClient )
+		{
+			netpacket.Type = PACKET_TYPE_INPUT;
+			netpacket.FrameCount = 0;
+			netpacket.Data.Input.JumpPressed = sourceisjump;
+			netpacket.Data.Input.KickPressed = !sourceisjump;
+
+			Fighter::NetworkController->Send( (void*)&netpacket, sizeof(netpacket), true );
 		}
 	}
 
@@ -241,6 +295,11 @@ void PlayerSelect::Update()
 	if( backgroundX <= -800 )
 	{
 		backgroundX = 0;
+	}
+
+	if( Fighter::NetworkController != nullptr )
+	{
+		Fighter::NetworkController->Update();
 	}
 }
 

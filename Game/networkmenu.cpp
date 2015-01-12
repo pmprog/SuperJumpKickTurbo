@@ -205,8 +205,9 @@ void NetworkMenu::Update()
 	{
 		std::string temp = PlayerSelect::Player1Name;
 		temp = PlayerSelect::Player2Name;
+		PlayerSelect* plyslc = new PlayerSelect( ( isNetworkHost ? localController : Fighter::FighterController::NetworkClient ), ( !isNetworkHost ? localController : Fighter::FighterController::NetworkClient ) );
 		delete FRAMEWORK->ProgramStages->Pop();
-		FRAMEWORK->ProgramStages->Push( new PlayerSelect( ( isNetworkHost ? localController : Fighter::FighterController::NetworkClient ), ( !isNetworkHost ? localController : Fighter::FighterController::NetworkClient ) ) );
+		FRAMEWORK->ProgramStages->Push( plyslc );
 		return;
 	}
 

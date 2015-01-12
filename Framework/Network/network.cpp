@@ -150,14 +150,7 @@ void Network::Update()
 
 void Network::Send( Memory* Packet, bool Reliable )
 {
-	if( !IsConnected() )
-	{
-		return;
-	}
-
-	ENetPacket * packet = enet_packet_create( Packet->GetData(), Packet->GetSize(), ( Reliable ? ENET_PACKET_FLAG_RELIABLE : 0 ));
-	enet_peer_send( networkPeer, 0, packet );
-	enet_host_flush( localHost );
+	Send( Packet->GetData(), Packet->GetSize(), Reliable );
 }
 
 void Network::Send( void* Packet, int PacketLength, bool Reliable )

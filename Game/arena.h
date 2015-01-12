@@ -4,6 +4,7 @@
 #include "includes.h"
 #include "../Framework/Display/spritesheet.h"
 #include "fighter.h"
+#include "networkpacket.h"
 
 #define SLOWMODE_DELAY_FRAMES		2
 #define ROUND_TIME							20
@@ -32,7 +33,7 @@ class Arena : public Stage
 
 		bool DebugReverse;
 
-		long ClockRoundFrameCount[ROUND_TIME];
+		uint64_t ClockRoundFrameCount[ROUND_TIME];
 
 		void FixCameraPosition();
 		void TickRoundClock();
@@ -45,7 +46,7 @@ class Arena : public Stage
 		static int Player2TotalWins;
 
 		bool DemoMode;
-		long RoundFrameCount;
+		uint64_t RoundFrameCount;
 
 		Fighter* Player1;
 		int Player1Wins;

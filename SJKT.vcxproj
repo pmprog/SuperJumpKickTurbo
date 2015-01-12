@@ -181,6 +181,7 @@
     <ClInclude Include="Game\matchover.h" />
     <ClInclude Include="Game\menu.h" />
     <ClInclude Include="Game\networkmenu.h" />
+    <ClInclude Include="Game\networkpacket.h" />
     <ClInclude Include="Game\playerselect.h" />
     <ClInclude Include="Game\roundcountin.h" />
     <ClInclude Include="Game\roundover.h" />

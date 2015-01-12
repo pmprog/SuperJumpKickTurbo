@@ -320,5 +320,8 @@
     <ClInclude Include="Game\networkmenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Game\networkpacket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

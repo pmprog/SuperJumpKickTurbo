@@ -4,6 +4,7 @@
 #include "includes.h"
 #include "../Framework/Display/spritesheet.h"
 #include "fighter.h"
+#include "networkpacket.h"
 
 class PlayerSelect : public Stage
 {
