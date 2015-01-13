@@ -12,7 +12,7 @@ class RoundCountIn : public Stage
 		int countdown;
 		ALLEGRO_FONT* fntTitle;
 		int fntTitleHeight;
-
+		bool netping;
 
   public:
     // Stage control

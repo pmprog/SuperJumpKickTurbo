@@ -2,6 +2,7 @@
 #pragma once
 
 #include "includes.h"
+#include "fighter.h"
 
 #define PACKET_TYPE_PING	0
 #define PACKET_TYPE_INPUT	1
@@ -12,16 +13,19 @@ typedef struct GamePacketInput
 {
 	bool JumpPressed;
 	bool KickPressed;
+	int X;
+	int Y;
+	Fighter::FighterStates State;
 } GamePacketInput;
 
 typedef struct GamePacketSyncCheck
 {
 	int Player1X;
 	int Player1Y;
-	int Player1State;
+	Fighter::FighterStates Player1State;
 	int Player2X;
 	int Player2Y;
-	int Player2State;
+	Fighter::FighterStates Player2State;
 } GamePacketSyncCheck;
 
 typedef union GamePacketData

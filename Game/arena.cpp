@@ -210,7 +210,12 @@ void Arena::EventOccurred(Event *e)
 		if( netpacket.Type == PACKET_TYPE_INPUT && (netpacket.Data.Input.JumpPressed || netpacket.Data.Input.KickPressed) )
 		{
 			// TODO: Check if we need a rollback!
-			// State_Load( netpacket.FrameCount );
+			if( netpacket.FrameCount < RoundFrameCount )
+			{
+				State_Load( netpacket.FrameCount );
+				Fighter* f = GetPlayerWithControls( Fighter::FighterController::NetworkClient );
+				f->Fighter_SetPosition( (float)netpacket.Data.Input.X, (float)netpacket.Data.Input.Y );
+			}
 
 			source = Fighter::FighterController::NetworkClient;
 			sourceisjump = netpacket.Data.Input.JumpPressed;
@@ -241,6 +246,8 @@ void Arena::EventOccurred(Event *e)
 			netpacket.FrameCount = RoundFrameCount;
 			netpacket.Data.Input.JumpPressed = sourceisjump;
 			netpacket.Data.Input.KickPressed = !sourceisjump;
+			netpacket.Data.Input.X = (int)GetPlayerWithControls( source )->Fighter_GetPosition()->X;
+			netpacket.Data.Input.Y = (int)GetPlayerWithControls( source )->Fighter_GetPosition()->Y;
 
 			Fighter::NetworkController->Send( (void*)&netpacket, sizeof(netpacket), true );
 		}
@@ -265,11 +272,6 @@ void Arena::EventOccurred(Event *e)
 
 void Arena::Update()
 {
-	if( Fighter::NetworkController != nullptr )
-	{
-		Fighter::NetworkController->Update();
-	}
-
 	if( DebugReverse )
 	{
 		if( RoundFrameCount > 2 )
@@ -430,6 +432,10 @@ void Arena::Update()
 			break;
 	}
 
+	if( Fighter::NetworkController != nullptr )
+	{
+		Fighter::NetworkController->Update();
+	}
 }
 
 void Arena::Render()

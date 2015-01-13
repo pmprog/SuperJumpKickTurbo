@@ -10,7 +10,7 @@
 class Arena;
 #endif
 
-#define FIGHTER_MAXIMUM_ROLLBACK_STATES		20
+#define FIGHTER_MAXIMUM_ROLLBACK_STATES		200
 
 class Fighter
 {
