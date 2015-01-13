@@ -6,6 +6,11 @@ Network* Fighter::NetworkController = nullptr;
 
 Fighter::Fighter( FighterController Controls, std::string Config, Arena* FightArena, bool AlternativeSprites )
 {
+
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Fighter: Constructing %s\n", Config.c_str() );
+#endif
+
 	ConfigFile* cfg = new ConfigFile( Config );
 	std::string* tmpstring;
 
@@ -118,6 +123,7 @@ Fighter::Fighter( FighterController Controls, std::string Config, Arena* FightAr
 	FighterHit = false;
 
 	State_Clear();
+
 }
 
 void Fighter::CharSelect_RenderProfileIcon(int ScreenX, int ScreenY)
@@ -513,12 +519,19 @@ void Fighter::AI_Update( int Skill )
 
 void Fighter::State_Clear()
 {
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Fighter State: Clear %s\n", PlayerName.c_str() );
+#endif
 	// Clear all rollback states
 	memset( (void*)&RollbackStates, -1, sizeof(FighterSaveState) * FIGHTER_MAXIMUM_ROLLBACK_STATES );
 }
 
 void Fighter::State_Save(uint64_t FrameCount)
 {
+#ifdef WRITE_LOG
+			fprintf( FRAMEWORK->LogFile, "Fighter State: Save %s at Frame %d\n", PlayerName.c_str(), FrameCount );
+#endif
+
 	FighterSaveState tempstates[FIGHTER_MAXIMUM_ROLLBACK_STATES - 1];
 
 	// Bulk copy states back one
@@ -536,6 +549,10 @@ void Fighter::State_Save(uint64_t FrameCount)
 
 bool Fighter::State_Load(uint64_t FrameCount)
 {
+#ifdef WRITE_LOG
+			fprintf( FRAMEWORK->LogFile, "Fighter State: Load %s at Frame %d\n", PlayerName.c_str(), FrameCount );
+#endif
+
 	FighterSaveState tempstates[FIGHTER_MAXIMUM_ROLLBACK_STATES];
 
 	bool foundState = false;

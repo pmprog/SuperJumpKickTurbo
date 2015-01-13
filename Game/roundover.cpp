@@ -35,6 +35,9 @@ RoundOver::~RoundOver()
 
 void RoundOver::Begin()
 {
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Stage: RoundOver::Begin()\n" );
+#endif
 	currentArena = (Arena*)FRAMEWORK->ProgramStages->Previous();
 
 	fntTitle = al_load_ttf_font( "resources/titlefont.ttf", 48, 0 );
@@ -89,6 +92,9 @@ void RoundOver::Resume()
 void RoundOver::Finish()
 {
 	al_destroy_font( fntTitle );
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Stage: RoundOver::Finish()\n" );
+#endif
 }
 
 void RoundOver::EventOccurred(Event *e)

@@ -27,14 +27,17 @@ void Menu::Begin()
 	TitleFighters[0] = new Fighter( Fighter::NoControls, "resources/akuma.txt", nullptr, false );
 	TitleFighters[0]->Fighter_SetPosition( 0, 400 );
 	TitleFighters[0]->Fighter_SetFacing( false );
+	TitleFighters[0]->PlayerName = "Menu:Akuma";
 
 	TitleFighters[1] = new Fighter( Fighter::NoControls, "resources/ryu.txt", nullptr, false );
 	TitleFighters[1]->Fighter_SetPosition( 0, 265 );
 	TitleFighters[1]->Fighter_SetFacing( false );
+	TitleFighters[1]->PlayerName = "Menu:Ryu";
 
 	TitleFighters[2] = new Fighter( Fighter::NoControls, "resources/bison.txt", nullptr, false );
 	TitleFighters[2]->Fighter_SetPosition( 0, 530 );
 	TitleFighters[2]->Fighter_SetFacing( false );
+	TitleFighters[2]->PlayerName = "Menu:Bison";
 
 	AUDIO->PlayMusic( "resources/naildown55-demo_riffs_3_loopedit.ogg", true );
 }

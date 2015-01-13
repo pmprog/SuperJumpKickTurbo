@@ -83,6 +83,10 @@ Arena::~Arena()
 
 void Arena::Begin()
 {
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Stage: Arena::Begin()\n" );
+#endif
+
 	fntTimer = al_load_ttf_font( "resources/titlefont.ttf", 48, 0 );
 	Player1Wins = 0;
 	Player2Wins = 0;
@@ -91,17 +95,26 @@ void Arena::Begin()
 
 void Arena::Pause()
 {
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Stage: Arena::Pause()\n" );
+#endif
 }
 
 void Arena::Resume()
 {
-	//ResetArena();
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Stage: Arena::Resume()\n" );
+#endif
 }
 
 void Arena::Finish()
 {
 	al_destroy_font( fntTimer );
 	AUDIO->PlayMusic( "resources/naildown55-demo_riffs_3_loopedit.ogg", true );
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Stage: Arena::Finish()\n" );
+#endif
+
 }
 
 void Arena::EventOccurred(Event *e)
@@ -200,7 +213,7 @@ void Arena::EventOccurred(Event *e)
 		if( e->Data.Network.Traffic.packet->dataLength != sizeof( netpacket ) )
 		{
 #ifdef WRITE_LOG
-			printf("Error: Invalid network packet length of %d, expecting %d", e->Data.Network.Traffic.packet->dataLength, sizeof( netpacket ) );
+			fprintf( FRAMEWORK->LogFile, "Error: Invalid network packet length of %d, expecting %d", e->Data.Network.Traffic.packet->dataLength, sizeof( netpacket ) );
 #endif
 			delete FRAMEWORK->ProgramStages->Pop();
 			return;
@@ -209,9 +222,15 @@ void Arena::EventOccurred(Event *e)
 
 		if( netpacket.Type == PACKET_TYPE_INPUT && (netpacket.Data.Input.JumpPressed || netpacket.Data.Input.KickPressed) )
 		{
+#ifdef WRITE_LOG
+			fprintf( FRAMEWORK->LogFile, "GamePacket  In: Input\tJump: %d\t Kick %d\t X: %d\t Y: %d\n", netpacket.Data.Input.JumpPressed, netpacket.Data.Input.KickPressed, netpacket.Data.Input.X, netpacket.Data.Input.Y );
+#endif
 			// TODO: Check if we need a rollback!
 			if( netpacket.FrameCount < RoundFrameCount )
 			{
+#ifdef WRITE_LOG
+				fprintf( FRAMEWORK->LogFile, " Input Packet : Net Frame: %d\t Local Frame: %d\n", netpacket.FrameCount, RoundFrameCount );
+#endif
 				State_Load( netpacket.FrameCount );
 				Fighter* f = GetPlayerWithControls( Fighter::FighterController::NetworkClient );
 				f->Fighter_SetPosition( (float)netpacket.Data.Input.X, (float)netpacket.Data.Input.Y );
@@ -223,6 +242,10 @@ void Arena::EventOccurred(Event *e)
 
 		if( netpacket.Type == PACKET_TYPE_DISCONNECT )
 		{
+#ifdef WRITE_LOG
+			fprintf( FRAMEWORK->LogFile, "GamePacket: Disconnection\n" );
+#endif
+
 			delete FRAMEWORK->ProgramStages->Pop();
 			return;
 		}
@@ -249,6 +272,9 @@ void Arena::EventOccurred(Event *e)
 			netpacket.Data.Input.X = (int)GetPlayerWithControls( source )->Fighter_GetPosition()->X;
 			netpacket.Data.Input.Y = (int)GetPlayerWithControls( source )->Fighter_GetPosition()->Y;
 
+#ifdef WRITE_LOG
+			fprintf( FRAMEWORK->LogFile, "GamePacket Out: Input\tJump: %d\t Kick %d\t X: %d\t Y: %d\n", netpacket.Data.Input.JumpPressed, netpacket.Data.Input.KickPressed, netpacket.Data.Input.X, netpacket.Data.Input.Y );
+#endif
 			Fighter::NetworkController->Send( (void*)&netpacket, sizeof(netpacket), true );
 		}
 	}
@@ -486,6 +512,10 @@ bool Arena::IsTransition()
 
 void Arena::ResetArena()
 {
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Stage: Arena::ResetArena()\n" );
+#endif
+
 	RoundFrameCount = 0;
 	CountdownTimer = ROUND_TIME;
 	CountdownTimerTicker = 0;
@@ -579,6 +609,10 @@ Fighter* Arena::GetOpponent(Fighter* Current)
 
 bool Arena::State_Load(uint64_t FrameCount)
 {
+#ifdef WRITE_LOG
+			fprintf( FRAMEWORK->LogFile, "State Rollback: Current Frame: %d\t New Frame: %d\n", RoundFrameCount, FrameCount );
+#endif
+
 	RoundFrameCount = FrameCount;
 
 	if( !Player1->State_Load( RoundFrameCount ) || !Player2->State_Load( RoundFrameCount ) )

@@ -38,6 +38,10 @@ PlayerSelect::PlayerSelect( Fighter::FighterController Player1Controls, Fighter:
 
 void PlayerSelect::Begin()
 {
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Stage: PlayerSelect::Begin()\n" );
+#endif
+
 }
 
 void PlayerSelect::Pause()
@@ -53,6 +57,10 @@ void PlayerSelect::Finish()
 	al_destroy_bitmap( imgBackground );
 	al_destroy_font( fntName );
 	al_destroy_font( fntControls );
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Stage: PlayerSelect::Finish()\n" );
+#endif
+
 }
 
 void PlayerSelect::EventOccurred(Event *e)
@@ -83,26 +91,26 @@ void PlayerSelect::EventOccurred(Event *e)
 		{
 			source = Fighter::FighterController::LocalKeyboardP1;
 			sourceisjump = true;
-			transmitinput = true;
+			transmitinput = ( GetPlayerWithControls( source ) != 0 );
 		}
 		if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Keyboard.Kick", ALLEGRO_KEY_LCTRL ) )
 		{
 			source = Fighter::FighterController::LocalKeyboardP1;
 			sourceisjump = false;
-			transmitinput = true;
+			transmitinput = ( GetPlayerWithControls( source ) != 0 );
 		}
 
 		if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Keyboard.Jump", ALLEGRO_KEY_RSHIFT ) )
 		{
 			source = Fighter::FighterController::LocalKeyboardP2;
 			sourceisjump = true;
-			transmitinput = true;
+			transmitinput = ( GetPlayerWithControls( source ) != 0 );
 		}
 		if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Keyboard.Kick", ALLEGRO_KEY_RCTRL ) )
 		{
 			source = Fighter::FighterController::LocalKeyboardP2;
 			sourceisjump = false;
-			transmitinput = true;
+			transmitinput = ( GetPlayerWithControls( source ) != 0 );
 		}
 	}
 
@@ -127,13 +135,13 @@ void PlayerSelect::EventOccurred(Event *e)
 			{
 				source = Fighter::FighterController::LocalJoystickP1;
 				sourceisjump = true;
-				transmitinput = true;
+				transmitinput = ( GetPlayerWithControls( source ) != 0 );
 			}
 			if( e->Data.Joystick.Button == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Joystick.Kick", 1 ) )
 			{
 				source = Fighter::FighterController::LocalJoystickP1;
 				sourceisjump = false;
-				transmitinput = true;
+				transmitinput = ( GetPlayerWithControls( source ) != 0 );
 			}
 		}
 		if( e->Data.Joystick.ID == menustage->Player2Joystick )
@@ -142,13 +150,13 @@ void PlayerSelect::EventOccurred(Event *e)
 			{
 				source = Fighter::FighterController::LocalJoystickP2;
 				sourceisjump = true;
-				transmitinput = true;
+				transmitinput = ( GetPlayerWithControls( source ) != 0 );
 			}
 			if( e->Data.Joystick.Button == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Joystick.Kick", 1 ) )
 			{
 				source = Fighter::FighterController::LocalJoystickP2;
 				sourceisjump = false;
-				transmitinput = true;
+				transmitinput = ( GetPlayerWithControls( source ) != 0 );
 			}
 		}
 	}
@@ -160,7 +168,7 @@ void PlayerSelect::EventOccurred(Event *e)
 		if( e->Data.Network.Traffic.packet->dataLength != sizeof( netpacket ) )
 		{
 #ifdef WRITE_LOG
-			printf("Error: Invalid network packet length of %d, expecting %d", e->Data.Network.Traffic.packet->dataLength, sizeof( netpacket ) );
+			fprintf( FRAMEWORK->LogFile, "Error: Invalid network packet length of %d, expecting %d", e->Data.Network.Traffic.packet->dataLength, sizeof( netpacket ) );
 #endif
 			delete FRAMEWORK->ProgramStages->Pop();
 			return;
@@ -182,7 +190,7 @@ void PlayerSelect::EventOccurred(Event *e)
 	}
 
 	// Network game
-	if( p1char->Controller == Fighter::FighterController::NetworkClient || p2char->Controller == Fighter::FighterController::NetworkClient )
+	if( GetPlayerWithControls( Fighter::FighterController::NetworkClient ) != 0 )
 	{
 
 		// Player disconnected

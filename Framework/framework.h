@@ -41,6 +41,8 @@ class Framework
 		void GetJoystickIDs();
 
   public:
+		FILE* LogFile;
+
     static Framework* System;
 
     ConfigFile* Settings;

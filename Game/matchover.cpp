@@ -3,6 +3,9 @@
 
 void MatchOver::Begin()
 {
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Stage: MatchOver::Begin()\n" );
+#endif
 	gameArena = (Arena*)FRAMEWORK->ProgramStages->Previous();
 
 	overbannerL[0] = 50;
@@ -36,6 +39,9 @@ void MatchOver::Resume()
 
 void MatchOver::Finish()
 {
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Stage: MatchOver::Finish()\n" );
+#endif
 }
 
 void MatchOver::EventOccurred(Event *e)

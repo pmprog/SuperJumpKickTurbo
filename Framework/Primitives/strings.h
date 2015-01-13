@@ -79,7 +79,7 @@ class Strings
 		static std::string FromNumber( int n )
 		{
 			char buffer[200];
-			sprintf( (char*)&buffer, "%d", n );
+			sfprintf( FRAMEWORK->LogFile, (char*)&buffer, "%d", n );
 			return std::string(buffer);
 		}
 

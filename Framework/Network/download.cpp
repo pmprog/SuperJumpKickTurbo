@@ -16,7 +16,7 @@ bool DownloadManager::AbortDownloads = false;
 DownloadManager::DownloadManager( int AllowedConcurrents )
 {
 #ifdef WRITE_LOG
-	printf( "DownloadManager: Init\n" );
+	fprintf( FRAMEWORK->LogFile, "DownloadManager: Init\n" );
 #endif
 	urlDownloads = AllowedConcurrents;
 	curl_global_init( CURL_GLOBAL_ALL );
@@ -25,7 +25,7 @@ DownloadManager::DownloadManager( int AllowedConcurrents )
 DownloadManager::~DownloadManager()
 {
 #ifdef WRITE_LOG
-	printf( "DownloadManager: Shutdown\n" );
+	fprintf( FRAMEWORK->LogFile, "DownloadManager: Shutdown\n" );
 #endif
 	curl_global_cleanup();
 }
@@ -33,7 +33,7 @@ DownloadManager::~DownloadManager()
 void DownloadManager::RequestURL( std::string URL )
 {
 #ifdef WRITE_LOG
-	printf( "DownloadManager: Request '%s' (Queue Length: %d, Download Count: %d)\n", URL.c_str(), urlList.size(), urlDownloading.size() );
+	fprintf( FRAMEWORK->LogFile, "DownloadManager: Request '%s' (Queue Length: %d, Download Count: %d)\n", URL.c_str(), urlList.size(), urlDownloading.size() );
 #endif
 	urlList.push_back( URL );
 }
@@ -53,7 +53,7 @@ void DownloadManager::EventOccured( Event* e )
 			}
 		}
 #ifdef WRITE_LOG
-		printf( "DownloadManager: Completed '%s' (Queue Length: %d, Download Count: %d)\n", e->Data.Download.URL.c_str(), urlList.size(), urlDownloading.size() );
+		fprintf( FRAMEWORK->LogFile, "DownloadManager: Completed '%s' (Queue Length: %d, Download Count: %d)\n", e->Data.Download.URL.c_str(), urlList.size(), urlDownloading.size() );
 #endif
 	}
 }
@@ -74,7 +74,7 @@ void DownloadManager::Update()
     al_start_thread( t );
 		urlList.pop_front();
 #ifdef WRITE_LOG
-		printf( "DownloadManager: Downloading '%s' (Queue Length: %d, Download Count: %d)\n", urlDownloading.back()->URL.c_str(), urlList.size(), urlDownloading.size() );
+		fprintf( FRAMEWORK->LogFile, "DownloadManager: Downloading '%s' (Queue Length: %d, Download Count: %d)\n", urlDownloading.back()->URL.c_str(), urlList.size(), urlDownloading.size() );
 #endif
 	}
 }

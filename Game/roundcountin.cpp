@@ -20,6 +20,9 @@ void RoundCountIn::Begin()
 	bannerspeed = ((float)(DISPLAY->GetHeight() + 100) / (float)FRAMEWORK->GetFramesPerSecond()) * 3.0f;
 	netping = false;
 
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Stage: RoundCountIn::Begin()\n" );
+#endif
 }
 
 void RoundCountIn::Pause()
@@ -33,6 +36,9 @@ void RoundCountIn::Resume()
 void RoundCountIn::Finish()
 {
 	al_destroy_font( fntTitle );
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Stage: RoundCountIn::Finish()\n" );
+#endif
 }
 
 void RoundCountIn::EventOccurred(Event *e)
@@ -54,7 +60,7 @@ void RoundCountIn::EventOccurred(Event *e)
 		if( e->Data.Network.Traffic.packet->dataLength != sizeof( netpacket ) )
 		{
 #ifdef WRITE_LOG
-			printf("Error: Invalid network packet length of %d, expecting %d", e->Data.Network.Traffic.packet->dataLength, sizeof( netpacket ) );
+			fprintf( FRAMEWORK->LogFile, "Error: Invalid network packet length of %d, expecting %d", e->Data.Network.Traffic.packet->dataLength, sizeof( netpacket ) );
 #endif
 			delete FRAMEWORK->ProgramStages->Pop();
 			delete FRAMEWORK->ProgramStages->Pop();

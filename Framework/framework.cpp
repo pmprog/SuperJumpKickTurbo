@@ -6,13 +6,17 @@ Framework* Framework::System;
 
 Framework::Framework( int Width, int Height, int Framerate, bool DropFrames )
 {
+	System = this;
+
 #ifdef WRITE_LOG
-	printf( "Framework: Startup: Allegro\n" );
+	LogFile = fopen( "sjkt.txt", "a" );
+	
+	fprintf( LogFile, "Framework: Startup: Allegro\n" );
 #endif
 
 	if( !al_init() )
 	{
-		printf( "Framework: Error: Cannot init Allegro\n" );
+		fprintf( LogFile, "Framework: Error: Cannot init Allegro\n" );
 		quitProgram = true;
 		return;
 	}
@@ -20,25 +24,25 @@ Framework::Framework( int Width, int Height, int Framerate, bool DropFrames )
 	al_init_font_addon();
 	if( !al_install_keyboard() || !al_install_mouse() || !al_install_joystick() || !al_init_primitives_addon() || !al_init_ttf_addon() || !al_init_image_addon() )
 	{
-		printf( "Framework: Error: Cannot init Allegro plugin\n" );
+		fprintf( LogFile, "Framework: Error: Cannot init Allegro plugin\n" );
 		quitProgram = true;
 		return;
 	}
 
 #ifdef NETWORK_SUPPORT
 #ifdef WRITE_LOG
-	printf( "Framework: Startup: Network\n" );
+	fprintf( LogFile, "Framework: Startup: Network\n" );
 #endif
 	if( enet_initialize() != 0 )
 	{
-		printf( "Framework: Error: Cannot init enet\n" );
+		fprintf( LogFile, "Framework: Error: Cannot init enet\n" );
 		quitProgram = true;
 		return;
 	}
 #endif
 
 #ifdef WRITE_LOG
-	printf( "Framework: Startup: Default Variables\n" );
+	fprintf( LogFile, "Framework: Startup: Default Variables\n" );
 #endif
 	quitProgram = false;
   ProgramStages = new StageStack();
@@ -47,20 +51,20 @@ Framework::Framework( int Width, int Height, int Framerate, bool DropFrames )
 	enableSlowDown = DropFrames;
 
 #ifdef WRITE_LOG
-	printf( "Framework: Startup: Settings file\n" );
+	fprintf( LogFile, "Framework: Startup: Settings file\n" );
 #endif
   Settings = new ConfigFile( "settings.cfg" );
 
 
 #ifdef DOWNLOAD_SUPPORT
 #ifdef WRITE_LOG
-	printf( "Framework: Startup: Download Manager\n" );
+	fprintf( LogFile, "Framework: Startup: Download Manager\n" );
 #endif
 	DOWNLOADS = new DownloadManager( Settings->GetQuickIntegerValue( "Downloads.Concurrent", 3 ) );
 #endif
 
 #ifdef WRITE_LOG
-	printf( "Framework: Startup: Allegro Events\n" );
+	fprintf( LogFile, "Framework: Startup: Allegro Events\n" );
 #endif
 	eventAllegro = al_create_event_queue();
 	eventMutex = al_create_mutex_recursive();
@@ -69,14 +73,14 @@ Framework::Framework( int Width, int Height, int Framerate, bool DropFrames )
 	srand( (unsigned int)al_get_time() );
 
 #ifdef WRITE_LOG
-	printf( "Framework: Startup: Display\n" );
+	fprintf( LogFile, "Framework: Startup: Display\n" );
 #endif
 	DISPLAY = new Display( Width, Height );
 	DISPLAY->Initialise( Settings->GetQuickIntegerValue( "Video.Width", Width ), Settings->GetQuickIntegerValue( "Video.Height", Height ), Settings->GetQuickBooleanValue( "Video.Fullscreen", false ), (DisplayScaleMode::ScaleMode)Settings->GetQuickIntegerValue( "Video.ScaleMode", DisplayScaleMode::Letterbox ) );
 	AUDIO = new Audio();
 
 #ifdef WRITE_LOG
-	printf( "Framework: Startup: Register event sources\n" );
+	fprintf( LogFile, "Framework: Startup: Register event sources\n" );
 #endif
 	RegisterEventSource( DISPLAY->GetEventSource() );
 	RegisterEventSource( al_get_keyboard_event_source() );
@@ -85,22 +89,20 @@ Framework::Framework( int Width, int Height, int Framerate, bool DropFrames )
 	RegisterEventSource( al_get_timer_event_source( frameTimer ) );
 
 #ifdef WRITE_LOG
-	printf( "Framework: Startup: Joystick IDs\n" );
+	fprintf( LogFile, "Framework: Startup: Joystick IDs\n" );
 #endif
 	GetJoystickIDs();
-
-	System = this;
 }
 
 Framework::~Framework()
 {
 #ifdef WRITE_LOG
-  printf( "Framework: Save Config\n" );
+  fprintf( LogFile, "Framework: Save Config\n" );
 #endif
   SaveSettings();
 
 #ifdef WRITE_LOG
-  printf( "Framework: Clear stages\n" );
+  fprintf( LogFile, "Framework: Clear stages\n" );
 #endif
 	if( ProgramStages != 0 )
 	{
@@ -109,7 +111,7 @@ Framework::~Framework()
 	}
 
 #ifdef WRITE_LOG
-  printf( "Framework: Shutdown\n" );
+  fprintf( LogFile, "Framework: Shutdown\n" );
 #endif
 	al_unregister_event_source( eventAllegro, DISPLAY->GetEventSource() );
 	al_destroy_event_queue( eventAllegro );
@@ -117,41 +119,45 @@ Framework::~Framework()
 	al_destroy_timer( frameTimer );
 
 #ifdef WRITE_LOG
-  printf( "Framework: Shutdown display\n" );
+  fprintf( LogFile, "Framework: Shutdown display\n" );
 #endif
 	DISPLAY->Shutdown();
 	delete DISPLAY;
 
 #ifdef WRITE_LOG
-  printf( "Framework: Shutdown audio\n" );
+  fprintf( LogFile, "Framework: Shutdown audio\n" );
 #endif
 	delete AUDIO;
 	
 #ifdef NETWORK_SUPPORT
 #ifdef WRITE_LOG
-  printf( "Framework: Shutdown enet\n" );
+  fprintf( LogFile, "Framework: Shutdown enet\n" );
 #endif
 	enet_deinitialize();
 #endif
 
 #ifdef DOWNLOAD_SUPPORT
 #ifdef WRITE_LOG
-  printf( "Framework: Shutdown downloads\n" );
+  fprintf( LogFile, "Framework: Shutdown downloads\n" );
 #endif
 	DOWNLOADS->AbortDownloads = true;
 	delete DOWNLOADS;
 #endif
 
 #ifdef WRITE_LOG
-  printf( "Framework: Shutdown Allegro\n" );
+  fprintf( LogFile, "Framework: Shutdown Allegro\n" );
 #endif
 	al_uninstall_system();
+
+#ifdef WRITE_LOG
+	fclose( LogFile );
+#endif
 }
 
 void Framework::Run()
 {
 #ifdef WRITE_LOG
-  printf( "Framework: Run.Program Loop\n" );
+  fprintf( LogFile, "Framework: Run.Program Loop\n" );
 #endif
 
   ProgramStages->Push( new BootUp() );
@@ -183,10 +189,6 @@ void Framework::Run()
 
 void Framework::ProcessEvents()
 {
-#ifdef WRITE_LOG
-  printf( "Framework: ProcessEvents\n" );
-#endif
-
 	if( ProgramStages->IsEmpty() )
   {
     quitProgram = true;
@@ -201,6 +203,10 @@ void Framework::ProcessEvents()
 
 	while( eventQueue.size() > 0 && !ProgramStages->IsEmpty() )
 	{
+#ifdef WRITE_LOG
+  fprintf( LogFile, "Framework: ProcessEvents (%d events queued)\n", eventQueue.size() );
+#endif
+
 		Event* e;
 		e = eventQueue.front();
 		eventQueue.pop_front();
@@ -421,7 +427,7 @@ void Framework::TranslateAllegroEvents()
 void Framework::ShutdownFramework()
 {
 #ifdef WRITE_LOG
-  printf( "Framework: Shutdown Framework\n" );
+  fprintf( LogFile, "Framework: Shutdown Framework\n" );
 #endif
   while( !ProgramStages->IsEmpty() )
   {
@@ -470,7 +476,7 @@ void Framework::UnregisterEventSource( ALLEGRO_EVENT_SOURCE* Source )
 void Framework::GetJoystickIDs()
 {
 #ifdef WRITE_LOG
-	printf( "Framework: Joysticks: Learn Joystick IDs\n" );
+	fprintf( LogFile, "Framework: Joysticks: Learn Joystick IDs\n" );
 #endif
 	// Record joystick IDs in a list for ID conversion
 	joystickIDs.clear();

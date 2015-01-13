@@ -1,5 +1,6 @@
 
 #include "display.h"
+#include "../framework.h"
 
 Display* Display::CurrentDisplay = nullptr;
 
@@ -18,7 +19,7 @@ Display::~Display()
 void Display::Initialise( int ScreenWidth, int ScreenHeight, bool Fullscreen, DisplayScaleMode::ScaleMode Scale )
 {
 #ifdef WRITE_LOG
-  printf( "Framework: Initialise Display\n" );
+  fprintf( FRAMEWORK->LogFile, "Framework: Initialise Display\n" );
 #endif
 	bool foundmode = false;
 	bool foundwindowedmode = false;
@@ -96,7 +97,7 @@ void Display::Initialise( int ScreenWidth, int ScreenHeight, bool Fullscreen, Di
 void Display::Shutdown()
 {
 #ifdef WRITE_LOG
-  printf( "Framework: Shutdown Display\n" );
+  fprintf( FRAMEWORK->LogFile, "Framework: Shutdown Display\n" );
 #endif
 	al_destroy_display( screen );
 }
