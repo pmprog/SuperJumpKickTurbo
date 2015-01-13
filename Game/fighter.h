@@ -44,7 +44,7 @@ class Fighter
 
 		typedef struct FighterSaveState
 		{
-			long FrameCount;
+			uint64_t FrameCount;
 			FighterStates State;
 			int StateTime;
 			Animation* Anim;
@@ -127,7 +127,7 @@ class Fighter
 		void AI_Update( int Skill );
 
 		void State_Clear();
-		void State_Save(long FrameCount);
-		bool State_Load(long FrameCount);
+		void State_Save(uint64_t FrameCount);
+		bool State_Load(uint64_t FrameCount);
 
 };

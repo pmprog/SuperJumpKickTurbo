@@ -62,7 +62,7 @@ class Arena : public Stage
 		void ResetArena();
 		Fighter* GetOpponent(Fighter* Current);
 
-		bool State_Load(long FrameCount);
+		bool State_Load(uint64_t FrameCount);
 		void AddCollisionAt( Vector2* Location );
 
     // Stage control

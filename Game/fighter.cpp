@@ -517,7 +517,7 @@ void Fighter::State_Clear()
 	memset( (void*)&RollbackStates, -1, sizeof(FighterSaveState) * FIGHTER_MAXIMUM_ROLLBACK_STATES );
 }
 
-void Fighter::State_Save(long FrameCount)
+void Fighter::State_Save(uint64_t FrameCount)
 {
 	FighterSaveState tempstates[FIGHTER_MAXIMUM_ROLLBACK_STATES - 1];
 
@@ -534,7 +534,7 @@ void Fighter::State_Save(long FrameCount)
 	RollbackStates[0].Y = currentPosition->Y;
 }
 
-bool Fighter::State_Load(long FrameCount)
+bool Fighter::State_Load(uint64_t FrameCount)
 {
 	FighterSaveState tempstates[FIGHTER_MAXIMUM_ROLLBACK_STATES];
 

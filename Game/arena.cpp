@@ -98,6 +98,7 @@ void Arena::EventOccurred(Event *e)
 
 	Fighter::FighterController source = Fighter::FighterController::NoControls;
 	bool sourceisjump = false;
+	bool transmitinput = false;
 
 	if( e->Type == EVENT_KEY_DOWN )
 	{
@@ -111,22 +112,26 @@ void Arena::EventOccurred(Event *e)
 		{
 			source = Fighter::FighterController::LocalKeyboardP1;
 			sourceisjump = true;
+			transmitinput = ( GetPlayerWithControls( source ) != nullptr );
 		}
 		if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Keyboard.Kick", ALLEGRO_KEY_LCTRL ) )
 		{
 			source = Fighter::FighterController::LocalKeyboardP1;
 			sourceisjump = false;
+			transmitinput = ( GetPlayerWithControls( source ) != nullptr );
 		}
 
 		if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Keyboard.Jump", ALLEGRO_KEY_RSHIFT ) )
 		{
 			source = Fighter::FighterController::LocalKeyboardP2;
 			sourceisjump = true;
+			transmitinput = ( GetPlayerWithControls( source ) != nullptr );
 		}
 		if( e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Keyboard.Kick", ALLEGRO_KEY_RCTRL ) )
 		{
 			source = Fighter::FighterController::LocalKeyboardP2;
 			sourceisjump = false;
+			transmitinput = ( GetPlayerWithControls( source ) != nullptr );
 		}
 	}
 
@@ -151,11 +156,13 @@ void Arena::EventOccurred(Event *e)
 			{
 				source = Fighter::FighterController::LocalJoystickP1;
 				sourceisjump = true;
+				transmitinput = ( GetPlayerWithControls( source ) != nullptr );
 			}
 			if( e->Data.Joystick.Button == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Joystick.Kick", 1 ) )
 			{
 				source = Fighter::FighterController::LocalJoystickP1;
 				sourceisjump = false;
+				transmitinput = ( GetPlayerWithControls( source ) != nullptr );
 			}
 		}
 		if( e->Data.Joystick.ID == menustage->Player2Joystick )
@@ -164,15 +171,64 @@ void Arena::EventOccurred(Event *e)
 			{
 				source = Fighter::FighterController::LocalJoystickP2;
 				sourceisjump = true;
+				transmitinput = ( GetPlayerWithControls( source ) != nullptr );
 			}
 			if( e->Data.Joystick.Button == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Joystick.Kick", 1 ) )
 			{
 				source = Fighter::FighterController::LocalJoystickP2;
 				sourceisjump = false;
+				transmitinput = ( GetPlayerWithControls( source ) != nullptr );
 			}
 		}
 	}
 
+	GamePacket netpacket;
+
+	if( e->Type == EVENT_NETWORK_PACKET_RECEIVED )
+	{
+		if( e->Data.Network.Traffic.packet->dataLength != sizeof( netpacket ) )
+		{
+#ifdef WRITE_LOG
+			printf("Error: Invalid network packet length of %d, expecting %d", e->Data.Network.Traffic.packet->dataLength, sizeof( netpacket ) );
+#endif
+			delete FRAMEWORK->ProgramStages->Pop();
+			return;
+		}
+		memcpy((void*)&netpacket, e->Data.Network.Traffic.packet->data, e->Data.Network.Traffic.packet->dataLength );
+
+		if( netpacket.Type == PACKET_TYPE_INPUT && (netpacket.Data.Input.JumpPressed || netpacket.Data.Input.KickPressed) )
+		{
+			// TODO: Check if we need a rollback!
+			// State_Load( netpacket.FrameCount )
+
+			source = Fighter::FighterController::NetworkClient;
+			sourceisjump = netpacket.Data.Input.JumpPressed;
+		}
+
+	}
+
+	// Network game
+	if( Player1->Controller == Fighter::FighterController::NetworkClient || Player2->Controller == Fighter::FighterController::NetworkClient )
+	{
+
+		// Player disconnected
+		if( e->Type == EVENT_NETWORK_DISCONNECTED )
+		{
+			delete FRAMEWORK->ProgramStages->Pop();
+			return;
+		}
+
+		// Send player local input
+		if( transmitinput && source != Fighter::FighterController::NetworkClient )
+		{
+			netpacket.Type = PACKET_TYPE_INPUT;
+			netpacket.FrameCount = RoundFrameCount;
+			netpacket.Data.Input.JumpPressed = sourceisjump;
+			netpacket.Data.Input.KickPressed = !sourceisjump;
+
+			Fighter::NetworkController->Send( (void*)&netpacket, sizeof(netpacket), true );
+		}
+	}
 
 	if( source != Fighter::FighterController::NoControls )
 	{
@@ -193,6 +249,10 @@ void Arena::EventOccurred(Event *e)
 
 void Arena::Update()
 {
+	if( Fighter::NetworkController != nullptr )
+	{
+		Fighter::NetworkController->Update();
+	}
 
 	if( DebugReverse )
 	{
@@ -495,7 +555,7 @@ Fighter* Arena::GetOpponent(Fighter* Current)
 	}
 }
 
-bool Arena::State_Load(long FrameCount)
+bool Arena::State_Load(uint64_t FrameCount)
 {
 	RoundFrameCount = FrameCount;
 
