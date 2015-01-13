@@ -68,6 +68,17 @@ Arena::~Arena()
 	delete CollisionGraphics;
 
 	delete RoundMarkers;
+
+	if( Fighter::NetworkController != nullptr )
+	{
+		GamePacket g;
+		memset( (void*)&g, 0, sizeof( g ) );
+		g.Type = PACKET_TYPE_DISCONNECT;
+		Fighter::NetworkController->Send( (void*)&g, sizeof(g), true );
+
+		delete Fighter::NetworkController;
+		Fighter::NetworkController = nullptr;
+	}
 }
 
 void Arena::Begin()
@@ -199,12 +210,17 @@ void Arena::EventOccurred(Event *e)
 		if( netpacket.Type == PACKET_TYPE_INPUT && (netpacket.Data.Input.JumpPressed || netpacket.Data.Input.KickPressed) )
 		{
 			// TODO: Check if we need a rollback!
-			// State_Load( netpacket.FrameCount )
+			// State_Load( netpacket.FrameCount );
 
 			source = Fighter::FighterController::NetworkClient;
 			sourceisjump = netpacket.Data.Input.JumpPressed;
 		}
 
+		if( netpacket.Type == PACKET_TYPE_DISCONNECT )
+		{
+			delete FRAMEWORK->ProgramStages->Pop();
+			return;
+		}
 	}
 
 	// Network game

@@ -43,6 +43,7 @@ void MatchOver::EventOccurred(Event *e)
 	if( e->Type == EVENT_KEY_DOWN )
 	{
 		delete FRAMEWORK->ProgramStages->Pop();
+		delete FRAMEWORK->ProgramStages->Pop();
 	}
 }
 

@@ -65,6 +65,16 @@ void PlayerSelect::EventOccurred(Event *e)
 	{
 		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ESCAPE )
 		{
+			if( Fighter::NetworkController != nullptr )
+			{
+				GamePacket g;
+				memset( (void*)&g, 0, sizeof( g ) );
+				g.Type = PACKET_TYPE_DISCONNECT;
+				Fighter::NetworkController->Send( (void*)&g, sizeof(g), true );
+
+				delete Fighter::NetworkController;
+				Fighter::NetworkController = nullptr;
+			}
 			delete FRAMEWORK->ProgramStages->Pop();
 			return;
 		}
@@ -161,6 +171,12 @@ void PlayerSelect::EventOccurred(Event *e)
 		{
 			source = Fighter::FighterController::NetworkClient;
 			sourceisjump = netpacket.Data.Input.JumpPressed;
+		}
+
+		if( netpacket.Type == PACKET_TYPE_DISCONNECT )
+		{
+			delete FRAMEWORK->ProgramStages->Pop();
+			return;
 		}
 
 	}

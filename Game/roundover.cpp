@@ -10,21 +10,26 @@ RoundOver::RoundOver(int PlayerWhoWon)
 
 RoundOver::~RoundOver()
 {
+	bool matchover = false;
 	currentArena->ResetArena();
 
 	if( currentArena->Player1Wins == 4 )
 	{
 		Arena::Player1TotalWins++;
-		delete FRAMEWORK->ProgramStages->Pop();
-		FRAMEWORK->ProgramStages->Push( new MatchOver() );
-		return;
+		matchover = true;
 	}
 	if( currentArena->Player2Wins == 4 )
 	{
 		Arena::Player2TotalWins++;
+		matchover = true;
+	}
+
+	if( matchover )
+	{
+		currentArena->Player1Wins = 0;
+		currentArena->Player2Wins = 0;
 		delete FRAMEWORK->ProgramStages->Pop();
 		FRAMEWORK->ProgramStages->Push( new MatchOver() );
-		return;
 	}
 }
 
@@ -90,7 +95,7 @@ void RoundOver::EventOccurred(Event *e)
 {
 	if( e->Type == EVENT_KEY_DOWN )
 	{
-		leaving = true;
+		// leaving = true;
 		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ESCAPE )
 		{
 			delete FRAMEWORK->ProgramStages->Pop();
