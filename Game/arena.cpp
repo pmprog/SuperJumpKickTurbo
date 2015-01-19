@@ -249,6 +249,14 @@ void Arena::EventOccurred(Event *e)
 			delete FRAMEWORK->ProgramStages->Pop();
 			return;
 		}
+
+		if( netpacket.Type == PACKET_TYPE_CHECK )
+		{
+#ifdef WRITE_LOG
+			fprintf( FRAMEWORK->LogFile, "GamePacket: Received Sync from %d, at %d\n", netpacket.FrameCount, RoundFrameCount );
+#endif
+			CheckSyncPacket( &netpacket );
+		}
 	}
 
 	// Network game
@@ -461,6 +469,15 @@ void Arena::Update()
 	if( Fighter::NetworkController != nullptr )
 	{
 		Fighter::NetworkController->Update();
+
+		// Send a sync packet
+		if( (RoundFrameCount % 10) == 0 )
+		{
+#ifdef WRITE_LOG
+			fprintf( FRAMEWORK->LogFile, "GamePacket: Sending Sync @ %d\n", RoundFrameCount );
+#endif
+			SendSyncPacket();
+		}
 	}
 }
 
@@ -594,6 +611,24 @@ void Arena::ResetArena()
 		ClockRoundFrameCount[i] = 0;
 	}
 
+	GamePacket netpacket;
+	netpacket.Type = PACKET_TYPE_CHECK;
+	netpacket.FrameCount = RoundFrameCount;
+	netpacket.Data.Sync.CountdownTimer = CountdownTimer;
+	netpacket.Data.Sync.CountdownTimerTicker = CountdownTimerTicker;
+	netpacket.Data.Sync.Player1.X = Player1->Fighter_GetPosition()->X;
+	netpacket.Data.Sync.Player1.Y = Player1->Fighter_GetPosition()->Y;
+	netpacket.Data.Sync.Player1.State = Player1->Fighter_GetState();
+	netpacket.Data.Sync.Player1.StateTime = Player1->Fighter_GetStateTime();
+	netpacket.Data.Sync.Player2.X = Player2->Fighter_GetPosition()->X;
+	netpacket.Data.Sync.Player2.Y = Player2->Fighter_GetPosition()->Y;
+	netpacket.Data.Sync.Player2.State = Player2->Fighter_GetState();
+	netpacket.Data.Sync.Player2.StateTime = Player2->Fighter_GetStateTime();
+
+	// Copy the sync packet
+	memcpy( (void*)&LastGoodSync, (void*)&netpacket, sizeof( LastGoodSync ) );
+	memcpy( (void*)&CurrentSync, (void*)&netpacket, sizeof( CurrentSync ) );
+
 	FRAMEWORK->ProgramStages->Push( new RoundCountIn() );
 }
 
@@ -709,4 +744,58 @@ void Arena::AddCollisionAt( Vector2* Location )
 		CollisionsAt[1] = Location;
 	}
 	CollisionAnimation->Start();
+}
+
+void Arena::SendSyncPacket()
+{
+	GamePacket netpacket;
+	netpacket.Type = PACKET_TYPE_CHECK;
+	netpacket.FrameCount = RoundFrameCount;
+	netpacket.Data.Sync.CountdownTimer = CountdownTimer;
+	netpacket.Data.Sync.CountdownTimerTicker = CountdownTimerTicker;
+	netpacket.Data.Sync.Player1.X = Player1->Fighter_GetPosition()->X;
+	netpacket.Data.Sync.Player1.Y = Player1->Fighter_GetPosition()->Y;
+	netpacket.Data.Sync.Player1.State = Player1->Fighter_GetState();
+	netpacket.Data.Sync.Player1.StateTime = Player1->Fighter_GetStateTime();
+	netpacket.Data.Sync.Player2.X = Player2->Fighter_GetPosition()->X;
+	netpacket.Data.Sync.Player2.Y = Player2->Fighter_GetPosition()->Y;
+	netpacket.Data.Sync.Player2.State = Player2->Fighter_GetState();
+	netpacket.Data.Sync.Player2.StateTime = Player2->Fighter_GetStateTime();
+
+	// Copy the sync packet
+	memcpy( (void*)&CurrentSync, (void*)&netpacket, sizeof( CurrentSync ) );
+
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "GamePacket Out: Sync\n" );
+#endif
+	Fighter::NetworkController->Send( (void*)&netpacket, sizeof(netpacket), true );
+}
+
+void Arena::CheckSyncPacket( GamePacket* Packet )
+{
+	if( CurrentSync.FrameCount == Packet->FrameCount
+		&& CurrentSync.Data.Sync.CountdownTimer == Packet->Data.Sync.CountdownTimer
+		&& CurrentSync.Data.Sync.CountdownTimerTicker == Packet->Data.Sync.CountdownTimerTicker
+		&& CurrentSync.Data.Sync.Player1.X == Packet->Data.Sync.Player1.X
+		&& CurrentSync.Data.Sync.Player1.Y == Packet->Data.Sync.Player1.Y
+		&& CurrentSync.Data.Sync.Player1.State == Packet->Data.Sync.Player1.State
+		&& CurrentSync.Data.Sync.Player1.StateTime == Packet->Data.Sync.Player1.StateTime
+		&& CurrentSync.Data.Sync.Player2.X == Packet->Data.Sync.Player2.X
+		&& CurrentSync.Data.Sync.Player2.Y == Packet->Data.Sync.Player2.Y
+		&& CurrentSync.Data.Sync.Player2.State == Packet->Data.Sync.Player2.State
+		&& CurrentSync.Data.Sync.Player2.StateTime == Packet->Data.Sync.Player2.StateTime )
+	{
+		// Copy the sync packet
+		memcpy( (void*)&LastGoodSync, (void*)&CurrentSync, sizeof( LastGoodSync ) );
+	} else {
+		RoundFrameCount = Packet->FrameCount;
+		CountdownTimer = Packet->Data.Sync.CountdownTimer;
+		CountdownTimerTicker = Packet->Data.Sync.CountdownTimerTicker;
+		Player1->Fighter_SetPosition( Packet->Data.Sync.Player1.X, Packet->Data.Sync.Player1.Y );
+		Player1->Fighter_SetState( Packet->Data.Sync.Player1.State );
+		Player1->Fighter_SetStateTime( Packet->Data.Sync.Player1.StateTime );
+		Player2->Fighter_SetPosition( Packet->Data.Sync.Player2.X, Packet->Data.Sync.Player2.Y );
+		Player2->Fighter_SetState( Packet->Data.Sync.Player2.State );
+		Player2->Fighter_SetStateTime( Packet->Data.Sync.Player2.StateTime );
+	}
 }

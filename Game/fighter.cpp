@@ -277,12 +277,12 @@ void Fighter::Fighter_Update( bool IgnoreCollisions )
 
 }
 
-int Fighter::Fighter_GetState()
+Fighter::FighterStates Fighter::Fighter_GetState()
 {
 	return currentState;
 }
 
-void Fighter::Fighter_SetState(int NewState)
+void Fighter::Fighter_SetState(FighterStates NewState)
 {
 	// Exit State Code
 	/*
@@ -337,6 +337,15 @@ void Fighter::Fighter_SetState(int NewState)
 	}
 }
 
+int Fighter::Fighter_GetStateTime()
+{
+	return currentStateTime;
+}
+
+void Fighter::Fighter_SetStateTime( int NewStateTime )
+{
+	currentStateTime = NewStateTime;
+}
 
 Vector2* Fighter::Fighter_GetPosition()
 {

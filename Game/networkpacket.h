@@ -18,14 +18,20 @@ typedef struct GamePacketInput
 	Fighter::FighterStates State;
 } GamePacketInput;
 
+typedef struct GamePacketPlayerSync
+{
+	int X;
+	int Y;
+	Fighter::FighterStates State;
+	int StateTime;
+} GamePacketPlayerSync;
+
 typedef struct GamePacketSyncCheck
 {
-	int Player1X;
-	int Player1Y;
-	Fighter::FighterStates Player1State;
-	int Player2X;
-	int Player2Y;
-	Fighter::FighterStates Player2State;
+	int CountdownTimer;
+	int CountdownTimerTicker;
+	GamePacketPlayerSync Player1;
+	GamePacketPlayerSync Player2;
 } GamePacketSyncCheck;
 
 typedef union GamePacketData

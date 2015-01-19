@@ -107,8 +107,10 @@ class Fighter
 		void CharSelect_RenderProfileIcon( int ScreenX, int ScreenY );
 
 		void Fighter_Update( bool IgnoreCollisions );
-		int Fighter_GetState();
-		void Fighter_SetState( int NewState );
+		FighterStates Fighter_GetState();
+		void Fighter_SetState( FighterStates NewState );
+		int Fighter_GetStateTime();
+		void Fighter_SetStateTime( int NewStateTime );
 
 		Vector2* Fighter_GetPosition();
 		void Fighter_SetPosition( float X, float Y );
