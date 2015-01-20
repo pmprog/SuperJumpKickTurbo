@@ -204,7 +204,7 @@ void Framework::ProcessEvents()
 	while( eventQueue.size() > 0 && !ProgramStages->IsEmpty() )
 	{
 #ifdef WRITE_LOG
-  fprintf( LogFile, "Framework: ProcessEvents (%d events queued)\n", eventQueue.size() );
+  // fprintf( LogFile, "Framework: ProcessEvents (%d events queued)\n", eventQueue.size() );
 #endif
 
 		Event* e;

@@ -133,6 +133,6 @@ class Fighter
 		void State_Save(uint64_t FrameCount);
 		bool State_Load(uint64_t FrameCount);
 		void State_Inject(uint64_t FrameCount, FighterSaveState* NewState);
-		FighterSaveState* State_GetCurrent();
+		FighterSaveState* State_GetCurrent(uint64_t FrameCount);
 
 };

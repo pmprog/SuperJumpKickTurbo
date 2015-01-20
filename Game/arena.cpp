@@ -210,10 +210,14 @@ void Arena::EventOccurred(Event *e)
 
 	if( e->Type == EVENT_NETWORK_PACKET_RECEIVED )
 	{
+#ifdef WRITE_LOG
+			fprintf( FRAMEWORK->LogFile, "Packet : Received : Frame : %d \n", RoundFrameCount );
+#endif
+
 		if( e->Data.Network.Traffic.packet->dataLength != sizeof( netpacket ) )
 		{
 #ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "Error: Invalid network packet length of %d, expecting %d \n", e->Data.Network.Traffic.packet->dataLength, sizeof( netpacket ) );
+			fprintf( FRAMEWORK->LogFile, "Packet : Error : Invalid network packet length of %d, expecting %d \n", e->Data.Network.Traffic.packet->dataLength, sizeof( netpacket ) );
 #endif
 			delete FRAMEWORK->ProgramStages->Pop();
 			return;
@@ -243,7 +247,7 @@ void Arena::EventOccurred(Event *e)
 		if( netpacket.Type == PACKET_TYPE_STATE )
 		{
 #ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, " State Packet : Net Frame: %d\t Local Frame: %d \n", netpacket.FrameCount, RoundFrameCount );
+			fprintf( FRAMEWORK->LogFile, "Packet : State : Net Frame: %d\t Local Frame: %d \n", netpacket.FrameCount, RoundFrameCount );
 #endif
 			if( netpacket.FrameCount < RoundFrameCount )
 			{
@@ -256,7 +260,7 @@ void Arena::EventOccurred(Event *e)
 		if( netpacket.Type == PACKET_TYPE_DISCONNECT )
 		{
 #ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "GamePacket: Disconnection\n" );
+			fprintf( FRAMEWORK->LogFile, "Packet : Disconnection\n" );
 #endif
 
 			delete FRAMEWORK->ProgramStages->Pop();
@@ -272,44 +276,6 @@ void Arena::EventOccurred(Event *e)
 //		}
 	}
 
-	// Network game
-	if( Player1->Controller == Fighter::FighterController::NetworkClient || Player2->Controller == Fighter::FighterController::NetworkClient )
-	{
-
-		// Player disconnected
-		if( e->Type == EVENT_NETWORK_DISCONNECTED )
-		{
-			delete FRAMEWORK->ProgramStages->Pop();
-			return;
-		}
-
-		// Send player local input
-		if( transmitinput && source != Fighter::FighterController::NetworkClient )
-		{
-//			netpacket.Type = PACKET_TYPE_INPUT;
-//			netpacket.FrameCount = RoundFrameCount;
-//			netpacket.Data.Input.JumpPressed = sourceisjump;
-//			netpacket.Data.Input.KickPressed = !sourceisjump;
-//			netpacket.Data.Input.X = (int)GetPlayerWithControls( source )->Fighter_GetPosition()->X;
-//			netpacket.Data.Input.Y = (int)GetPlayerWithControls( source )->Fighter_GetPosition()->Y;
-//
-//#ifdef WRITE_LOG
-//			fprintf( FRAMEWORK->LogFile, "GamePacket Out: Input\tJump: %d\t Kick %d\t X: %d\t Y: %d \n", netpacket.Data.Input.JumpPressed, netpacket.Data.Input.KickPressed, netpacket.Data.Input.X, netpacket.Data.Input.Y );
-//#endif
-			Fighter* f = GetPlayerWithControls( source );
-			Fighter::FighterSaveState* tempstate = f->State_GetCurrent();
-
-			netpacket.Type = PACKET_TYPE_STATE;
-			netpacket.FrameCount = RoundFrameCount;
-			memcpy( (void*)&netpacket.Data.State, (void*)tempstate, sizeof( Fighter::FighterSaveState ) );
-
-#ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "GamePacket Out: State \n" );
-#endif
-			Fighter::NetworkController->Send( (void*)&netpacket, sizeof(netpacket), true );
-		}
-	}
-
 	if( source != Fighter::FighterController::NoControls )
 	{
 		Fighter* f = GetPlayerWithControls( source );
@@ -322,6 +288,26 @@ void Arena::EventOccurred(Event *e)
 			f->Fighter_JumpPressed();
 		} else {
 			f->Fighter_KickPressed();
+		}
+	}
+
+	// Network game
+	if( Player1->Controller == Fighter::FighterController::NetworkClient || Player2->Controller == Fighter::FighterController::NetworkClient )
+	{
+		// Send player local input
+		if( transmitinput && source != Fighter::FighterController::NetworkClient )
+		{
+			Fighter* f = GetPlayerWithControls( source );
+			Fighter::FighterSaveState* tempstate = f->State_GetCurrent( RoundFrameCount );
+
+			netpacket.Type = PACKET_TYPE_STATE;
+			netpacket.FrameCount = RoundFrameCount;
+			memcpy( (void*)&netpacket.Data.State, (void*)tempstate, sizeof( Fighter::FighterSaveState ) );
+
+#ifdef WRITE_LOG
+			fprintf( FRAMEWORK->LogFile, "Packet : State : Sent \n" );
+#endif
+			Fighter::NetworkController->Send( (void*)&netpacket, sizeof(netpacket), true );
 		}
 	}
 
@@ -676,7 +662,8 @@ Fighter* Arena::GetOpponent(Fighter* Current)
 bool Arena::State_Load(uint64_t FrameCount)
 {
 #ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "State Rollback: Current Frame: %d\t New Frame: %d \n", RoundFrameCount, FrameCount );
+			fprintf( FRAMEWORK->LogFile, "State : Rollback : Current Frame: %d \n", RoundFrameCount );
+			fprintf( FRAMEWORK->LogFile, "State : Rollback : New Frame: %d \n", FrameCount );
 #endif
 
 	RoundFrameCount = FrameCount;

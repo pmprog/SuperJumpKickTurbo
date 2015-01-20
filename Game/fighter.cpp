@@ -586,6 +586,15 @@ bool Fighter::State_Load(uint64_t FrameCount)
 				Fighter_Update( true );
 			}
 
+#ifdef WRITE_LOG
+			fprintf( FRAMEWORK->LogFile, "  Player X : %d \n", currentPosition->X );
+			fprintf( FRAMEWORK->LogFile, "  Player Y : %d \n", currentPosition->Y );
+			fprintf( FRAMEWORK->LogFile, "  Player State : %d \n", currentState );
+			fprintf( FRAMEWORK->LogFile, "  Player StateTime : %d \n", currentStateTime );
+			// fprintf( FRAMEWORK->LogFile, "  Player 1 Hit : %d, %d \n", CurrentSync.Data.Sync.Player1.FighterHit, Packet->Data.Sync.Player1.FighterHit );
+			fprintf( FRAMEWORK->LogFile, "  Player Face : %d \n", currentFaceLeft );
+#endif
+
 			// Bulk copy states to hide rolled back future
 			memcpy( (void*)&tempstates, (void*)&RollbackStates[i], sizeof(FighterSaveState) * (FIGHTER_MAXIMUM_ROLLBACK_STATES - i) );
 			memcpy( (void*)&RollbackStates[0], (void*)&tempstates, sizeof(FighterSaveState) * (FIGHTER_MAXIMUM_ROLLBACK_STATES - i) );
@@ -602,6 +611,12 @@ void Fighter::State_Inject(uint64_t FrameCount, FighterSaveState* NewState)
 {
 #ifdef WRITE_LOG
 	fprintf( FRAMEWORK->LogFile, "Fighter State: Inject %s at Frame %d \n", PlayerName.c_str(), FrameCount );
+	fprintf( FRAMEWORK->LogFile, "  Player X : %d \n", NewState->X );
+	fprintf( FRAMEWORK->LogFile, "  Player Y : %d \n", NewState->Y );
+	fprintf( FRAMEWORK->LogFile, "  Player State : %d \n", NewState->State );
+	fprintf( FRAMEWORK->LogFile, "  Player StateTime : %d \n", NewState->StateTime );
+	// fprintf( FRAMEWORK->LogFile, "  Player 1 Hit : %d, %d \n", CurrentSync.Data.Sync.Player1.FighterHit, Packet->Data.Sync.Player1.FighterHit );
+	fprintf( FRAMEWORK->LogFile, "  Player Face : %d \n", NewState->FaceLeft );
 #endif
 
 	State_Load( FrameCount - 1 );
@@ -613,12 +628,18 @@ void Fighter::State_Inject(uint64_t FrameCount, FighterSaveState* NewState)
 	State_Save( FrameCount );
 }
 
-Fighter::FighterSaveState* Fighter::State_GetCurrent()
+Fighter::FighterSaveState* Fighter::State_GetCurrent(uint64_t FrameCount)
 {
-	Fighter::FighterSaveState* current = (void*)malloc( sizeof(Fighter::FighterSaveState) );
+	Fighter::FighterSaveState* current = (FighterSaveState*)malloc( sizeof(FighterSaveState) );
 
 #ifdef WRITE_LOG
 	fprintf( FRAMEWORK->LogFile, "Fighter State: Get %s at Frame %d \n", PlayerName.c_str(), FrameCount );
+	fprintf( FRAMEWORK->LogFile, "  Player X : %d \n", currentPosition->X );
+	fprintf( FRAMEWORK->LogFile, "  Player Y : %d \n", currentPosition->Y );
+	fprintf( FRAMEWORK->LogFile, "  Player State : %d \n", currentState );
+	fprintf( FRAMEWORK->LogFile, "  Player StateTime : %d \n", currentStateTime );
+	// fprintf( FRAMEWORK->LogFile, "  Player 1 Hit : %d, %d \n", CurrentSync.Data.Sync.Player1.FighterHit, Packet->Data.Sync.Player1.FighterHit );
+	fprintf( FRAMEWORK->LogFile, "  Player Face : %d \n", currentFaceLeft );
 #endif
 
 	current->FrameCount = FrameCount;
