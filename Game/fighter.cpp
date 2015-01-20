@@ -538,7 +538,7 @@ void Fighter::State_Clear()
 void Fighter::State_Save(uint64_t FrameCount)
 {
 #ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "Fighter State: Save %s at Frame %d\n", PlayerName.c_str(), FrameCount );
+			fprintf( FRAMEWORK->LogFile, "Fighter State: Save %s at Frame %d \n", PlayerName.c_str(), FrameCount );
 #endif
 
 	FighterSaveState tempstates[FIGHTER_MAXIMUM_ROLLBACK_STATES - 1];
@@ -559,7 +559,7 @@ void Fighter::State_Save(uint64_t FrameCount)
 bool Fighter::State_Load(uint64_t FrameCount)
 {
 #ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "Fighter State: Load %s at Frame %d\n", PlayerName.c_str(), FrameCount );
+			fprintf( FRAMEWORK->LogFile, "Fighter State: Load %s at Frame %d \n", PlayerName.c_str(), FrameCount );
 #endif
 
 	FighterSaveState tempstates[FIGHTER_MAXIMUM_ROLLBACK_STATES];

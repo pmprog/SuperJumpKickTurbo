@@ -213,7 +213,7 @@ void Arena::EventOccurred(Event *e)
 		if( e->Data.Network.Traffic.packet->dataLength != sizeof( netpacket ) )
 		{
 #ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "Error: Invalid network packet length of %d, expecting %d", e->Data.Network.Traffic.packet->dataLength, sizeof( netpacket ) );
+			fprintf( FRAMEWORK->LogFile, "Error: Invalid network packet length of %d, expecting %d \n", e->Data.Network.Traffic.packet->dataLength, sizeof( netpacket ) );
 #endif
 			delete FRAMEWORK->ProgramStages->Pop();
 			return;
@@ -223,13 +223,13 @@ void Arena::EventOccurred(Event *e)
 		if( netpacket.Type == PACKET_TYPE_INPUT && (netpacket.Data.Input.JumpPressed || netpacket.Data.Input.KickPressed) )
 		{
 #ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "GamePacket  In: Input\tJump: %d\t Kick %d\t X: %d\t Y: %d\n", netpacket.Data.Input.JumpPressed, netpacket.Data.Input.KickPressed, netpacket.Data.Input.X, netpacket.Data.Input.Y );
+			fprintf( FRAMEWORK->LogFile, "GamePacket  In: Input\tJump: %d\t Kick %d\t X: %d\t Y: %d \n", netpacket.Data.Input.JumpPressed, netpacket.Data.Input.KickPressed, netpacket.Data.Input.X, netpacket.Data.Input.Y );
 #endif
 			// TODO: Check if we need a rollback!
 			if( netpacket.FrameCount < RoundFrameCount )
 			{
 #ifdef WRITE_LOG
-				fprintf( FRAMEWORK->LogFile, " Input Packet : Net Frame: %d\t Local Frame: %d\n", netpacket.FrameCount, RoundFrameCount );
+				fprintf( FRAMEWORK->LogFile, " Input Packet : Net Frame: %d\t Local Frame: %d \n", netpacket.FrameCount, RoundFrameCount );
 #endif
 				State_Load( netpacket.FrameCount );
 				Fighter* f = GetPlayerWithControls( Fighter::FighterController::NetworkClient );
@@ -253,7 +253,7 @@ void Arena::EventOccurred(Event *e)
 		if( netpacket.Type == PACKET_TYPE_CHECK )
 		{
 #ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "GamePacket: Received Sync from %d, at %d\n", netpacket.FrameCount, RoundFrameCount );
+			fprintf( FRAMEWORK->LogFile, "GamePacket: Received Sync from %d, at %d \n", netpacket.FrameCount, RoundFrameCount );
 #endif
 			CheckSyncPacket( &netpacket );
 		}
@@ -281,7 +281,7 @@ void Arena::EventOccurred(Event *e)
 			netpacket.Data.Input.Y = (int)GetPlayerWithControls( source )->Fighter_GetPosition()->Y;
 
 #ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "GamePacket Out: Input\tJump: %d\t Kick %d\t X: %d\t Y: %d\n", netpacket.Data.Input.JumpPressed, netpacket.Data.Input.KickPressed, netpacket.Data.Input.X, netpacket.Data.Input.Y );
+			fprintf( FRAMEWORK->LogFile, "GamePacket Out: Input\tJump: %d\t Kick %d\t X: %d\t Y: %d \n", netpacket.Data.Input.JumpPressed, netpacket.Data.Input.KickPressed, netpacket.Data.Input.X, netpacket.Data.Input.Y );
 #endif
 			Fighter::NetworkController->Send( (void*)&netpacket, sizeof(netpacket), true );
 		}
@@ -471,10 +471,10 @@ void Arena::Update()
 		Fighter::NetworkController->Update();
 
 		// Send a sync packet
-		if( (RoundFrameCount % 10) == 0 )
+		if( (RoundFrameCount % 5) == 0 )
 		{
 #ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "GamePacket: Sending Sync @ %d\n", RoundFrameCount );
+			fprintf( FRAMEWORK->LogFile, "GamePacket: Sending Sync @ %d \n", RoundFrameCount );
 #endif
 			SendSyncPacket();
 		}
@@ -631,7 +631,11 @@ void Arena::ResetArena()
 
 	// Copy the sync packet
 	memcpy( (void*)&LastGoodSync, (void*)&netpacket, sizeof( LastGoodSync ) );
-	memcpy( (void*)&CurrentSync, (void*)&netpacket, sizeof( CurrentSync ) );
+
+	SyncHistory.clear();
+	GamePacket* copypacket = (GamePacket*)malloc( sizeof(GamePacket) );
+	memcpy( (void*)copypacket, (void*)&netpacket, sizeof(GamePacket) );
+	SyncHistory.push_back( copypacket );
 
 	FRAMEWORK->ProgramStages->Push( new RoundCountIn() );
 }
@@ -649,7 +653,7 @@ Fighter* Arena::GetOpponent(Fighter* Current)
 bool Arena::State_Load(uint64_t FrameCount)
 {
 #ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "State Rollback: Current Frame: %d\t New Frame: %d\n", RoundFrameCount, FrameCount );
+			fprintf( FRAMEWORK->LogFile, "State Rollback: Current Frame: %d\t New Frame: %d \n", RoundFrameCount, FrameCount );
 #endif
 
 	RoundFrameCount = FrameCount;
@@ -777,70 +781,111 @@ void Arena::SendSyncPacket()
 	netpacket.Data.Sync.Player2.FacingLeft = Player2->Fighter_IsFacingLeft();
 
 	// Copy the sync packet
-	memcpy( (void*)&CurrentSync, (void*)&netpacket, sizeof( CurrentSync ) );
+	GamePacket* copypacket = (GamePacket*)malloc( sizeof(GamePacket) );
+	memcpy( (void*)copypacket, (void*)&netpacket, sizeof(GamePacket) );
+	SyncHistory.push_back( copypacket );
 
 #ifdef WRITE_LOG
-	fprintf( FRAMEWORK->LogFile, "GamePacket Out: Sync\n" );
+	fprintf( FRAMEWORK->LogFile, "GamePacket Out: Sync @ %d \n", RoundFrameCount );
 #endif
 	Fighter::NetworkController->Send( (void*)&netpacket, sizeof(netpacket), true );
 }
 
 void Arena::CheckSyncPacket( GamePacket* Packet )
 {
-	if( CurrentSync.FrameCount == Packet->FrameCount
-		&& CurrentSync.Data.Sync.CountdownTimer == Packet->Data.Sync.CountdownTimer
-		&& CurrentSync.Data.Sync.CountdownTimerTicker == Packet->Data.Sync.CountdownTimerTicker
-		&& CurrentSync.Data.Sync.Player1.X == Packet->Data.Sync.Player1.X
-		&& CurrentSync.Data.Sync.Player1.Y == Packet->Data.Sync.Player1.Y
-		&& CurrentSync.Data.Sync.Player1.State == Packet->Data.Sync.Player1.State
-		&& CurrentSync.Data.Sync.Player1.StateTime == Packet->Data.Sync.Player1.StateTime
-		&& CurrentSync.Data.Sync.Player1.FighterHit == Packet->Data.Sync.Player1.FighterHit
-		&& CurrentSync.Data.Sync.Player1.FacingLeft == Packet->Data.Sync.Player1.FacingLeft
-		&& CurrentSync.Data.Sync.Player2.X == Packet->Data.Sync.Player2.X
-		&& CurrentSync.Data.Sync.Player2.Y == Packet->Data.Sync.Player2.Y
-		&& CurrentSync.Data.Sync.Player2.State == Packet->Data.Sync.Player2.State
-		&& CurrentSync.Data.Sync.Player2.StateTime == Packet->Data.Sync.Player2.StateTime
-		&& CurrentSync.Data.Sync.Player2.FighterHit == Packet->Data.Sync.Player2.FighterHit
-		&& CurrentSync.Data.Sync.Player2.FacingLeft == Packet->Data.Sync.Player2.FacingLeft)
-	{
-#ifdef WRITE_LOG
-		fprintf( FRAMEWORK->LogFile, "Sync State: OK : %d\n", Packet->FrameCount );
-#endif
-		// Copy the sync packet
-		memcpy( (void*)&LastGoodSync, (void*)&CurrentSync, sizeof( LastGoodSync ) );
-	} else {
-#ifdef WRITE_LOG
-		fprintf( FRAMEWORK->LogFile, "Sync State: Desync : %d\n", Packet->FrameCount );
-		fprintf( FRAMEWORK->LogFile, "  Packet Data : Local, Remote\n" );
-		fprintf( FRAMEWORK->LogFile, "  RoundFrameCount : %d, %d\n", CurrentSync.FrameCount, Packet->FrameCount );
-		fprintf( FRAMEWORK->LogFile, "  CountdownTimer : %d, %d\n", CurrentSync.Data.Sync.CountdownTimer, Packet->Data.Sync.CountdownTimer );
-		fprintf( FRAMEWORK->LogFile, "  CountdownTimerTicker : %d, %d\n", CurrentSync.Data.Sync.CountdownTimerTicker, Packet->Data.Sync.CountdownTimerTicker );
-		fprintf( FRAMEWORK->LogFile, "  Player 1 X : %d, %d\n", CurrentSync.Data.Sync.Player1.X, Packet->Data.Sync.Player1.X );
-		fprintf( FRAMEWORK->LogFile, "  Player 1 Y : %d, %d\n", CurrentSync.Data.Sync.Player1.Y, Packet->Data.Sync.Player1.Y );
-		fprintf( FRAMEWORK->LogFile, "  Player 1 State : %d, %d\n", CurrentSync.Data.Sync.Player1.State, Packet->Data.Sync.Player1.State );
-		fprintf( FRAMEWORK->LogFile, "  Player 1 StateTime : %d, %d\n", CurrentSync.Data.Sync.Player1.StateTime, Packet->Data.Sync.Player1.StateTime );
-		fprintf( FRAMEWORK->LogFile, "  Player 1 Hit : %d, %d\n", CurrentSync.Data.Sync.Player1.FighterHit, Packet->Data.Sync.Player1.FighterHit );
-		fprintf( FRAMEWORK->LogFile, "  Player 1 Face : %d, %d\n", CurrentSync.Data.Sync.Player1.FacingLeft, Packet->Data.Sync.Player1.FacingLeft );
-		fprintf( FRAMEWORK->LogFile, "  Player 2 X : %d, %d\n", CurrentSync.Data.Sync.Player2.X, Packet->Data.Sync.Player2.X );
-		fprintf( FRAMEWORK->LogFile, "  Player 2 Y : %d, %d\n", CurrentSync.Data.Sync.Player2.Y, Packet->Data.Sync.Player2.Y );
-		fprintf( FRAMEWORK->LogFile, "  Player 2 State : %d, %d\n", CurrentSync.Data.Sync.Player2.State, Packet->Data.Sync.Player2.State );
-		fprintf( FRAMEWORK->LogFile, "  Player 2 StateTime : %d, %d\n", CurrentSync.Data.Sync.Player2.StateTime, Packet->Data.Sync.Player2.StateTime );
-		fprintf( FRAMEWORK->LogFile, "  Player 2 Hit : %d, %d\n", CurrentSync.Data.Sync.Player2.FighterHit, Packet->Data.Sync.Player2.FighterHit );
-		fprintf( FRAMEWORK->LogFile, "  Player 2 Face : %d, %d\n", CurrentSync.Data.Sync.Player2.FacingLeft, Packet->Data.Sync.Player2.FacingLeft );
-#endif
+	GamePacket CurrentSync;
+	GamePacket* check;
+	bool foundPacket = false;
 
-		RoundFrameCount = CurrentSync.FrameCount;
-		CountdownTimer = CurrentSync.Data.Sync.CountdownTimer;
-		CountdownTimerTicker = CurrentSync.Data.Sync.CountdownTimerTicker;
-		Player1->Fighter_SetPosition( CurrentSync.Data.Sync.Player1.X, CurrentSync.Data.Sync.Player1.Y );
-		Player1->Fighter_SetState( CurrentSync.Data.Sync.Player1.State );
-		Player1->Fighter_SetStateTime( CurrentSync.Data.Sync.Player1.StateTime );
-		Player1->FighterHit = CurrentSync.Data.Sync.Player1.FighterHit;
-		Player1->Fighter_SetFacing( CurrentSync.Data.Sync.Player1.FacingLeft );
-		Player2->Fighter_SetPosition( CurrentSync.Data.Sync.Player2.X, CurrentSync.Data.Sync.Player2.Y );
-		Player2->Fighter_SetState( CurrentSync.Data.Sync.Player2.State );
-		Player2->Fighter_SetStateTime( CurrentSync.Data.Sync.Player2.StateTime );
-		Player2->FighterHit = CurrentSync.Data.Sync.Player2.FighterHit;
-		Player2->Fighter_SetFacing( CurrentSync.Data.Sync.Player2.FacingLeft );
+	while( SyncHistory.size() > 0 )
+	{
+		std::list<GamePacket*>::iterator p = SyncHistory.begin();
+		check = (GamePacket*)*p;
+		memcpy( (void*)&CurrentSync, (void*)check, sizeof(GamePacket) );
+
+		// We're past this, delete it
+		if( CurrentSync.FrameCount <= Packet->FrameCount )
+		{
+	#ifdef WRITE_LOG
+			fprintf( FRAMEWORK->LogFile, "Sync State: Discarded : %d \n", CurrentSync.FrameCount );
+	#endif
+			SyncHistory.pop_front();
+			free( (void*)check );
+		}
+
+		// Matching frame, check
+		if( CurrentSync.FrameCount == Packet->FrameCount )
+		{
+	#ifdef WRITE_LOG
+			fprintf( FRAMEWORK->LogFile, "Sync State: Matching : %d \n", Packet->FrameCount );
+	#endif
+			foundPacket = true;
+			break;
+		}
 	}
+
+	if( foundPacket )
+	{
+		if( CurrentSync.Data.Sync.CountdownTimer == Packet->Data.Sync.CountdownTimer
+			&& CurrentSync.Data.Sync.CountdownTimerTicker == Packet->Data.Sync.CountdownTimerTicker
+			&& CurrentSync.Data.Sync.Player1.X == Packet->Data.Sync.Player1.X
+			&& CurrentSync.Data.Sync.Player1.Y == Packet->Data.Sync.Player1.Y
+			&& CurrentSync.Data.Sync.Player1.State == Packet->Data.Sync.Player1.State
+			&& CurrentSync.Data.Sync.Player1.StateTime == Packet->Data.Sync.Player1.StateTime
+			&& CurrentSync.Data.Sync.Player1.FighterHit == Packet->Data.Sync.Player1.FighterHit
+			&& CurrentSync.Data.Sync.Player1.FacingLeft == Packet->Data.Sync.Player1.FacingLeft
+			&& CurrentSync.Data.Sync.Player2.X == Packet->Data.Sync.Player2.X
+			&& CurrentSync.Data.Sync.Player2.Y == Packet->Data.Sync.Player2.Y
+			&& CurrentSync.Data.Sync.Player2.State == Packet->Data.Sync.Player2.State
+			&& CurrentSync.Data.Sync.Player2.StateTime == Packet->Data.Sync.Player2.StateTime
+			&& CurrentSync.Data.Sync.Player2.FighterHit == Packet->Data.Sync.Player2.FighterHit
+			&& CurrentSync.Data.Sync.Player2.FacingLeft == Packet->Data.Sync.Player2.FacingLeft)
+		{
+	#ifdef WRITE_LOG
+			fprintf( FRAMEWORK->LogFile, "Sync State: OK : %d \n", Packet->FrameCount );
+	#endif
+			// Copy the sync packet
+			memcpy( (void*)&LastGoodSync, (void*)&CurrentSync, sizeof( LastGoodSync ) );
+		} else {
+	#ifdef WRITE_LOG
+			fprintf( FRAMEWORK->LogFile, "Sync State: Desync : %d \n", Packet->FrameCount );
+			fprintf( FRAMEWORK->LogFile, "  Packet Data : Local, Remote\n" );
+			fprintf( FRAMEWORK->LogFile, "  RoundFrameCount : %d, %d \n", CurrentSync.FrameCount, Packet->FrameCount );
+			fprintf( FRAMEWORK->LogFile, "  CountdownTimer : %d, %d \n", CurrentSync.Data.Sync.CountdownTimer, Packet->Data.Sync.CountdownTimer );
+			fprintf( FRAMEWORK->LogFile, "  CountdownTimerTicker : %d, %d \n", CurrentSync.Data.Sync.CountdownTimerTicker, Packet->Data.Sync.CountdownTimerTicker );
+			fprintf( FRAMEWORK->LogFile, "  Player 1 X : %d, %d \n", CurrentSync.Data.Sync.Player1.X, Packet->Data.Sync.Player1.X );
+			fprintf( FRAMEWORK->LogFile, "  Player 1 Y : %d, %d \n", CurrentSync.Data.Sync.Player1.Y, Packet->Data.Sync.Player1.Y );
+			fprintf( FRAMEWORK->LogFile, "  Player 1 State : %d, %d \n", CurrentSync.Data.Sync.Player1.State, Packet->Data.Sync.Player1.State );
+			fprintf( FRAMEWORK->LogFile, "  Player 1 StateTime : %d, %d \n", CurrentSync.Data.Sync.Player1.StateTime, Packet->Data.Sync.Player1.StateTime );
+			fprintf( FRAMEWORK->LogFile, "  Player 1 Hit : %d, %d \n", CurrentSync.Data.Sync.Player1.FighterHit, Packet->Data.Sync.Player1.FighterHit );
+			fprintf( FRAMEWORK->LogFile, "  Player 1 Face : %d, %d \n", CurrentSync.Data.Sync.Player1.FacingLeft, Packet->Data.Sync.Player1.FacingLeft );
+			fprintf( FRAMEWORK->LogFile, "  Player 2 X : %d, %d \n", CurrentSync.Data.Sync.Player2.X, Packet->Data.Sync.Player2.X );
+			fprintf( FRAMEWORK->LogFile, "  Player 2 Y : %d, %d \n", CurrentSync.Data.Sync.Player2.Y, Packet->Data.Sync.Player2.Y );
+			fprintf( FRAMEWORK->LogFile, "  Player 2 State : %d, %d \n", CurrentSync.Data.Sync.Player2.State, Packet->Data.Sync.Player2.State );
+			fprintf( FRAMEWORK->LogFile, "  Player 2 StateTime : %d, %d \n", CurrentSync.Data.Sync.Player2.StateTime, Packet->Data.Sync.Player2.StateTime );
+			fprintf( FRAMEWORK->LogFile, "  Player 2 Hit : %d, %d \n", CurrentSync.Data.Sync.Player2.FighterHit, Packet->Data.Sync.Player2.FighterHit );
+			fprintf( FRAMEWORK->LogFile, "  Player 2 Face : %d, %d \n", CurrentSync.Data.Sync.Player2.FacingLeft, Packet->Data.Sync.Player2.FacingLeft );
+			fprintf( FRAMEWORK->LogFile, "Sync State: Restoring : %d \n", LastGoodSync.FrameCount );
+	#endif
+
+			RoundFrameCount = LastGoodSync.FrameCount;
+			CountdownTimer = LastGoodSync.Data.Sync.CountdownTimer;
+			CountdownTimerTicker = LastGoodSync.Data.Sync.CountdownTimerTicker;
+			Player1->State_Load( RoundFrameCount );
+			Player1->Fighter_SetPosition( LastGoodSync.Data.Sync.Player1.X, LastGoodSync.Data.Sync.Player1.Y );
+			Player1->Fighter_SetState( LastGoodSync.Data.Sync.Player1.State );
+			Player1->Fighter_SetStateTime( LastGoodSync.Data.Sync.Player1.StateTime );
+			Player1->FighterHit = LastGoodSync.Data.Sync.Player1.FighterHit;
+			Player1->Fighter_SetFacing( LastGoodSync.Data.Sync.Player1.FacingLeft );
+			Player1->State_Save( RoundFrameCount );
+			Player2->State_Load( RoundFrameCount );
+			Player2->Fighter_SetPosition( LastGoodSync.Data.Sync.Player2.X, LastGoodSync.Data.Sync.Player2.Y );
+			Player2->Fighter_SetState( LastGoodSync.Data.Sync.Player2.State );
+			Player2->Fighter_SetStateTime( LastGoodSync.Data.Sync.Player2.StateTime );
+			Player2->FighterHit = LastGoodSync.Data.Sync.Player2.FighterHit;
+			Player2->Fighter_SetFacing( LastGoodSync.Data.Sync.Player2.FacingLeft );
+			Player2->State_Save( RoundFrameCount );
+		}
+	}
+
 }

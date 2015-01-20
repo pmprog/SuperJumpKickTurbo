@@ -8,6 +8,7 @@
 
 #define SLOWMODE_DELAY_FRAMES		2
 #define ROUND_TIME							20
+#define SYNC_HISTORY_TIME				40
 
 class Arena : public Stage
 {
@@ -33,7 +34,7 @@ class Arena : public Stage
 
 		bool DebugReverse;
 
-		GamePacket CurrentSync;
+		std::list<GamePacket*> SyncHistory;
 		GamePacket LastGoodSync;
 
 		uint64_t ClockRoundFrameCount[ROUND_TIME];
