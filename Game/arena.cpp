@@ -220,24 +220,37 @@ void Arena::EventOccurred(Event *e)
 		}
 		memcpy((void*)&netpacket, e->Data.Network.Traffic.packet->data, e->Data.Network.Traffic.packet->dataLength );
 
-		if( netpacket.Type == PACKET_TYPE_INPUT && (netpacket.Data.Input.JumpPressed || netpacket.Data.Input.KickPressed) )
+//		if( netpacket.Type == PACKET_TYPE_INPUT && (netpacket.Data.Input.JumpPressed || netpacket.Data.Input.KickPressed) )
+//		{
+//#ifdef WRITE_LOG
+//			fprintf( FRAMEWORK->LogFile, "GamePacket  In: Input\tJump: %d\t Kick %d\t X: %d\t Y: %d \n", netpacket.Data.Input.JumpPressed, netpacket.Data.Input.KickPressed, netpacket.Data.Input.X, netpacket.Data.Input.Y );
+//#endif
+//			// Check if we need a rollback!
+//			if( netpacket.FrameCount < RoundFrameCount )
+//			{
+//#ifdef WRITE_LOG
+//				fprintf( FRAMEWORK->LogFile, " Input Packet : Net Frame: %d\t Local Frame: %d \n", netpacket.FrameCount, RoundFrameCount );
+//#endif
+//				State_Load( netpacket.FrameCount );
+//				Fighter* f = GetPlayerWithControls( Fighter::FighterController::NetworkClient );
+//				f->Fighter_SetPosition( (float)netpacket.Data.Input.X, (float)netpacket.Data.Input.Y );
+//			}
+//
+//			source = Fighter::FighterController::NetworkClient;
+//			sourceisjump = netpacket.Data.Input.JumpPressed;
+//		}
+
+		if( netpacket.Type == PACKET_TYPE_STATE )
 		{
 #ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "GamePacket  In: Input\tJump: %d\t Kick %d\t X: %d\t Y: %d \n", netpacket.Data.Input.JumpPressed, netpacket.Data.Input.KickPressed, netpacket.Data.Input.X, netpacket.Data.Input.Y );
+			fprintf( FRAMEWORK->LogFile, " State Packet : Net Frame: %d\t Local Frame: %d \n", netpacket.FrameCount, RoundFrameCount );
 #endif
-			// TODO: Check if we need a rollback!
 			if( netpacket.FrameCount < RoundFrameCount )
 			{
-#ifdef WRITE_LOG
-				fprintf( FRAMEWORK->LogFile, " Input Packet : Net Frame: %d\t Local Frame: %d \n", netpacket.FrameCount, RoundFrameCount );
-#endif
-				State_Load( netpacket.FrameCount );
 				Fighter* f = GetPlayerWithControls( Fighter::FighterController::NetworkClient );
-				f->Fighter_SetPosition( (float)netpacket.Data.Input.X, (float)netpacket.Data.Input.Y );
+				f->State_Inject( netpacket.FrameCount, &netpacket.Data.State );
+				State_Load( netpacket.FrameCount );
 			}
-
-			source = Fighter::FighterController::NetworkClient;
-			sourceisjump = netpacket.Data.Input.JumpPressed;
 		}
 
 		if( netpacket.Type == PACKET_TYPE_DISCONNECT )
@@ -250,13 +263,13 @@ void Arena::EventOccurred(Event *e)
 			return;
 		}
 
-		if( netpacket.Type == PACKET_TYPE_CHECK )
-		{
-#ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "GamePacket: Received Sync from %d, at %d \n", netpacket.FrameCount, RoundFrameCount );
-#endif
-			CheckSyncPacket( &netpacket );
-		}
+//		if( netpacket.Type == PACKET_TYPE_CHECK )
+//		{
+//#ifdef WRITE_LOG
+//			fprintf( FRAMEWORK->LogFile, "GamePacket: Received Sync from %d, at %d \n", netpacket.FrameCount, RoundFrameCount );
+//#endif
+//			CheckSyncPacket( &netpacket );
+//		}
 	}
 
 	// Network game
@@ -273,15 +286,25 @@ void Arena::EventOccurred(Event *e)
 		// Send player local input
 		if( transmitinput && source != Fighter::FighterController::NetworkClient )
 		{
-			netpacket.Type = PACKET_TYPE_INPUT;
+//			netpacket.Type = PACKET_TYPE_INPUT;
+//			netpacket.FrameCount = RoundFrameCount;
+//			netpacket.Data.Input.JumpPressed = sourceisjump;
+//			netpacket.Data.Input.KickPressed = !sourceisjump;
+//			netpacket.Data.Input.X = (int)GetPlayerWithControls( source )->Fighter_GetPosition()->X;
+//			netpacket.Data.Input.Y = (int)GetPlayerWithControls( source )->Fighter_GetPosition()->Y;
+//
+//#ifdef WRITE_LOG
+//			fprintf( FRAMEWORK->LogFile, "GamePacket Out: Input\tJump: %d\t Kick %d\t X: %d\t Y: %d \n", netpacket.Data.Input.JumpPressed, netpacket.Data.Input.KickPressed, netpacket.Data.Input.X, netpacket.Data.Input.Y );
+//#endif
+			Fighter* f = GetPlayerWithControls( source );
+			Fighter::FighterSaveState* tempstate = f->State_GetCurrent();
+
+			netpacket.Type = PACKET_TYPE_STATE;
 			netpacket.FrameCount = RoundFrameCount;
-			netpacket.Data.Input.JumpPressed = sourceisjump;
-			netpacket.Data.Input.KickPressed = !sourceisjump;
-			netpacket.Data.Input.X = (int)GetPlayerWithControls( source )->Fighter_GetPosition()->X;
-			netpacket.Data.Input.Y = (int)GetPlayerWithControls( source )->Fighter_GetPosition()->Y;
+			memcpy( (void*)&netpacket.Data.State, (void*)tempstate, sizeof( Fighter::FighterSaveState ) );
 
 #ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "GamePacket Out: Input\tJump: %d\t Kick %d\t X: %d\t Y: %d \n", netpacket.Data.Input.JumpPressed, netpacket.Data.Input.KickPressed, netpacket.Data.Input.X, netpacket.Data.Input.Y );
+			fprintf( FRAMEWORK->LogFile, "GamePacket Out: State \n" );
 #endif
 			Fighter::NetworkController->Send( (void*)&netpacket, sizeof(netpacket), true );
 		}
@@ -470,14 +493,14 @@ void Arena::Update()
 	{
 		Fighter::NetworkController->Update();
 
-		// Send a sync packet
-		if( (RoundFrameCount % 40) == 0 )
-		{
-#ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "GamePacket: Sending Sync @ %d \n", RoundFrameCount );
-#endif
-			SendSyncPacket();
-		}
+//		// Send a sync packet
+//		if( (RoundFrameCount % 40) == 0 )
+//		{
+//#ifdef WRITE_LOG
+//			fprintf( FRAMEWORK->LogFile, "GamePacket: Sending Sync @ %d \n", RoundFrameCount );
+//#endif
+//			SendSyncPacket();
+//		}
 	}
 }
 

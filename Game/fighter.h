@@ -47,7 +47,7 @@ class Fighter
 			uint64_t FrameCount;
 			FighterStates State;
 			int StateTime;
-			Animation* Anim;
+			// Animation* Anim;
 			float X;
 			float Y;
 			bool FaceLeft;
@@ -109,6 +109,7 @@ class Fighter
 		void Fighter_Update( bool IgnoreCollisions );
 		FighterStates Fighter_GetState();
 		void Fighter_SetState( FighterStates NewState );
+		void Fighter_SetState( FighterStates NewState, bool SaveState );
 		int Fighter_GetStateTime();
 		void Fighter_SetStateTime( int NewStateTime );
 
@@ -131,5 +132,7 @@ class Fighter
 		void State_Clear();
 		void State_Save(uint64_t FrameCount);
 		bool State_Load(uint64_t FrameCount);
+		void State_Inject(uint64_t FrameCount, FighterSaveState* NewState);
+		FighterSaveState* State_GetCurrent();
 
 };

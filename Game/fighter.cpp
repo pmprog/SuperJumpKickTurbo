@@ -284,6 +284,11 @@ Fighter::FighterStates Fighter::Fighter_GetState()
 
 void Fighter::Fighter_SetState(FighterStates NewState)
 {
+	Fighter_SetState( NewState, true );
+}
+
+void Fighter::Fighter_SetState( FighterStates NewState, bool SaveState )
+{
 	// Exit State Code
 	/*
 		switch( currentState )
@@ -331,7 +336,7 @@ void Fighter::Fighter_SetState(FighterStates NewState)
 		break;
 	}
 
-	if( currentArena != nullptr )
+	if( SaveState && currentArena != nullptr )
 	{
 		State_Save( currentArena->RoundFrameCount );
 	}
@@ -551,7 +556,7 @@ void Fighter::State_Save(uint64_t FrameCount)
 	RollbackStates[0].State = currentState;
 	RollbackStates[0].StateTime = currentStateTime;
 	RollbackStates[0].FaceLeft = currentFaceLeft;
-	RollbackStates[0].Anim = currentAnimation;
+	//RollbackStates[0].Anim = currentAnimation;
 	RollbackStates[0].X = currentPosition->X;
 	RollbackStates[0].Y = currentPosition->Y;
 }
@@ -569,10 +574,10 @@ bool Fighter::State_Load(uint64_t FrameCount)
 	{
 		if( RollbackStates[i].FrameCount >= 0 && RollbackStates[i].FrameCount <= FrameCount )
 		{
-			currentState = RollbackStates[i].State;
+			// currentState = RollbackStates[i].State;
+			Fighter_SetState( RollbackStates[i].State, false );
 			currentStateTime = RollbackStates[i].StateTime;
 			currentFaceLeft = RollbackStates[i].FaceLeft;
-			currentAnimation = RollbackStates[i].Anim;
 			currentPosition->X = RollbackStates[i].X;
 			currentPosition->Y = RollbackStates[i].Y;
 
@@ -591,4 +596,37 @@ bool Fighter::State_Load(uint64_t FrameCount)
 		}
 	}
 	return foundState;
+}
+
+void Fighter::State_Inject(uint64_t FrameCount, FighterSaveState* NewState)
+{
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Fighter State: Inject %s at Frame %d \n", PlayerName.c_str(), FrameCount );
+#endif
+
+	State_Load( FrameCount - 1 );
+	Fighter_SetState( NewState->State, false );
+	currentStateTime = NewState->StateTime;
+	currentFaceLeft = NewState->FaceLeft;
+	currentPosition->X = NewState->X;
+	currentPosition->Y = NewState->Y;
+	State_Save( FrameCount );
+}
+
+Fighter::FighterSaveState* Fighter::State_GetCurrent()
+{
+	Fighter::FighterSaveState* current = (void*)malloc( sizeof(Fighter::FighterSaveState) );
+
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Fighter State: Get %s at Frame %d \n", PlayerName.c_str(), FrameCount );
+#endif
+
+	current->FrameCount = FrameCount;
+	current->State = currentState;
+	current->StateTime = currentStateTime;
+	current->FaceLeft = currentFaceLeft;
+	current->X = currentPosition->X;
+	current->Y = currentPosition->Y;
+
+	return current;
 }
