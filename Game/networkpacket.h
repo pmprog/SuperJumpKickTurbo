@@ -24,6 +24,8 @@ typedef struct GamePacketPlayerSync
 	int Y;
 	Fighter::FighterStates State;
 	int StateTime;
+	bool FighterHit;
+	bool FacingLeft;
 } GamePacketPlayerSync;
 
 typedef struct GamePacketSyncCheck
