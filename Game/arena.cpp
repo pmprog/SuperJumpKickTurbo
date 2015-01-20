@@ -471,7 +471,7 @@ void Arena::Update()
 		Fighter::NetworkController->Update();
 
 		// Send a sync packet
-		if( (RoundFrameCount % 5) == 0 )
+		if( (RoundFrameCount % 40) == 0 )
 		{
 #ifdef WRITE_LOG
 			fprintf( FRAMEWORK->LogFile, "GamePacket: Sending Sync @ %d \n", RoundFrameCount );
@@ -797,28 +797,19 @@ void Arena::CheckSyncPacket( GamePacket* Packet )
 	GamePacket* check;
 	bool foundPacket = false;
 
-	while( SyncHistory.size() > 0 )
+	memset( (void*)&CurrentSync, 0, sizeof(GamePacket) );
+
+	for( std::list<GamePacket*>::iterator p = SyncHistory.begin(); p != SyncHistory.end(); p++ )
 	{
-		std::list<GamePacket*>::iterator p = SyncHistory.begin();
 		check = (GamePacket*)*p;
-		memcpy( (void*)&CurrentSync, (void*)check, sizeof(GamePacket) );
-
-		// We're past this, delete it
-		if( CurrentSync.FrameCount <= Packet->FrameCount )
-		{
-	#ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "Sync State: Discarded : %d \n", CurrentSync.FrameCount );
-	#endif
-			SyncHistory.pop_front();
-			free( (void*)check );
-		}
-
+		
 		// Matching frame, check
-		if( CurrentSync.FrameCount == Packet->FrameCount )
+		if( check->FrameCount == Packet->FrameCount )
 		{
 	#ifdef WRITE_LOG
 			fprintf( FRAMEWORK->LogFile, "Sync State: Matching : %d \n", Packet->FrameCount );
 	#endif
+			memcpy( (void*)&CurrentSync, (void*)check, sizeof(GamePacket) );
 			foundPacket = true;
 			break;
 		}
@@ -846,6 +837,18 @@ void Arena::CheckSyncPacket( GamePacket* Packet )
 	#endif
 			// Copy the sync packet
 			memcpy( (void*)&LastGoodSync, (void*)&CurrentSync, sizeof( LastGoodSync ) );
+
+			// Trim all those prior to last good sync
+			std::list<GamePacket*>::iterator p = SyncHistory.begin();
+			check = (GamePacket*)*p;
+			while( check->FrameCount < Packet->FrameCount )
+			{
+				free( check );
+				SyncHistory.pop_front();
+				p = SyncHistory.begin();
+				check = (GamePacket*)*p;
+			}
+
 		} else {
 	#ifdef WRITE_LOG
 			fprintf( FRAMEWORK->LogFile, "Sync State: Desync : %d \n", Packet->FrameCount );
@@ -885,6 +888,17 @@ void Arena::CheckSyncPacket( GamePacket* Packet )
 			Player2->FighterHit = LastGoodSync.Data.Sync.Player2.FighterHit;
 			Player2->Fighter_SetFacing( LastGoodSync.Data.Sync.Player2.FacingLeft );
 			Player2->State_Save( RoundFrameCount );
+
+			// Trim all those after last good sync
+			std::list<GamePacket*>::reverse_iterator p = SyncHistory.rbegin();
+			check = (GamePacket*)*p;
+			while( check->FrameCount > LastGoodSync.FrameCount )
+			{
+				free( check );
+				SyncHistory.pop_back();
+				p = SyncHistory.rbegin();
+				check = (GamePacket*)*p;
+			}
 		}
 	}
 
