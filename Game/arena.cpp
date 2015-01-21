@@ -226,6 +226,13 @@ void Arena::EventOccurred(Event *e)
 			fprintf( FRAMEWORK->LogFile, "Packet : State : Net Frame: %d \n", netpacket.FrameCount );
 			fprintf( FRAMEWORK->LogFile, "Packet : State : Local Frame: %d \n", RoundFrameCount );
 #endif
+			// We're behind, catchup
+			while( netpacket.FrameCount > RoundFrameCount )
+			{
+				Update();
+			}
+
+			// Inject the state
 			if( netpacket.FrameCount <= RoundFrameCount )
 			{
 				Fighter* f = GetPlayerWithControls( Fighter::FighterController::NetworkClient );
