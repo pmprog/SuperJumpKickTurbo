@@ -128,7 +128,7 @@ Fighter::Fighter( FighterController Controls, std::string Config, Arena* FightAr
 
 void Fighter::CharSelect_RenderProfileIcon(int ScreenX, int ScreenY)
 {
-	spriteSheet->DrawSprite( 0, ScreenX, ScreenY );
+	spriteSheet->DrawSprite( 0, ScreenX - (spriteSheet->GetFrame(0)->Width / 2), ScreenY - (spriteSheet->GetFrame(0)->Height / 2) );
 }
 
 void Fighter::Fighter_Update( bool IgnoreCollisions )
@@ -290,11 +290,6 @@ void Fighter::Fighter_SetState(FighterStates NewState)
 void Fighter::Fighter_SetState( FighterStates NewState, bool SaveState )
 {
 	// Exit State Code
-	/*
-		switch( currentState )
-		{
-		}
-		*/
 
 	currentState = (Fighter::FighterStates)NewState;
 	currentStateTime = 0;
@@ -556,9 +551,9 @@ void Fighter::State_Save(uint64_t FrameCount)
 	RollbackStates[0].State = currentState;
 	RollbackStates[0].StateTime = currentStateTime;
 	RollbackStates[0].FaceLeft = currentFaceLeft;
-	//RollbackStates[0].Anim = currentAnimation;
 	RollbackStates[0].X = currentPosition->X;
 	RollbackStates[0].Y = currentPosition->Y;
+	RollbackStates[0].BeenHit = FighterHit;
 }
 
 bool Fighter::State_Load(uint64_t FrameCount)
@@ -574,12 +569,12 @@ bool Fighter::State_Load(uint64_t FrameCount)
 	{
 		if( RollbackStates[i].FrameCount >= 0 && RollbackStates[i].FrameCount <= FrameCount )
 		{
-			// currentState = RollbackStates[i].State;
 			Fighter_SetState( RollbackStates[i].State, false );
 			currentStateTime = RollbackStates[i].StateTime;
 			currentFaceLeft = RollbackStates[i].FaceLeft;
 			currentPosition->X = RollbackStates[i].X;
 			currentPosition->Y = RollbackStates[i].Y;
+			FighterHit = RollbackStates[i].BeenHit;
 
 			for( long l = RollbackStates[i].FrameCount; l <= FrameCount; l++ )
 			{
@@ -591,7 +586,7 @@ bool Fighter::State_Load(uint64_t FrameCount)
 			fprintf( FRAMEWORK->LogFile, "  Player Y : %d \n", currentPosition->Y );
 			fprintf( FRAMEWORK->LogFile, "  Player State : %d \n", currentState );
 			fprintf( FRAMEWORK->LogFile, "  Player StateTime : %d \n", currentStateTime );
-			// fprintf( FRAMEWORK->LogFile, "  Player 1 Hit : %d, %d \n", CurrentSync.Data.Sync.Player1.FighterHit, Packet->Data.Sync.Player1.FighterHit );
+			fprintf( FRAMEWORK->LogFile, "  Player Hit : %d \n", FighterHit );
 			fprintf( FRAMEWORK->LogFile, "  Player Face : %d \n", currentFaceLeft );
 #endif
 
@@ -615,7 +610,7 @@ void Fighter::State_Inject(uint64_t FrameCount, FighterSaveState* NewState)
 	fprintf( FRAMEWORK->LogFile, "  Player Y : %d \n", NewState->Y );
 	fprintf( FRAMEWORK->LogFile, "  Player State : %d \n", NewState->State );
 	fprintf( FRAMEWORK->LogFile, "  Player StateTime : %d \n", NewState->StateTime );
-	// fprintf( FRAMEWORK->LogFile, "  Player 1 Hit : %d, %d \n", CurrentSync.Data.Sync.Player1.FighterHit, Packet->Data.Sync.Player1.FighterHit );
+	fprintf( FRAMEWORK->LogFile, "  Player Hit : %d \n", NewState->BeenHit );
 	fprintf( FRAMEWORK->LogFile, "  Player Face : %d \n", NewState->FaceLeft );
 #endif
 
@@ -625,6 +620,7 @@ void Fighter::State_Inject(uint64_t FrameCount, FighterSaveState* NewState)
 	currentFaceLeft = NewState->FaceLeft;
 	currentPosition->X = NewState->X;
 	currentPosition->Y = NewState->Y;
+	FighterHit = NewState->BeenHit;
 	State_Save( FrameCount );
 }
 
@@ -638,7 +634,7 @@ Fighter::FighterSaveState* Fighter::State_GetCurrent(uint64_t FrameCount)
 	fprintf( FRAMEWORK->LogFile, "  Player Y : %d \n", currentPosition->Y );
 	fprintf( FRAMEWORK->LogFile, "  Player State : %d \n", currentState );
 	fprintf( FRAMEWORK->LogFile, "  Player StateTime : %d \n", currentStateTime );
-	// fprintf( FRAMEWORK->LogFile, "  Player 1 Hit : %d, %d \n", CurrentSync.Data.Sync.Player1.FighterHit, Packet->Data.Sync.Player1.FighterHit );
+	fprintf( FRAMEWORK->LogFile, "  Player Hit : %d \n", FighterHit );
 	fprintf( FRAMEWORK->LogFile, "  Player Face : %d \n", currentFaceLeft );
 #endif
 
@@ -648,6 +644,7 @@ Fighter::FighterSaveState* Fighter::State_GetCurrent(uint64_t FrameCount)
 	current->FaceLeft = currentFaceLeft;
 	current->X = currentPosition->X;
 	current->Y = currentPosition->Y;
+	current->BeenHit = FighterHit;
 
 	return current;
 }

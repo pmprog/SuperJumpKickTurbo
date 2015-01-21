@@ -32,20 +32,12 @@ class Arena : public Stage
 		int SlowMode;
 		int SlowModeDelay;
 
-		bool DebugReverse;
-
-		std::list<GamePacket*> SyncHistory;
-		GamePacket LastGoodSync;
-
 		uint64_t ClockRoundFrameCount[ROUND_TIME];
 
 		void FixCameraPosition();
 		void TickRoundClock();
 
 		Fighter* GetPlayerWithControls( Fighter::FighterController Controller );
-
-		void SendSyncPacket();
-		void CheckSyncPacket( GamePacket* Packet );
 
   public:
 

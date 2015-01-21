@@ -47,7 +47,7 @@ class Fighter
 			uint64_t FrameCount;
 			FighterStates State;
 			int StateTime;
-			// Animation* Anim;
+			bool BeenHit;
 			float X;
 			float Y;
 			bool FaceLeft;
