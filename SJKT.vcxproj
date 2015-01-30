@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3B9D51A4-1EE3-40C9-89B3-38F918A2FC90}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>SJKT</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(INCLUDE);$(IncludePath)</IncludePath>
+    <LibraryPath>$(LIB);$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(INCLUDE);$(IncludePath)</IncludePath>
+    <LibraryPath>$(LIB);$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;NETWORK_SUPPORT;_DEBUG;_WINDOWS;WRITE_LOG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)objs\</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>allegro-5.1.8-monolith-mt-debug.lib;enet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NETWORK_SUPPORT;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>allegro-5.1.8-monolith-mt.lib;enet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Framework\configfile.cpp" />
+    <ClCompile Include="Framework\Display\animation.cpp" />
+    <ClCompile Include="Framework\Display\bitmapcache.cpp" />
+    <ClCompile Include="Framework\Display\display.cpp" />
+    <ClCompile Include="Framework\Display\fontcache.cpp" />
+    <ClCompile Include="Framework\Display\spritesheet.cpp" />
+    <ClCompile Include="Framework\Display\tilemap.cpp" />
+    <ClCompile Include="Framework\Display\ttffont.cpp" />
+    <ClCompile Include="Framework\event.cpp" />
+    <ClCompile Include="Framework\Forms\checkbox.cpp" />
+    <ClCompile Include="Framework\Forms\control.cpp" />
+    <ClCompile Include="Framework\Forms\form.cpp" />
+    <ClCompile Include="Framework\Forms\graphic.cpp" />
+    <ClCompile Include="Framework\Forms\graphicbutton.cpp" />
+    <ClCompile Include="Framework\Forms\hscrollbar.cpp" />
+    <ClCompile Include="Framework\Forms\label.cpp" />
+    <ClCompile Include="Framework\Forms\list.cpp" />
+    <ClCompile Include="Framework\Forms\textbutton.cpp" />
+    <ClCompile Include="Framework\Forms\textedit.cpp" />
+    <ClCompile Include="Framework\Forms\vscrollbar.cpp" />
+    <ClCompile Include="Framework\framework.cpp" />
+    <ClCompile Include="Framework\main.cpp" />
+    <ClCompile Include="Framework\memory.cpp" />
+    <ClCompile Include="Framework\Network\download.cpp" />
+    <ClCompile Include="Framework\Network\network.cpp" />
+    <ClCompile Include="Framework\Primitives\angle.cpp" />
+    <ClCompile Include="Framework\Primitives\box.cpp" />
+    <ClCompile Include="Framework\Primitives\line.cpp" />
+    <ClCompile Include="Framework\Primitives\vector2.cpp" />
+    <ClCompile Include="Framework\Sound\audio.cpp" />
+    <ClCompile Include="Framework\Sound\sfxcache.cpp" />
+    <ClCompile Include="Framework\Stages\stagestack.cpp" />
+    <ClCompile Include="Framework\Transitions\fadeacross.cpp" />
+    <ClCompile Include="Framework\Transitions\fadein.cpp" />
+    <ClCompile Include="Framework\Transitions\fadeout.cpp" />
+    <ClCompile Include="Framework\Transitions\strips.cpp" />
+    <ClCompile Include="Framework\Transitions\tiled.cpp" />
+    <ClCompile Include="Game\arena.cpp" />
+    <ClCompile Include="Game\boot.cpp" />
+    <ClCompile Include="Game\fighter.cpp" />
+    <ClCompile Include="Game\matchover.cpp" />
+    <ClCompile Include="Game\menu.cpp" />
+    <ClCompile Include="Game\networkmenu.cpp" />
+    <ClCompile Include="Game\playerselect.cpp" />
+    <ClCompile Include="Game\roundcountin.cpp" />
+    <ClCompile Include="Game\roundover.cpp" />
+    <ClCompile Include="Game\settingsmenu.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Framework\configfile.h" />
+    <ClInclude Include="Framework\Display\animation.h" />
+    <ClInclude Include="Framework\Display\bitmapcache.h" />
+    <ClInclude Include="Framework\Display\display.h" />
+    <ClInclude Include="Framework\Display\fontcache.h" />
+    <ClInclude Include="Framework\Display\spritesheet.h" />
+    <ClInclude Include="Framework\Display\tilemap.h" />
+    <ClInclude Include="Framework\Display\ttffont.h" />
+    <ClInclude Include="Framework\event.h" />
+    <ClInclude Include="Framework\Forms\checkbox.h" />
+    <ClInclude Include="Framework\Forms\control.h" />
+    <ClInclude Include="Framework\Forms\form.h" />
+    <ClInclude Include="Framework\Forms\forms.h" />
+    <ClInclude Include="Framework\Forms\forms_enums.h" />
+    <ClInclude Include="Framework\Forms\graphic.h" />
+    <ClInclude Include="Framework\Forms\graphicbutton.h" />
+    <ClInclude Include="Framework\Forms\hscrollbar.h" />
+    <ClInclude Include="Framework\Forms\label.h" />
+    <ClInclude Include="Framework\Forms\list.h" />
+    <ClInclude Include="Framework\Forms\textbutton.h" />
+    <ClInclude Include="Framework\Forms\textedit.h" />
+    <ClInclude Include="Framework\Forms\vscrollbar.h" />
+    <ClInclude Include="Framework\framework.h" />
+    <ClInclude Include="Framework\includes.h" />
+    <ClInclude Include="Framework\maths.h" />
+    <ClInclude Include="Framework\memory.h" />
+    <ClInclude Include="Framework\Network\download.h" />
+    <ClInclude Include="Framework\Network\network.h" />
+    <ClInclude Include="Framework\Primitives\angle.h" />
+    <ClInclude Include="Framework\Primitives\box.h" />
+    <ClInclude Include="Framework\Primitives\line.h" />
+    <ClInclude Include="Framework\Primitives\strings.h" />
+    <ClInclude Include="Framework\Primitives\vector2.h" />
+    <ClInclude Include="Framework\Sound\audio.h" />
+    <ClInclude Include="Framework\Sound\sfxcache.h" />
+    <ClInclude Include="Framework\Stages\stage.h" />
+    <ClInclude Include="Framework\Stages\stagestack.h" />
+    <ClInclude Include="Framework\Transitions\fadeacross.h" />
+    <ClInclude Include="Framework\Transitions\fadein.h" />
+    <ClInclude Include="Framework\Transitions\fadeout.h" />
+    <ClInclude Include="Framework\Transitions\strips.h" />
+    <ClInclude Include="Framework\Transitions\tiled.h" />
+    <ClInclude Include="Framework\Transitions\transitions.h" />
+    <ClInclude Include="Game\arena.h" />
+    <ClInclude Include="Game\boot.h" />
+    <ClInclude Include="Game\fighter.h" />
+    <ClInclude Include="Game\includes.h" />
+    <ClInclude Include="Game\matchover.h" />
+    <ClInclude Include="Game\menu.h" />
+    <ClInclude Include="Game\networkmenu.h" />
+    <ClInclude Include="Game\networkpacket.h" />
+    <ClInclude Include="Game\playerselect.h" />
+    <ClInclude Include="Game\roundcountin.h" />
+    <ClInclude Include="Game\roundover.h" />
+    <ClInclude Include="Game\settingsmenu.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,100 @@
+Name = "Ryu"
+Sprites = "resources/ryu.png"
+SpritesAlt = "resources/ryu_alt.png"
+
+JumpFrames = 64.0
+JumpSpeed = 12.2
+JumpBackFrames = 20.0
+JumpBackVSpeed = 14.0
+JumpBackHSpeed = 6.0
+KickVSpeed = 8.0
+KickHSpeed = 16.0
+
+Profile [ 1536, 32, 64, 64 ]
+
+IdleFrameTime = 8
+Idle [
+	  0, 0, 152, 216,
+	152, 0, 152, 216,
+	304, 0, 152, 216,
+	456, 0, 152, 216,
+	608, 0, 152, 216,
+	760, 0, 152, 216
+	]
+IdleHit [
+	28, 52, 110, 155,
+	28, 52, 110, 155,
+	28, 52, 110, 155,
+	28, 52, 110, 155,
+	28, 52, 110, 155,
+	28, 52, 110, 155
+	]
+
+TakeOffFrameTime = 6
+TakeOff [
+	1152, 0, 128, 256,
+	1152, 0, 128, 256
+	]
+TakeOffHit [
+	18, 60, 88, 190,
+	18, 60, 88, 190
+	]
+
+InAirFrameTime = 6
+InAir [
+	1024, 0, 128, 256
+	]
+InAirHit [
+	18, 96, 88, 160
+	]
+
+LandFrameTime = 6
+Land [
+	1280, 0, 128, 256
+	]
+LandHit [
+	20, 64, 96, 192
+	]
+
+KickFrameTime = 6
+Kick [
+	880, 340, 220, 170
+	]
+KickHit [
+	32, 30, 162, 110
+	]
+KickAttack [
+	160, 131, 56, 36
+	]
+
+SuperFrameTime = 4
+Super [
+	 376, 256, 128, 256,
+	1048, 256, 192, 256,
+	 528, 256, 128, 256,
+	 680, 256, 184, 256
+	]
+
+KnockDownFrameTime = 6
+KnockDown [
+	796, 554, 200, 160
+	]
+	
+KnockDownLandFrameTime = 6
+KnockDownLand [
+	1015, 566, 200, 138
+	]
+
+KnockedOutFrameTime = 6
+KnockedOut [
+	1229, 568, 200, 114
+	]
+
+WinFrameTime = 8
+Win [
+	  0, 530, 140, 179,
+	140, 530, 140, 179,
+	280, 530, 140, 179,
+	420, 530, 140, 179
+	]
+

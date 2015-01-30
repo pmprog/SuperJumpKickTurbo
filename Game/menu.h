@@ -1,26 +1,36 @@
 
 #pragma once
 
-#include "../Framework/stage.h"
-#include "../Framework/graphicslib.h"
-#include "fighter_akuma.h"
+#include "includes.h"
+#include "../Framework/Display/spritesheet.h"
+
+#include "fighter.h"
 
 class Menu : public Stage
 {
 	private:
-		Akuma*	titleChar;
-		SDL_Surface* titleSuper;
-		SDL_Surface* titleJumpFighter;
+		ALLEGRO_BITMAP* imgSuper;
+		ALLEGRO_BITMAP* imgJumpKick;
+		ALLEGRO_BITMAP* imgBackground;
+		SpriteSheet* imgTurbo;
 
-		spFont* titleFont;
-		spFont* titleFontSel;
+		ALLEGRO_FONT* fntTitle;
 
-		float ScreenScale;
-		int menuTimer;
-		int menuOption;
-		int turboValue;
+		int menuTime;
+		int menuSelection;
+
+		ALLEGRO_COLOR menuSelectedColour;
+		ALLEGRO_COLOR menuItemColour;
+
+		Fighter* TitleFighters[3];
+
+		int backgroundX;
 
   public:
+
+		static int Player1Joystick;
+		static int Player2Joystick;
+
     // Stage control
     virtual void Begin();
     virtual void Pause();
@@ -29,4 +39,5 @@ class Menu : public Stage
     virtual void EventOccurred(Event *e);
     virtual void Update();
     virtual void Render();
+		virtual bool IsTransition();
 };

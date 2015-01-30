@@ -1,9 +1,8 @@
 
 #pragma once
 
-#include "../Framework/stage.h"
-#include "../Framework/graphicslib.h"
-#include "../Library/spritesheet.h"
+#include "includes.h"
+#include "../Framework/Display/spritesheet.h"
 
 class BootUp : public Stage
 {
@@ -12,6 +11,8 @@ class BootUp : public Stage
 		int bootBarSize;
 		SpriteSheet* logoSprite;
 		int logoFadeIn;
+
+		Angle* a;
 
 		void StartGame();
 
@@ -24,4 +25,5 @@ class BootUp : public Stage
     virtual void EventOccurred(Event *e);
     virtual void Update();
     virtual void Render();
+		virtual bool IsTransition();
 };

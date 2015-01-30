@@ -1,62 +1,69 @@
 
 #pragma once
 
-#include "graphicslib.h"
+#include "includes.h"
+#include "configfile.h"
+#include "Display/display.h"
+#include "Sound/audio.h"
 #include "event.h"
 
-#include "../Library/configfile.h"
-#include "stagestack.h"
+#include "Stages/stagestack.h"
+#include "Display/bitmapcache.h"
+#include "Display/fontcache.h"
 
-#define FRAMES_PER_SECOND 100
-#define FRAME_TIME_IN_MS  1000 / FRAMES_PER_SECOND
+#ifdef NETWORK_SUPPORT
+#include "Network/network.h"
+#endif
+
+#ifdef DOWNLOAD_SUPPORT
+#include "Network/download.h"
+#endif
+
+#define FRAMEWORK	Framework::System
 
 class Framework
 {
   private:
     bool quitProgram;
-    int deltaTime;
-    int framesToProcess;
 
-    SDL_Surface* displaySurface;
+		int framesPerSecond;
+		ALLEGRO_TIMER* frameTimer;
+    int framesToProcess;
+		bool enableSlowDown;
+
+
+		ALLEGRO_EVENT_QUEUE* eventAllegro;
 		std::list<Event*> eventQueue;
-		SDL_mutex* eventMutex;
+		ALLEGRO_MUTEX* eventMutex;
+
+		std::vector<ALLEGRO_JOYSTICK*> joystickIDs;
+		
+		void GetJoystickIDs();
 
   public:
+		FILE* LogFile;
+
     static Framework* System;
-
-    Framework();
-    ~Framework();
-
-    void Run();
-		void ShutdownFramework();
-		bool IsShuttingDown() { return quitProgram; };
-
-		void ProcessEvents();
-    void PushEvent( Event* e );
-		void PushSDLEvent( SDL_Event* e );
-
-		void ProcessUpdates( int Delta );
 
     ConfigFile* Settings;
     StageStack* ProgramStages;
 
-    void InitialiseDisplay();
-    void ShutdownDisplay();
-    int GetDisplayWidth();
-    int GetDisplayHeight();
-		void SetWindowTitle( std::string* NewTitle );
+    Framework( int Width, int Height, int Framerate, bool DropFrames );
+    ~Framework();
 
-    void InitialiseAudioSystem();
-    void ShutdownAudioSystem();
-    void PlayMusic( std::string Filename, bool Loop );
-    void StopMusic();
+    void Run();
+		void ProcessEvents();
+    void PushEvent( Event* e );
+		void TranslateAllegroEvents();
+		void ShutdownFramework();
+		bool IsShuttingDown() { return quitProgram; };
 
     void SaveSettings();
 
-};
+		bool IsSlowMode();
+		void SetSlowMode(bool SlowEnabled);
+		int GetFramesPerSecond();
 
-// Unfortunately Sparrow doesn't really support C++
-void resizeWindow( Uint16 w, Uint16 h );
-int engineUpdate(Uint32 steps);
-void engineDraw();
-void pushSDLEvent( SDL_Event* e );
+		void RegisterEventSource( ALLEGRO_EVENT_SOURCE* Source );
+		void UnregisterEventSource( ALLEGRO_EVENT_SOURCE* Source );
+};
