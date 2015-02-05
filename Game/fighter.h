@@ -91,6 +91,9 @@ class Fighter
 
 		Box* CollisionBoxToScreenBox(Box* Source);
 
+		bool jumpIsPressed;
+		bool kickIsPressed;
+
 
 	public:
 		Arena* currentArena;

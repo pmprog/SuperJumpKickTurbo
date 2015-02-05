@@ -119,6 +119,9 @@ Fighter::Fighter( FighterController Controls, std::string Config, Arena* FightAr
 		animWin->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Win", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "Win", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "Win", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "Win", (frameidx * 4) + 3, 0) ) );
 	}
 
+	jumpIsPressed = false;
+	kickIsPressed = false;
+
 	Fighter_SetState( Fighter::FighterStates::Idle );
 	FighterHit = false;
 
@@ -153,6 +156,33 @@ void Fighter::Fighter_Update( bool IgnoreCollisions )
 			AI_Update( 2 );
 		}
 	}
+
+	if( jumpIsPressed )
+	{
+		switch( currentState )
+		{
+			case Fighter::Idle:
+				Fighter_SetState( Fighter::Jump );
+				break;
+		}
+		jumpIsPressed = false;
+	}
+
+	if( kickIsPressed )
+	{
+		switch( currentState )
+		{
+			case Fighter::Idle:
+				Fighter_SetState( Fighter::BackJump );
+				break;
+			case Fighter::Jump:
+			case Fighter::BackJump:
+				Fighter_SetState( Fighter::Kick );
+				break;
+		}
+		kickIsPressed = false;
+	}
+
 
 	currentAnimation->Update();
 	currentStateTime++;
@@ -425,27 +455,12 @@ void Fighter::Fighter_SetFacing(bool FacingLeft)
 
 void Fighter::Fighter_JumpPressed()
 {
-	switch( currentState )
-	{
-		case Fighter::Idle:
-			Fighter_SetState( Fighter::Jump );
-			break;
-	}
+	jumpIsPressed = true;
 }
 
 void Fighter::Fighter_KickPressed()
 {
-	switch( currentState )
-	{
-		case Fighter::Idle:
-			Fighter_SetState( Fighter::BackJump );
-			break;
-		case Fighter::Jump:
-		case Fighter::BackJump:
-			Fighter_SetState( Fighter::Kick );
-			break;
-
-	}
+	kickIsPressed = true;
 }
 
 void Fighter::Fighter_SuperPressed()
