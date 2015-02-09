@@ -2,7 +2,7 @@
 #pragma once
 
 #include <string>
-#include "../Framework/Primitives/vector2.h"
+#include "../Framework/Primitives/vector2i.h"
 #include "../Framework/Primitives/box.h"
 #include "../Framework/Display/animation.h"
 
@@ -48,8 +48,8 @@ class Fighter
 			FighterStates State;
 			int StateTime;
 			bool BeenHit;
-			float X;
-			float Y;
+			int X;
+			int Y;
 			bool FaceLeft;
 		} FighterSaveState;
 
@@ -76,7 +76,7 @@ class Fighter
 		FighterStates currentState;
 		int currentStateTime;
 		Animation* currentAnimation;
-		Vector2* currentPosition;
+		Vector2i* currentPosition;
 		bool currentFaceLeft;
 
 		float jumpFrames;
@@ -116,9 +116,9 @@ class Fighter
 		int Fighter_GetStateTime();
 		void Fighter_SetStateTime( int NewStateTime );
 
-		Vector2* Fighter_GetPosition();
-		void Fighter_SetPosition( float X, float Y );
-		void Fighter_SetPosition( Vector2* NewPosition );
+		Vector2i* Fighter_GetPosition();
+		void Fighter_SetPosition( int X, int Y );
+		void Fighter_SetPosition( Vector2i* NewPosition );
 		void Fighter_Render( int ScreenOffsetX, int ScreenOffsetY );
 
 		bool Fighter_IsFacingLeft();
@@ -135,7 +135,6 @@ class Fighter
 		void State_Clear();
 		void State_Save(uint64_t FrameCount);
 		bool State_Load(uint64_t FrameCount);
-		void State_Inject(uint64_t FrameCount, FighterSaveState* NewState);
 		FighterSaveState* State_GetCurrent(uint64_t FrameCount);
 
 };

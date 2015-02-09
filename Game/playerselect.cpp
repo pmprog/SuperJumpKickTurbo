@@ -175,10 +175,10 @@ void PlayerSelect::EventOccurred(Event *e)
 		}
 		memcpy((void*)&netpacket, e->Data.Network.Traffic.packet->data, e->Data.Network.Traffic.packet->dataLength );
 
-		if( netpacket.Type == PACKET_TYPE_INPUT && (netpacket.Data.Input.JumpPressed || netpacket.Data.Input.KickPressed) )
+		if( netpacket.Type == PACKET_TYPE_INPUT && (netpacket.Input.JumpPressed || netpacket.Input.KickPressed) )
 		{
 			source = Fighter::FighterController::NetworkClient;
-			sourceisjump = netpacket.Data.Input.JumpPressed;
+			sourceisjump = netpacket.Input.JumpPressed;
 		}
 
 		if( netpacket.Type == PACKET_TYPE_DISCONNECT )
@@ -205,8 +205,8 @@ void PlayerSelect::EventOccurred(Event *e)
 		{
 			netpacket.Type = PACKET_TYPE_INPUT;
 			netpacket.FrameCount = 0;
-			netpacket.Data.Input.JumpPressed = sourceisjump;
-			netpacket.Data.Input.KickPressed = !sourceisjump;
+			netpacket.Input.JumpPressed = sourceisjump;
+			netpacket.Input.KickPressed = !sourceisjump;
 
 			Fighter::NetworkController->Send( (void*)&netpacket, sizeof(netpacket), true );
 		}

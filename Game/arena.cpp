@@ -206,10 +206,8 @@ void Arena::EventOccurred(Event *e)
 
 	if( e->Type == EVENT_NETWORK_PACKET_RECEIVED )
 	{
-#ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "Packet : Received : Frame : %d \n", RoundFrameCount );
-#endif
 
+		// Validate packet length
 		if( e->Data.Network.Traffic.packet->dataLength != sizeof( netpacket ) )
 		{
 #ifdef WRITE_LOG
@@ -220,25 +218,37 @@ void Arena::EventOccurred(Event *e)
 		}
 		memcpy((void*)&netpacket, e->Data.Network.Traffic.packet->data, e->Data.Network.Traffic.packet->dataLength );
 
-		if( netpacket.Type == PACKET_TYPE_STATE )
+#ifdef WRITE_LOG
+		fprintf( FRAMEWORK->LogFile, "Packet : Received : Local Frame : %d \n", RoundFrameCount );
+		fprintf( FRAMEWORK->LogFile, "Packet : Received : Remote Frame : %d \n", netpacket.FrameCount );
+#endif
+
+		if( netpacket.Type == PACKET_TYPE_INPUT )
 		{
 #ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "Packet : State : Net Frame: %d \n", netpacket.FrameCount );
-			fprintf( FRAMEWORK->LogFile, "Packet : State : Local Frame: %d \n", RoundFrameCount );
+			fprintf( FRAMEWORK->LogFile, "Packet : Input\n" );
 #endif
-			// We're behind, catchup
-			while( netpacket.FrameCount > RoundFrameCount )
+
+			int tempcurrentframe = RoundFrameCount;
+
+			State_Load( netpacket.FrameCount );
+
+			Fighter* f = GetPlayerWithControls( Fighter::FighterController::NetworkClient );
+
+			if( f == nullptr )
+			{
+				// A new challenger?
+			} else if( netpacket.Input.JumpPressed ) {
+				f->Fighter_JumpPressed();
+			} else if( netpacket.Input.KickPressed ) {
+				f->Fighter_KickPressed();
+			}
+
+			while( RoundFrameCount < tempcurrentframe )
 			{
 				Update();
 			}
 
-			// Inject the state
-			if( netpacket.FrameCount <= RoundFrameCount )
-			{
-				Fighter* f = GetPlayerWithControls( Fighter::FighterController::NetworkClient );
-				f->State_Inject( netpacket.FrameCount, &netpacket.Data.State );
-				State_Load( netpacket.FrameCount );
-			}
 		}
 
 		if( netpacket.Type == PACKET_TYPE_DISCONNECT )
@@ -246,7 +256,6 @@ void Arena::EventOccurred(Event *e)
 #ifdef WRITE_LOG
 			fprintf( FRAMEWORK->LogFile, "Packet : Disconnection\n" );
 #endif
-
 			delete FRAMEWORK->ProgramStages->Pop();
 			return;
 		}
@@ -277,9 +286,12 @@ void Arena::EventOccurred(Event *e)
 			Fighter* f = GetPlayerWithControls( source );
 			Fighter::FighterSaveState* tempstate = f->State_GetCurrent( RoundFrameCount );
 
-			netpacket.Type = PACKET_TYPE_STATE;
+			netpacket.Type = PACKET_TYPE_INPUT;
 			netpacket.FrameCount = RoundFrameCount;
-			memcpy( (void*)&netpacket.Data.State, (void*)tempstate, sizeof( Fighter::FighterSaveState ) );
+			netpacket.Input.JumpPressed = sourceisjump;
+			netpacket.Input.KickPressed = !sourceisjump;
+			netpacket.Input.X = f->Fighter_GetPosition()->X;
+			netpacket.Input.Y = f->Fighter_GetPosition()->Y;
 
 #ifdef WRITE_LOG
 			fprintf( FRAMEWORK->LogFile, "Packet : State : Sent \n" );

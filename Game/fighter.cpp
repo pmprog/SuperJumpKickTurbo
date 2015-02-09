@@ -18,7 +18,7 @@ Fighter::Fighter( FighterController Controls, std::string Config, Arena* FightAr
 
 	currentArena = FightArena;
 
-	currentPosition = new Vector2();
+	currentPosition = new Vector2i();
 
 	CharacterName.clear();
 	CharacterName.append( cfg->GetQuickStringValue("Name", "Unknown")->c_str() );
@@ -377,12 +377,12 @@ void Fighter::Fighter_SetStateTime( int NewStateTime )
 	currentStateTime = NewStateTime;
 }
 
-Vector2* Fighter::Fighter_GetPosition()
+Vector2i* Fighter::Fighter_GetPosition()
 {
 	return currentPosition;
 }
 
-void Fighter::Fighter_SetPosition(float X, float Y)
+void Fighter::Fighter_SetPosition(int X, int Y)
 {
 	currentPosition->X = X;
 	currentPosition->Y = Y;
@@ -394,7 +394,7 @@ void Fighter::Fighter_SetPosition(float X, float Y)
 
 }
 
-void Fighter::Fighter_SetPosition(Vector2* NewPosition)
+void Fighter::Fighter_SetPosition(Vector2i* NewPosition)
 {
 	currentPosition->X = NewPosition->X;
 	currentPosition->Y = NewPosition->Y;
@@ -615,28 +615,6 @@ bool Fighter::State_Load(uint64_t FrameCount)
 		}
 	}
 	return foundState;
-}
-
-void Fighter::State_Inject(uint64_t FrameCount, FighterSaveState* NewState)
-{
-#ifdef WRITE_LOG
-	fprintf( FRAMEWORK->LogFile, "Fighter State: Inject %s at Frame %d \n", PlayerName.c_str(), FrameCount );
-	fprintf( FRAMEWORK->LogFile, "  Player X : %d \n", NewState->X );
-	fprintf( FRAMEWORK->LogFile, "  Player Y : %d \n", NewState->Y );
-	fprintf( FRAMEWORK->LogFile, "  Player State : %d \n", NewState->State );
-	fprintf( FRAMEWORK->LogFile, "  Player StateTime : %d \n", NewState->StateTime );
-	fprintf( FRAMEWORK->LogFile, "  Player Hit : %d \n", NewState->BeenHit );
-	fprintf( FRAMEWORK->LogFile, "  Player Face : %d \n", NewState->FaceLeft );
-#endif
-
-	State_Load( FrameCount - 1 );
-	Fighter_SetState( NewState->State, false );
-	currentStateTime = NewState->StateTime;
-	currentFaceLeft = NewState->FaceLeft;
-	currentPosition->X = NewState->X;
-	currentPosition->Y = NewState->Y;
-	FighterHit = NewState->BeenHit;
-	State_Save( FrameCount );
 }
 
 Fighter::FighterSaveState* Fighter::State_GetCurrent(uint64_t FrameCount)
