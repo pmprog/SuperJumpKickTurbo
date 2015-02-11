@@ -244,6 +244,17 @@ void Arena::EventOccurred(Event *e)
 				f->Fighter_KickPressed();
 			}
 
+			if( f != nullptr )
+			{
+				if( f->Fighter_GetPosition()->X != netpacket.Input.X || f->Fighter_GetPosition()->Y != netpacket.Input.Y )
+				{
+#ifdef WRITE_LOG
+					fprintf( FRAMEWORK->LogFile, "Packet : Input ********************************************** Desync!!\n" );
+					fprintf( FRAMEWORK->LogFile, " Local (%d, %d) != Remote (%d, %d) \n", f->Fighter_GetPosition()->X, f->Fighter_GetPosition()->Y, netpacket.Input.X, netpacket.Input.Y );
+#endif
+				}
+			}
+
 			while( RoundFrameCount < tempcurrentframe )
 			{
 				ButtonReplay_Play(RoundFrameCount);
@@ -260,6 +271,13 @@ void Arena::EventOccurred(Event *e)
 #endif
 			delete FRAMEWORK->ProgramStages->Pop();
 			return;
+		}
+
+		if( netpacket.Type == PACKET_TYPE_PING )
+		{
+#ifdef WRITE_LOG
+			fprintf( FRAMEWORK->LogFile, "Packet : Ping - Unexpected ********************************************** Desync Likely!!\n" );
+#endif
 		}
 
 	}
@@ -746,6 +764,9 @@ void Arena::ButtonReplay_Add(uint32_t Player, uint64_t FrameTime, bool JumpPress
 
 void Arena::ButtonReplay_Play(uint64_t FrameTime)
 {
+#ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "Button Replay : Frame %d \n", FrameTime );
+#endif
 	for( std::vector<ReplayPacket*>::const_iterator idx = ButtonReplay.begin(); idx != ButtonReplay.end(); idx++ )
 	{
 		ReplayPacket* replay = (ReplayPacket*)*idx;

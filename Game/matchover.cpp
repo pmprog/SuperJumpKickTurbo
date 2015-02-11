@@ -3,10 +3,12 @@
 
 void MatchOver::Begin()
 {
+	gameArena = (Arena*)FRAMEWORK->ProgramStages->Previous();
+
 #ifdef WRITE_LOG
+	fprintf( FRAMEWORK->LogFile, "********************************************* Match Over : Score %d vs %d \n", gameArena->Player1Wins, gameArena->Player2Wins );
 	fprintf( FRAMEWORK->LogFile, "Stage: MatchOver::Begin()\n" );
 #endif
-	gameArena = (Arena*)FRAMEWORK->ProgramStages->Previous();
 
 	overbannerL[0] = 50;
 	overbannerL[1] = -100;

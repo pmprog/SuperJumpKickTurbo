@@ -21,6 +21,8 @@ void RoundCountIn::Begin()
 	netping = false;
 
 #ifdef WRITE_LOG
+	Arena* a = (Arena*)FRAMEWORK->ProgramStages->Previous();
+	fprintf( FRAMEWORK->LogFile, "********************************************* New Round %d vs %d \n", a->Player1Wins, a->Player2Wins );
 	fprintf( FRAMEWORK->LogFile, "Stage: RoundCountIn::Begin()\n" );
 #endif
 }
@@ -60,7 +62,7 @@ void RoundCountIn::EventOccurred(Event *e)
 		if( e->Data.Network.Traffic.packet->dataLength != sizeof( netpacket ) )
 		{
 #ifdef WRITE_LOG
-			fprintf( FRAMEWORK->LogFile, "Error: Invalid network packet length of %d, expecting %d", e->Data.Network.Traffic.packet->dataLength, sizeof( netpacket ) );
+			fprintf( FRAMEWORK->LogFile, "Error: Invalid network packet length of %d, expecting %d \n", e->Data.Network.Traffic.packet->dataLength, sizeof( netpacket ) );
 #endif
 			delete FRAMEWORK->ProgramStages->Pop();
 			delete FRAMEWORK->ProgramStages->Pop();
