@@ -252,6 +252,14 @@ void Arena::EventOccurred(Event *e)
 					fprintf( FRAMEWORK->LogFile, "Packet : Input ********************************************** Desync!!\n" );
 					fprintf( FRAMEWORK->LogFile, " Local (%d, %d) != Remote (%d, %d) \n", f->Fighter_GetPosition()->X, f->Fighter_GetPosition()->Y, netpacket.Input.X, netpacket.Input.Y );
 #endif
+					// We're only slightly out (could be rounding errors), try just fixing the position
+					if( Maths::Abs( f->Fighter_GetPosition()->X - netpacket.Input.X ) < 4 && Maths::Abs( f->Fighter_GetPosition()->Y - netpacket.Input.Y ) < 4 )
+					{
+#ifdef WRITE_LOG
+						fprintf( FRAMEWORK->LogFile, " Minor adjustment to position made\n" );
+#endif
+						f->Fighter_SetPosition( netpacket.Input.X, netpacket.Input.Y );
+					}
 				}
 			}
 
