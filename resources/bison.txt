@@ -10,7 +10,7 @@ JumpBackHSpeed = 7.0
 KickVSpeed = 15.0
 KickHSpeed = 19.0
 
-Profile [ 1984, 32, 64, 64 ]
+Profile [ 1728, 64, 64, 64 ]
 
 IdleFrameTime = 8
 Idle [

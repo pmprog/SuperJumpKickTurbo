@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="SJKT" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/SJKT" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DWRITE_LOG" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/SJKT" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-std=c++11" />
+			<Add option="-fpermissive" />
+			<Add option="-DPANDORA" />
+			<Add option="-DNETWORK_SUPPORT" />
+		</Compiler>
+		<Linker>
+			<Add library="allegro" />
+			<Add library="allegro_audio" />
+			<Add library="allegro_acodec" />
+			<Add library="allegro_font" />
+			<Add library="allegro_ttf" />
+			<Add library="allegro_primitives" />
+			<Add library="allegro_color" />
+			<Add library="allegro_image" />
+			<Add library="enet" />
+		</Linker>
+		<Unit filename="Framework/Display/animation.cpp" />
+		<Unit filename="Framework/Display/animation.h" />
+		<Unit filename="Framework/Display/bitmapcache.cpp" />
+		<Unit filename="Framework/Display/bitmapcache.h" />
+		<Unit filename="Framework/Display/display.cpp" />
+		<Unit filename="Framework/Display/display.h" />
+		<Unit filename="Framework/Display/fontcache.cpp" />
+		<Unit filename="Framework/Display/fontcache.h" />
+		<Unit filename="Framework/Display/spritesheet.cpp" />
+		<Unit filename="Framework/Display/spritesheet.h" />
+		<Unit filename="Framework/Display/tilemap.cpp" />
+		<Unit filename="Framework/Display/tilemap.h" />
+		<Unit filename="Framework/Display/ttffont.cpp" />
+		<Unit filename="Framework/Display/ttffont.h" />
+		<Unit filename="Framework/Forms/checkbox.cpp" />
+		<Unit filename="Framework/Forms/checkbox.h" />
+		<Unit filename="Framework/Forms/control.cpp" />
+		<Unit filename="Framework/Forms/control.h" />
+		<Unit filename="Framework/Forms/form.cpp" />
+		<Unit filename="Framework/Forms/form.h" />
+		<Unit filename="Framework/Forms/forms.h" />
+		<Unit filename="Framework/Forms/forms_enums.h" />
+		<Unit filename="Framework/Forms/graphic.cpp" />
+		<Unit filename="Framework/Forms/graphic.h" />
+		<Unit filename="Framework/Forms/graphicbutton.cpp" />
+		<Unit filename="Framework/Forms/graphicbutton.h" />
+		<Unit filename="Framework/Forms/hscrollbar.cpp" />
+		<Unit filename="Framework/Forms/hscrollbar.h" />
+		<Unit filename="Framework/Forms/label.cpp" />
+		<Unit filename="Framework/Forms/label.h" />
+		<Unit filename="Framework/Forms/list.cpp" />
+		<Unit filename="Framework/Forms/list.h" />
+		<Unit filename="Framework/Forms/textbutton.cpp" />
+		<Unit filename="Framework/Forms/textbutton.h" />
+		<Unit filename="Framework/Forms/textedit.cpp" />
+		<Unit filename="Framework/Forms/textedit.h" />
+		<Unit filename="Framework/Forms/vscrollbar.cpp" />
+		<Unit filename="Framework/Forms/vscrollbar.h" />
+		<Unit filename="Framework/Network/download.cpp" />
+		<Unit filename="Framework/Network/download.h" />
+		<Unit filename="Framework/Network/network.cpp" />
+		<Unit filename="Framework/Network/network.h" />
+		<Unit filename="Framework/Primitives/angle.cpp" />
+		<Unit filename="Framework/Primitives/angle.h" />
+		<Unit filename="Framework/Primitives/box.cpp" />
+		<Unit filename="Framework/Primitives/box.h" />
+		<Unit filename="Framework/Primitives/line.cpp" />
+		<Unit filename="Framework/Primitives/line.h" />
+		<Unit filename="Framework/Primitives/strings.h" />
+		<Unit filename="Framework/Primitives/vector2.cpp" />
+		<Unit filename="Framework/Primitives/vector2.h" />
+		<Unit filename="Framework/Primitives/vector2i.cpp" />
+		<Unit filename="Framework/Primitives/vector2i.h" />
+		<Unit filename="Framework/Sound/audio.cpp" />
+		<Unit filename="Framework/Sound/audio.h" />
+		<Unit filename="Framework/Sound/sfxcache.cpp" />
+		<Unit filename="Framework/Sound/sfxcache.h" />
+		<Unit filename="Framework/Stages/stage.h" />
+		<Unit filename="Framework/Stages/stagestack.cpp" />
+		<Unit filename="Framework/Stages/stagestack.h" />
+		<Unit filename="Framework/Transitions/fadeacross.cpp" />
+		<Unit filename="Framework/Transitions/fadeacross.h" />
+		<Unit filename="Framework/Transitions/fadein.cpp" />
+		<Unit filename="Framework/Transitions/fadein.h" />
+		<Unit filename="Framework/Transitions/fadeout.cpp" />
+		<Unit filename="Framework/Transitions/fadeout.h" />
+		<Unit filename="Framework/Transitions/strips.cpp" />
+		<Unit filename="Framework/Transitions/strips.h" />
+		<Unit filename="Framework/Transitions/tiled.cpp" />
+		<Unit filename="Framework/Transitions/tiled.h" />
+		<Unit filename="Framework/Transitions/transitions.h" />
+		<Unit filename="Framework/configfile.cpp" />
+		<Unit filename="Framework/configfile.h" />
+		<Unit filename="Framework/event.cpp" />
+		<Unit filename="Framework/event.h" />
+		<Unit filename="Framework/framework.cpp" />
+		<Unit filename="Framework/framework.h" />
+		<Unit filename="Framework/includes.h" />
+		<Unit filename="Framework/main.cpp" />
+		<Unit filename="Framework/maths.h" />
+		<Unit filename="Framework/memory.cpp" />
+		<Unit filename="Framework/memory.h" />
+		<Unit filename="Game/arena.cpp" />
+		<Unit filename="Game/arena.h" />
+		<Unit filename="Game/boot.cpp" />
+		<Unit filename="Game/boot.h" />
+		<Unit filename="Game/fighter.cpp" />
+		<Unit filename="Game/fighter.h" />
+		<Unit filename="Game/includes.h" />
+		<Unit filename="Game/matchover.cpp" />
+		<Unit filename="Game/matchover.h" />
+		<Unit filename="Game/menu.cpp" />
+		<Unit filename="Game/menu.h" />
+		<Unit filename="Game/networkmenu.cpp" />
+		<Unit filename="Game/networkmenu.h" />
+		<Unit filename="Game/networkpacket.h" />
+		<Unit filename="Game/playerselect.cpp" />
+		<Unit filename="Game/playerselect.h" />
+		<Unit filename="Game/roundcountin.cpp" />
+		<Unit filename="Game/roundcountin.h" />
+		<Unit filename="Game/roundover.cpp" />
+		<Unit filename="Game/roundover.h" />
+		<Unit filename="Game/settingsmenu.cpp" />
+		<Unit filename="Game/settingsmenu.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

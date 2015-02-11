@@ -1,0 +1,437 @@
+# depslib dependency file v1.0
+1423679862 source:/media/coding/sjkt/Framework/configfile.cpp
+	"configfile.h"
+	<ctype.h>
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+
+1423679862 /media/coding/sjkt/Framework/configfile.h
+	<string>
+	<vector>
+	<list>
+
+1423679862 source:/media/coding/sjkt/Framework/Display/animation.cpp
+	"animation.h"
+
+1423679862 /media/coding/sjkt/Framework/Display/animation.h
+	"spritesheet.h"
+
+1423679862 /media/coding/sjkt/Framework/Display/spritesheet.h
+	"../includes.h"
+	"../framework.h"
+	"bitmapcache.h"
+	"../Primitives/angle.h"
+
+1423683586 /media/coding/sjkt/Framework/includes.h
+	<enet/enet.h>
+	<curl/curl.h>
+	<allegro5/allegro.h>
+	<allegro5/allegro_audio.h>
+	<allegro5/allegro_acodec.h>
+	<allegro5/allegro_color.h>
+	<allegro5/allegro_font.h>
+	<allegro5/allegro_image.h>
+	<allegro5/allegro_ttf.h>
+	<allegro5/allegro_primitives.h>
+	<algorithm>
+	<map>
+	<string>
+	<vector>
+	<list>
+	<stdio.h>
+	"configfile.h"
+	"maths.h"
+	"memory.h"
+
+1423679862 /media/coding/sjkt/Framework/maths.h
+	<cmath>
+
+1423679862 /media/coding/sjkt/Framework/memory.h
+	<cstdlib>
+
+1423679862 /media/coding/sjkt/Framework/framework.h
+	"includes.h"
+	"configfile.h"
+	"Display/display.h"
+	"Sound/audio.h"
+	"event.h"
+	"Stages/stagestack.h"
+	"Display/bitmapcache.h"
+	"Display/fontcache.h"
+	"Network/network.h"
+	"Network/download.h"
+
+1423679862 /media/coding/sjkt/Framework/Display/display.h
+	"../includes.h"
+	"../Primitives/vector2.h"
+
+1423679862 /media/coding/sjkt/Framework/Primitives/vector2.h
+	"../maths.h"
+
+1423679862 /media/coding/sjkt/Framework/Sound/audio.h
+	"../includes.h"
+	"sfxcache.h"
+
+1423679862 /media/coding/sjkt/Framework/Sound/sfxcache.h
+	"../includes.h"
+
+1423679862 /media/coding/sjkt/Framework/event.h
+	"includes.h"
+	"memory.h"
+	"Forms/forms_enums.h"
+
+1423679862 /media/coding/sjkt/Framework/Forms/forms_enums.h
+
+1423679862 /media/coding/sjkt/Framework/Stages/stagestack.h
+	"stage.h"
+
+1423679862 /media/coding/sjkt/Framework/Stages/stage.h
+	"../event.h"
+
+1423679862 /media/coding/sjkt/Framework/Display/bitmapcache.h
+	"../includes.h"
+
+1423679862 /media/coding/sjkt/Framework/Display/fontcache.h
+	"ttffont.h"
+
+1423679862 /media/coding/sjkt/Framework/Display/ttffont.h
+	"../includes.h"
+
+1423679862 /media/coding/sjkt/Framework/Network/network.h
+	"../includes.h"
+
+1423679862 /media/coding/sjkt/Framework/Network/download.h
+	"../includes.h"
+	"../event.h"
+
+1423679862 /media/coding/sjkt/Framework/Primitives/angle.h
+	"../maths.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Display/bitmapcache.cpp
+	"bitmapcache.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Display/display.cpp
+	"display.h"
+	"../framework.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Display/fontcache.cpp
+	"fontcache.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Display/spritesheet.cpp
+	"spritesheet.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Display/tilemap.cpp
+	"tilemap.h"
+	"../framework.h"
+	"../Display/display.h"
+	"../Primitives/vector2.h"
+
+1423679862 /media/coding/sjkt/Framework/Display/tilemap.h
+	"spritesheet.h"
+	"animation.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Display/ttffont.cpp
+	"ttffont.h"
+
+1423684476 source:/media/coding/sjkt/Framework/event.cpp
+	"event.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Forms/checkbox.cpp
+	"checkbox.h"
+
+1423679862 /media/coding/sjkt/Framework/Forms/checkbox.h
+	"control.h"
+
+1423679862 /media/coding/sjkt/Framework/Forms/control.h
+	"../includes.h"
+	"../Primitives/vector2.h"
+	"../event.h"
+	"../framework.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Forms/control.cpp
+	"control.h"
+	"forms.h"
+
+1423679862 /media/coding/sjkt/Framework/Forms/forms.h
+	"forms_enums.h"
+	"control.h"
+	"form.h"
+	"label.h"
+	"graphic.h"
+	"textbutton.h"
+	"graphicbutton.h"
+	"checkbox.h"
+	"vscrollbar.h"
+	"hscrollbar.h"
+	"list.h"
+	"textedit.h"
+
+1423679862 /media/coding/sjkt/Framework/Forms/form.h
+	"control.h"
+
+1423679862 /media/coding/sjkt/Framework/Forms/label.h
+	"control.h"
+	"../Display/fontcache.h"
+
+1423679862 /media/coding/sjkt/Framework/Forms/graphic.h
+	"control.h"
+
+1423679862 /media/coding/sjkt/Framework/Forms/textbutton.h
+	"control.h"
+	"../Display/fontcache.h"
+
+1423679862 /media/coding/sjkt/Framework/Forms/graphicbutton.h
+	"control.h"
+
+1423679862 /media/coding/sjkt/Framework/Forms/vscrollbar.h
+	"control.h"
+
+1423679862 /media/coding/sjkt/Framework/Forms/hscrollbar.h
+	"control.h"
+
+1423679862 /media/coding/sjkt/Framework/Forms/list.h
+	"control.h"
+	"vscrollbar.h"
+
+1423679862 /media/coding/sjkt/Framework/Forms/textedit.h
+	"control.h"
+	"../Display/fontcache.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Forms/form.cpp
+	"form.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Forms/graphic.cpp
+	"graphic.h"
+	"../Display/bitmapcache.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Forms/graphicbutton.cpp
+	"graphicbutton.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Forms/hscrollbar.cpp
+	"hscrollbar.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Forms/label.cpp
+	"label.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Forms/list.cpp
+	"list.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Forms/textbutton.cpp
+	"textbutton.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Forms/textedit.cpp
+	"textedit.h"
+	<iostream>
+	<algorithm>
+
+1423679862 source:/media/coding/sjkt/Framework/Forms/vscrollbar.cpp
+	"vscrollbar.h"
+
+1423679862 source:/media/coding/sjkt/Framework/framework.cpp
+	"framework.h"
+	"../Game/boot.h"
+
+1423679862 /media/coding/sjkt/Game/boot.h
+	"includes.h"
+	"../Framework/Display/spritesheet.h"
+
+1423679863 /media/coding/sjkt/Game/includes.h
+	"../Framework/Stages/stage.h"
+	"../Framework/includes.h"
+	"../Framework/framework.h"
+	"../Framework/Display/display.h"
+	"../Framework/Display/fontcache.h"
+	"../Framework/Forms/forms.h"
+
+1423679862 source:/media/coding/sjkt/Framework/main.cpp
+	"framework.h"
+
+1423679862 source:/media/coding/sjkt/Framework/memory.cpp
+	"memory.h"
+	<stdio.h>
+	<string.h>
+
+1423679862 source:/media/coding/sjkt/Framework/Network/download.cpp
+	"download.h"
+	"../framework.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Network/network.cpp
+	"network.h"
+	"../framework.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Primitives/angle.cpp
+	"angle.h"
+	"vector2.h"
+	"../includes.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Primitives/box.cpp
+	"box.h"
+
+1423679862 /media/coding/sjkt/Framework/Primitives/box.h
+	"vector2.h"
+	"line.h"
+
+1423679862 /media/coding/sjkt/Framework/Primitives/line.h
+	"vector2.h"
+	"angle.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Primitives/line.cpp
+	"line.h"
+	"../maths.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Primitives/vector2.cpp
+	"vector2.h"
+	"angle.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Primitives/vector2i.cpp
+	"vector2i.h"
+
+1423679862 /media/coding/sjkt/Framework/Primitives/vector2i.h
+	"../maths.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Sound/audio.cpp
+	"audio.h"
+	"../framework.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Sound/sfxcache.cpp
+	"sfxcache.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Stages/stagestack.cpp
+	"stagestack.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Transitions/fadeacross.cpp
+	"fadeacross.h"
+	"../framework.h"
+
+1423679862 /media/coding/sjkt/Framework/Transitions/fadeacross.h
+	"../Stages/stage.h"
+	"../includes.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Transitions/fadein.cpp
+	"fadein.h"
+	"../framework.h"
+
+1423679862 /media/coding/sjkt/Framework/Transitions/fadein.h
+	"../Stages/stage.h"
+	"../includes.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Transitions/fadeout.cpp
+	"fadeout.h"
+	"../framework.h"
+
+1423679862 /media/coding/sjkt/Framework/Transitions/fadeout.h
+	"../Stages/stage.h"
+	"../includes.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Transitions/strips.cpp
+	"strips.h"
+	"../framework.h"
+
+1423679862 /media/coding/sjkt/Framework/Transitions/strips.h
+	"../Stages/stage.h"
+	"../includes.h"
+
+1423679862 source:/media/coding/sjkt/Framework/Transitions/tiled.cpp
+	"tiled.h"
+	"../framework.h"
+
+1423679862 /media/coding/sjkt/Framework/Transitions/tiled.h
+	"../Stages/stage.h"
+	"../includes.h"
+
+1423679862 source:/media/coding/sjkt/Game/arena.cpp
+	"arena.h"
+	"roundover.h"
+	"matchover.h"
+	"menu.h"
+	"roundcountin.h"
+
+1423679862 /media/coding/sjkt/Game/arena.h
+	"includes.h"
+	"../Framework/Display/spritesheet.h"
+	"fighter.h"
+	"networkpacket.h"
+
+1423679862 /media/coding/sjkt/Game/fighter.h
+	<string>
+	"../Framework/Primitives/vector2i.h"
+	"../Framework/Primitives/box.h"
+	"../Framework/Display/animation.h"
+
+1423679863 /media/coding/sjkt/Game/networkpacket.h
+	"includes.h"
+	"fighter.h"
+
+1423679863 /media/coding/sjkt/Game/roundover.h
+	"includes.h"
+	"arena.h"
+
+1423679863 /media/coding/sjkt/Game/matchover.h
+	"includes.h"
+	"arena.h"
+
+1423679863 /media/coding/sjkt/Game/menu.h
+	"includes.h"
+	"../Framework/Display/spritesheet.h"
+	"fighter.h"
+
+1423679863 /media/coding/sjkt/Game/roundcountin.h
+	"includes.h"
+	"arena.h"
+
+1423679862 source:/media/coding/sjkt/Game/boot.cpp
+	"boot.h"
+	"../Framework/framework.h"
+	"../Framework/Display/display.h"
+	"../Framework/Network/download.h"
+	"menu.h"
+
+1423679862 source:/media/coding/sjkt/Game/fighter.cpp
+	"fighter.h"
+	"arena.h"
+
+1423679863 source:/media/coding/sjkt/Game/matchover.cpp
+	"matchover.h"
+
+1423679863 source:/media/coding/sjkt/Game/menu.cpp
+	"menu.h"
+	"arena.h"
+	"settingsmenu.h"
+	"playerselect.h"
+	"networkmenu.h"
+
+1423679863 /media/coding/sjkt/Game/settingsmenu.h
+	"includes.h"
+	"../Framework/Display/spritesheet.h"
+
+1423679863 /media/coding/sjkt/Game/playerselect.h
+	"includes.h"
+	"../Framework/Display/spritesheet.h"
+	"fighter.h"
+	"networkpacket.h"
+
+1423679863 /media/coding/sjkt/Game/networkmenu.h
+	"includes.h"
+	"fighter.h"
+
+1423679863 source:/media/coding/sjkt/Game/networkmenu.cpp
+	"networkmenu.h"
+	"playerselect.h"
+
+1423679863 source:/media/coding/sjkt/Game/playerselect.cpp
+	"playerselect.h"
+	"arena.h"
+	"menu.h"
+
+1423679863 source:/media/coding/sjkt/Game/roundcountin.cpp
+	"roundcountin.h"
+	"networkpacket.h"
+
+1423679863 source:/media/coding/sjkt/Game/roundover.cpp
+	"roundover.h"
+	"matchover.h"
+
+1423679863 source:/media/coding/sjkt/Game/settingsmenu.cpp
+	"settingsmenu.h"
+
