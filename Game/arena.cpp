@@ -246,8 +246,10 @@ void Arena::EventOccurred(Event *e)
 
 			while( RoundFrameCount < tempcurrentframe )
 			{
+				ButtonReplay_Play(RoundFrameCount);
 				Update();
 			}
+			ButtonReplay_Play(RoundFrameCount);
 
 		}
 
@@ -297,6 +299,8 @@ void Arena::EventOccurred(Event *e)
 			fprintf( FRAMEWORK->LogFile, "Packet : State : Sent \n" );
 #endif
 			Fighter::NetworkController->Send( (void*)&netpacket, sizeof(netpacket), true );
+
+			ButtonReplay_Add( (Player1->Controller == Fighter::FighterController::NetworkClient ? 2 : 1), RoundFrameCount, sourceisjump, !sourceisjump );
 		}
 	}
 
@@ -601,6 +605,7 @@ void Arena::ResetArena()
 	{
 		ClockRoundFrameCount[i] = 0;
 	}
+	ButtonReplay_Clear();
 
 	FRAMEWORK->ProgramStages->Push( new RoundCountIn() );
 }
@@ -718,4 +723,58 @@ void Arena::AddCollisionAt( Vector2* Location )
 		CollisionsAt[1] = Location;
 	}
 	CollisionAnimation->Start();
+}
+
+void Arena::ButtonReplay_Clear()
+{
+	while( ButtonReplay.size() > 0 )
+	{
+		free( ButtonReplay.back() );
+		ButtonReplay.pop_back();
+	}
+}
+
+void Arena::ButtonReplay_Add(uint32_t Player, uint64_t FrameTime, bool JumpPressed, bool KickPressed)
+{
+	ReplayPacket* replay = (ReplayPacket*)malloc( sizeof(ReplayPacket) );
+	replay->PlayerNumber = Player;
+	replay->FrameCount = FrameTime;
+	replay->Input.JumpPressed = JumpPressed;
+	replay->Input.KickPressed = KickPressed;
+	ButtonReplay.push_back( replay );
+}
+
+void Arena::ButtonReplay_Play(uint64_t FrameTime)
+{
+	for( std::vector<ReplayPacket*>::const_iterator idx = ButtonReplay.begin(); idx != ButtonReplay.end(); idx++ )
+	{
+		ReplayPacket* replay = (ReplayPacket*)*idx;
+		if( replay->FrameCount == FrameTime )
+		{
+			switch( replay->PlayerNumber )
+			{
+				case 1:
+					if( replay->Input.JumpPressed )
+					{
+						Player1->Fighter_JumpPressed();
+					}
+					if( replay->Input.KickPressed )
+					{
+						Player1->Fighter_KickPressed();
+					}
+					break;
+
+				case 2:
+					if( replay->Input.JumpPressed )
+					{
+						Player2->Fighter_JumpPressed();
+					}
+					if( replay->Input.KickPressed )
+					{
+						Player2->Fighter_KickPressed();
+					}
+					break;
+			}
+		}
+	}
 }

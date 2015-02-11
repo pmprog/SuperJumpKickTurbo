@@ -23,3 +23,9 @@ typedef struct GamePacket
 	GamePacketInput Input;
 } GamePacket;
 
+typedef struct ReplayPacket
+{
+	uint32_t PlayerNumber;
+	uint64_t FrameCount;
+	GamePacketInput Input;
+} ReplayPacket;

@@ -33,11 +33,16 @@ class Arena : public Stage
 		int SlowModeDelay;
 
 		uint64_t ClockRoundFrameCount[ROUND_TIME];
+		std::vector<ReplayPacket*> ButtonReplay;
 
 		void FixCameraPosition();
 		void TickRoundClock();
 
 		Fighter* GetPlayerWithControls( Fighter::FighterController Controller );
+
+		void ButtonReplay_Clear();
+		void ButtonReplay_Add(uint32_t Player, uint64_t FrameTime, bool JumpPressed, bool KickPressed);
+		void ButtonReplay_Play(uint64_t FrameTime);
 
   public:
 
