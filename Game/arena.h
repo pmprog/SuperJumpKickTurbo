@@ -18,6 +18,7 @@ class Arena : public Stage
 		Vector2* CollisionsAt[2];
 
 		ALLEGRO_FONT* fntTimer;
+		ALLEGRO_FONT* fntName;
 		int CountdownTimer;
 		int CountdownTimerTicker;
 		bool DisableTimer;

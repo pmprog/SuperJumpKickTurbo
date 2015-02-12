@@ -11,17 +11,20 @@ RoundOver::RoundOver(int PlayerWhoWon)
 RoundOver::~RoundOver()
 {
 	bool matchover = false;
+	int winner = 0;
 	currentArena->ResetArena();
 
 	if( currentArena->Player1Wins == 4 )
 	{
 		Arena::Player1TotalWins++;
 		matchover = true;
+		winner = 1;
 	}
 	if( currentArena->Player2Wins == 4 )
 	{
 		Arena::Player2TotalWins++;
 		matchover = true;
+		winner = 2;
 	}
 
 	if( matchover )
@@ -29,7 +32,7 @@ RoundOver::~RoundOver()
 		currentArena->Player1Wins = 0;
 		currentArena->Player2Wins = 0;
 		delete FRAMEWORK->ProgramStages->Pop();
-		FRAMEWORK->ProgramStages->Push( new MatchOver() );
+		FRAMEWORK->ProgramStages->Push( new MatchOver( winner ) );
 	}
 }
 

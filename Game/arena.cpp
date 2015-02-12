@@ -84,6 +84,7 @@ void Arena::Begin()
 #endif
 
 	fntTimer = al_load_ttf_font( "resources/titlefont.ttf", 48, 0 );
+	fntName = al_load_ttf_font( "resources/titlefont.ttf", 24, 0 );
 	Player1Wins = 0;
 	Player2Wins = 0;
 	ResetArena();
@@ -106,6 +107,7 @@ void Arena::Resume()
 void Arena::Finish()
 {
 	al_destroy_font( fntTimer );
+	al_destroy_font( fntName );
 	AUDIO->PlayMusic( "resources/naildown55-demo_riffs_3_loopedit.ogg", true );
 #ifdef WRITE_LOG
 	fprintf( FRAMEWORK->LogFile, "Stage: Arena::Finish()\n" );
@@ -540,7 +542,23 @@ void Arena::Render()
 	al_draw_textf( fntTimer, al_map_rgb( 255, 255, 0 ), DISPLAY->GetWidth() / 2, 10, ALLEGRO_ALIGN_CENTRE, "%d", CountdownTimer );
 
 	Player1->CharSelect_RenderProfileIcon( 30, 450 );
+	for( int ty = -2; ty < 2; ty++ )
+	{
+		for( int tx = -2; tx < 2; tx++ )
+		{
+			al_draw_textf( fntName, al_map_rgb( 0, 0, 0 ), 90 + tx, 450 + ty, ALLEGRO_ALIGN_LEFT, Player1->PlayerName.c_str() );
+		}
+	}
+	al_draw_textf( fntName, al_map_rgb( 128, 192, 64 ), 90, 450, ALLEGRO_ALIGN_LEFT, Player1->PlayerName.c_str() );
 	Player2->CharSelect_RenderProfileIcon( 770, 450 );
+	for( int ty = -2; ty < 2; ty++ )
+	{
+		for( int tx = -2; tx < 2; tx++ )
+		{
+			al_draw_textf( fntName, al_map_rgb( 0, 0, 0 ), 710 + tx, 450 + ty, ALLEGRO_ALIGN_RIGHT, Player2->PlayerName.c_str() );
+		}
+	}
+	al_draw_textf( fntName, al_map_rgb( 128, 192, 64 ), 710, 450, ALLEGRO_ALIGN_RIGHT, Player2->PlayerName.c_str() );
 }
 
 bool Arena::IsTransition()
