@@ -504,10 +504,10 @@ void Arena::Update()
 void Arena::Render()
 {
 	// Fix background drawing
-	al_draw_bitmap( Background, -Camera.X, DISPLAY->GetHeight() - al_get_bitmap_height(Background) + Camera.Y, 0 );
+	// al_draw_bitmap( Background, -Camera.X, DISPLAY->GetHeight() - al_get_bitmap_height(Background) + Camera.Y, 0 );
+	al_draw_bitmap_region( Background, Camera.X, al_get_bitmap_height(Background) - Camera.Y - DISPLAY->GetHeight(), DISPLAY->GetWidth(), DISPLAY->GetHeight(), 0, 0, 0 );
 
 	// Draw Fighters
-
 	switch( Player2->Fighter_GetState() )
 	{
 		case Fighter::FighterStates::Knockdown:
@@ -531,10 +531,20 @@ void Arena::Render()
 		}
 	}
 
-	for( int r = 0; r < 4; r++ )
+	if( !DemoMode )
 	{
-		RoundMarkers->DrawSprite( ( Player1Wins > r ? 1 : 0 ), 10 + (r * 52), 10 );
-		RoundMarkers->DrawSprite( ( Player2Wins > r ? 1 : 0 ), 790 - (r * 52) - 48, 10 );
+		al_hold_bitmap_drawing( true );
+		for( int r = 0; r < 4; r++ )
+		{
+			RoundMarkers->DrawSprite( ( Player1Wins > r ? 1 : 0 ), 10 + (r * 52), 10 );
+			RoundMarkers->DrawSprite( ( Player2Wins > r ? 1 : 0 ), 790 - (r * 52) - 48, 10 );
+		}
+		al_hold_bitmap_drawing( false );
+	} else {
+		al_draw_text( fntName, al_map_rgb( 0, 0, 0 ), 14, 14, ALLEGRO_ALIGN_LEFT, "DEMO" );
+		al_draw_text( fntName, al_map_rgb( 255, 255, 0 ), 10, 10, ALLEGRO_ALIGN_LEFT, "DEMO" );
+		al_draw_text( fntName, al_map_rgb( 0, 0, 0 ), 794, 14, ALLEGRO_ALIGN_RIGHT, "DEMO" );
+		al_draw_text( fntName, al_map_rgb( 255, 255, 0 ), 790, 10, ALLEGRO_ALIGN_RIGHT, "DEMO" );
 	}
 
 	// Draw timer
