@@ -24,6 +24,10 @@
 #include <vector>
 #include <list>
 
+#ifdef PANDORA
+#include <stdio.h>
+#endif
+
 #include "configfile.h"
 #include "maths.h"
 #include "memory.h"
