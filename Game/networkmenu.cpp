@@ -93,7 +93,7 @@ void NetworkMenu::Finish()
 
 void NetworkMenu::EventOccurred(Event *e)
 {
-	byte nullterm = 0;
+	char nullterm = 0;
 
 	if( e->Type == EVENT_KEY_DOWN && e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ESCAPE )
 	{

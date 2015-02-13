@@ -377,7 +377,12 @@ void PlayerSelect::ConstructPlayer1( Fighter::FighterController Controller, std:
 	p1char->Fighter_SetPosition( DISPLAY->GetWidth() / 4, 0 );
 	p1char->Fighter_SetState( Fighter::Idle );
 	p1char->Fighter_SetFacing( false );
-	p1char->PlayerName = PlayerSelect::Player1Name;
+	if( Controller == Fighter::FighterController::CPU_Easy || Controller == Fighter::FighterController::CPU_Medium || Controller == Fighter::FighterController::CPU_Hard )
+	{
+		p1char->PlayerName = "CPU";
+	} else {
+		p1char->PlayerName = PlayerSelect::Player1Name;
+	}
 }
 
 void PlayerSelect::ConstructPlayer2( Fighter::FighterController Controller, std::string Character )
@@ -386,7 +391,13 @@ void PlayerSelect::ConstructPlayer2( Fighter::FighterController Controller, std:
 	p2char->Fighter_SetPosition( (DISPLAY->GetWidth() / 4) * 3, 0 );
 	p2char->Fighter_SetState( Fighter::Idle );
 	p2char->Fighter_SetFacing( true );
-	p2char->PlayerName = PlayerSelect::Player2Name;
+	
+	if( Controller == Fighter::FighterController::CPU_Easy || Controller == Fighter::FighterController::CPU_Medium || Controller == Fighter::FighterController::CPU_Hard )
+	{
+		p2char->PlayerName = "CPU";
+	} else {
+		p2char->PlayerName = PlayerSelect::Player2Name;
+	}
 }
 
 int PlayerSelect::GetPlayerWithControls( Fighter::FighterController Controller )
