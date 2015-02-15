@@ -800,9 +800,8 @@ void Arena::ButtonReplay_Add(uint32_t Player, uint64_t FrameTime, bool JumpPress
 
 void Arena::ButtonReplay_Play(uint64_t FrameTime)
 {
-#ifdef WRITE_LOG
-	fprintf( FRAMEWORK->LogFile, "Button Replay : Frame %d \n", FrameTime );
-#endif
+	bool foundbutton = false;
+
 	for( std::vector<ReplayPacket*>::const_iterator idx = ButtonReplay.begin(); idx != ButtonReplay.end(); idx++ )
 	{
 		ReplayPacket* replay = (ReplayPacket*)*idx;
@@ -814,10 +813,12 @@ void Arena::ButtonReplay_Play(uint64_t FrameTime)
 					if( replay->Input.JumpPressed )
 					{
 						Player1->Fighter_JumpPressed();
+						foundbutton = true;
 					}
 					if( replay->Input.KickPressed )
 					{
 						Player1->Fighter_KickPressed();
+						foundbutton = true;
 					}
 					break;
 
@@ -825,13 +826,23 @@ void Arena::ButtonReplay_Play(uint64_t FrameTime)
 					if( replay->Input.JumpPressed )
 					{
 						Player2->Fighter_JumpPressed();
+						foundbutton = true;
 					}
 					if( replay->Input.KickPressed )
 					{
 						Player2->Fighter_KickPressed();
+						foundbutton = true;
 					}
 					break;
 			}
 		}
 	}
+
+#ifdef WRITE_LOG
+	if( foundbutton )
+	{
+		fprintf( FRAMEWORK->LogFile, "Button Replay : Frame %d \n", FrameTime );
+	}
+#endif
+
 }
