@@ -13,7 +13,7 @@ int main ( int argc, char* argv[] )
 
 #ifdef PANDORA
 	// Hacky close on the Pandora :(
-	raise(SIGINT);
+	raise(SIGKILL);
 #endif
 
   return 0;

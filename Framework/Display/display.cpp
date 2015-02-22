@@ -30,6 +30,8 @@ void Display::Initialise( int ScreenWidth, int ScreenHeight, bool Fullscreen, Di
 	fallback.X = gameSize.X;
 	fallback.Y = gameSize.Y;
 
+#ifndef PANDORA
+
 	if( Fullscreen )
 	{
 		al_set_new_display_flags( ALLEGRO_FULLSCREEN );
@@ -66,13 +68,15 @@ void Display::Initialise( int ScreenWidth, int ScreenHeight, bool Fullscreen, Di
 		screen = al_create_display( fallback.X, fallback.Y );
 	}
 
-#ifndef PANDORA
 	screenGameBuffer = al_create_bitmap( gameSize.X, gameSize.Y );
 	al_set_target_bitmap( screenGameBuffer );
+
+#else
+	al_set_new_display_flags( ALLEGRO_FULLSCREEN );
+	screen = al_create_display( 800, 480 );
 #endif
 
 	float bestscale = 1.0f;
-#ifndef PANDORA
 	switch( Scale )
 	{
 		case DisplayScaleMode::Letterbox:
@@ -89,9 +93,8 @@ void Display::Initialise( int ScreenWidth, int ScreenHeight, bool Fullscreen, Di
 			gameScreenSize.Y = ScreenHeight;
 			break;
 	}
-#endif
 
-	screenRetarget = nullptr;
+	ClearTarget();
 
 	al_set_blender( ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA );
 

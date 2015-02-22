@@ -97,12 +97,12 @@ void Menu::EventOccurred(Event *e)
 			activateoption = true;
 			source1 = Fighter::FighterController::LocalKeyboardP1;
 		}
-		if( (e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Jump", ALLEGRO_KEY_LSHIFT ) || e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Kick", ALLEGRO_KEY_LCTRL )) && !rushedintro )
+		if( (e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Keyboard.Jump", ALLEGRO_KEY_LSHIFT ) || e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Keyboard.Kick", ALLEGRO_KEY_LCTRL )) && !rushedintro )
 		{
 			activateoption = true;
 			source1 = Fighter::FighterController::LocalKeyboardP1;
 		}
-		if( (e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Jump", ALLEGRO_KEY_RSHIFT ) || e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Kick", ALLEGRO_KEY_RCTRL )) && !rushedintro )
+		if( (e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Keyboard.Jump", ALLEGRO_KEY_RSHIFT ) || e->Data.Keyboard.KeyCode == FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Keyboard.Kick", ALLEGRO_KEY_RCTRL )) && !rushedintro )
 		{
 			activateoption = true;
 			source2 = Fighter::FighterController::LocalKeyboardP2;
