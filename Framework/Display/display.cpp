@@ -142,7 +142,11 @@ ALLEGRO_BITMAP* Display::GetCurrentTarget()
 	{
 		return screenRetarget;
 	}
+#ifdef PANDORA
+	return nullptr;
+#else
 	return screenGameBuffer;
+#endif
 }
 
 void Display::ClearTarget()
