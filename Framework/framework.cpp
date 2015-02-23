@@ -101,6 +101,13 @@ Framework::~Framework()
 #endif
   SaveSettings();
 
+#ifdef PANDORA
+#ifdef WRITE_LOG
+  fprintf( LogFile, "Framework: Hacky Pandora Shutdown\n" );
+#endif
+	raise(SIGKILL);
+#endif
+
 #ifdef WRITE_LOG
   fprintf( LogFile, "Framework: Clear stages\n" );
 #endif
