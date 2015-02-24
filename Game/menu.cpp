@@ -40,18 +40,32 @@ void Menu::Begin()
 	TitleFighters[2]->PlayerName = "Menu:Bison";
 
 	AUDIO->PlayMusic( "resources/naildown55-demo_riffs_3_loopedit.ogg", true );
+
+#ifdef PANDORA
+	al_set_blender( ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA );
+#endif
 }
 
 void Menu::Pause()
 {
+#ifdef PANDORA
+	al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
+#endif
 }
 
 void Menu::Resume()
 {
+#ifdef PANDORA
+	al_set_blender( ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA );
+#endif
 }
 
 void Menu::Finish()
 {
+#ifdef PANDORA
+	al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
+#endif
+
 	al_destroy_bitmap( imgSuper );
 	al_destroy_bitmap( imgJumpKick );
 	delete imgTurbo;
