@@ -1,5 +1,6 @@
 
 #include "settingsmenu.h"
+#include "settingskeyset.h"
 
 void SettingsMenu::Begin()
 {
@@ -113,6 +114,18 @@ void SettingsMenu::EventOccurred(Event *e)
 
 	if( e->Type == EVENT_FORM_INTERACTION && e->Data.Forms.RaisedBy != nullptr )
 	{
+		if( e->Data.Forms.EventFlag == FormEventType::KeyDown )
+		{
+			if( e->Data.Forms.KeyInfo.KeyCode == ALLEGRO_KEY_UP )
+			{
+				uiForm->FocusPrevious();
+			}
+			if( e->Data.Forms.KeyInfo.KeyCode == ALLEGRO_KEY_DOWN )
+			{
+				uiForm->FocusNext();
+			}
+		}
+
 		Form* f = e->Data.Forms.RaisedBy->GetForm();
 		if( f->Name == "Video Settings" )
 		{
@@ -392,10 +405,145 @@ void SettingsMenu::ProcessAudioFormEvents(Event *e)
 
 void SettingsMenu::CreateInputForm()
 {
+	Control* c;
+	Label* l;
+	TextButton* tb;
+	TextButton* tbfirst;
+	std::string* keyname;
+
+	int currenty = 10;
+	int rowheight = fontUI->GetFontHeight() + 14;
+	int btnoffset = -1;
+	int btnheight = rowheight - 2;
+
+	uiForm = new Form();
+	uiForm->BackgroundColour = al_map_rgb( 0, 0, 0 );
+	uiForm->Location.X = 200;
+	uiForm->Location.Y = 100;
+	uiForm->Size.X = 400;
+	uiForm->Size.Y = 300;
+	uiForm->Name= "Input Settings";
+
+	c = new Control( uiForm );
+	c->Location.X = 4;
+	c->Location.Y = 4;
+	c->Size.X = uiForm->Size.X - 8;
+	c->Size.Y = uiForm->Size.Y - 8;
+
+	l = new Label( c, "Player 1:", fontUI );
+	l->Location.X = 10;
+	l->Location.Y = currenty;
+	l->Size.X = 380;
+	l->Size.Y = rowheight;
+	l->TextVAlign = VerticalAlignment::Bottom;
+
+	currenty += rowheight;
+
+	l = new Label( c, "Jump:", fontUI );
+	l->Location.X = 20;
+	l->Location.Y = currenty;
+	l->Size.X = 60;
+	l->Size.Y = rowheight;
+	l->TextVAlign = VerticalAlignment::Centre;
+
+	keyname = new std::string( al_keycode_to_name( FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Keyboard.Jump", ALLEGRO_KEY_LSHIFT ) ) );
+	tb = new TextButton( c, *keyname, fontUI );
+	tb->Location.X = 85;
+	tb->Location.Y = currenty - btnoffset;
+	tb->Size.X = c->Size.X - 90;
+	tb->Size.Y = btnheight;
+	tb->Name = "Player1.Keyboard.Jump";
+
+	tbfirst = tb;
+
+	currenty += rowheight;
+
+	l = new Label( c, "Kick:", fontUI );
+	l->Location.X = 20;
+	l->Location.Y = currenty;
+	l->Size.X = 180;
+	l->Size.Y = rowheight;
+	l->TextVAlign = VerticalAlignment::Centre;
+
+	keyname = new std::string( al_keycode_to_name( FRAMEWORK->Settings->GetQuickIntegerValue( "Player1.Keyboard.Kick", ALLEGRO_KEY_LCTRL ) ) );
+	tb = new TextButton( c, *keyname, fontUI );
+	tb->Location.X = 85;
+	tb->Location.Y = currenty - btnoffset;
+	tb->Size.X = c->Size.X - 90;
+	tb->Size.Y = btnheight;
+	tb->Name = "Player1.Keyboard.Kick";
+
+	currenty += (rowheight * 1.5);
+
+	l = new Label( c, "Player 2:", fontUI );
+	l->Location.X = 10;
+	l->Location.Y = currenty;
+	l->Size.X = 380;
+	l->Size.Y = rowheight;
+	l->TextVAlign = VerticalAlignment::Bottom;
+
+	currenty += rowheight;
+
+	l = new Label( c, "Jump:", fontUI );
+	l->Location.X = 20;
+	l->Location.Y = currenty;
+	l->Size.X = 60;
+	l->Size.Y = rowheight;
+	l->TextVAlign = VerticalAlignment::Centre;
+
+	keyname = new std::string( al_keycode_to_name( FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Keyboard.Jump", ALLEGRO_KEY_RSHIFT ) ) );
+	tb = new TextButton( c, *keyname, fontUI );
+	tb->Location.X = 85;
+	tb->Location.Y = currenty - btnoffset;
+	tb->Size.X = c->Size.X - 90;
+	tb->Size.Y = btnheight;
+	tb->Name = "Player2.Keyboard.Jump";
+
+	currenty += rowheight;
+
+	l = new Label( c, "Kick:", fontUI );
+	l->Location.X = 20;
+	l->Location.Y = currenty;
+	l->Size.X = 180;
+	l->Size.Y = rowheight;
+	l->TextVAlign = VerticalAlignment::Centre;
+
+	keyname = new std::string( al_keycode_to_name( FRAMEWORK->Settings->GetQuickIntegerValue( "Player2.Keyboard.Kick", ALLEGRO_KEY_RCTRL ) ) );
+	tb = new TextButton( c, *keyname, fontUI );
+	tb->Location.X = 85;
+	tb->Location.Y = currenty - btnoffset;
+	tb->Size.X = c->Size.X - 90;
+	tb->Size.Y = btnheight;
+	tb->Name = "Player2.Keyboard.Kick";
+
+	tb = new TextButton( c, "Ok", fontUI );
+	tb->Size.X = 80;
+	tb->Size.Y = 40;
+	tb->Location.X = c->Size.X - 90;
+	tb->Location.Y = c->Size.Y - 50;
+	tb->Name = "Input.Ok";
+
+	// Have to force process the Enter key events before I can set focus...
+	FRAMEWORK->ProcessEvents();
+	tbfirst->Focus();
 }
 
 void SettingsMenu::ProcessInputFormEvents(Event *e)
 {
+	if( e->Data.Forms.EventFlag == FormEventType::ButtonClick )
+	{
+
+		if( e->Data.Forms.RaisedBy->Name == "Input.Ok" )
+		{
+			AUDIO->PlaySoundEffect( "resources/collision.wav" );
+			FRAMEWORK->ProcessEvents();
+			delete uiForm;
+			uiForm = nullptr;
+		} else {
+			FRAMEWORK->ProgramStages->Push( new SettingsKeySet(e->Data.Forms.RaisedBy->Name, (TextButton*)e->Data.Forms.RaisedBy) );
+		}
+
+	}
 }
 
 void SettingsMenu::CreateNetworkForm()

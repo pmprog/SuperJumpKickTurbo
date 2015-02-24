@@ -35,6 +35,7 @@ NetworkMenu::NetworkMenu(Fighter::FighterController Controller)
 	l->Size.Y = fontForm->GetFontHeight();
 
 	te = new TextEdit( c, "", fontForm );
+	te->Name = "HostName";
 	te->BackgroundColour = c->BackgroundColour;
 	te->ForegroundColour = al_map_rgb( 255, 220, 0 );
 	te->Location.X = l->Size.X + 6;
@@ -113,7 +114,7 @@ void NetworkMenu::EventOccurred(Event *e)
 			delete FRAMEWORK->ProgramStages->Pop();
 			return;
 		}
-		if( e->Data.Forms.EventFlag == FormEventType::ButtonClick && e->Data.Forms.RaisedBy->Name == "Start" )
+		if( (e->Data.Forms.EventFlag == FormEventType::ButtonClick && e->Data.Forms.RaisedBy->Name == "Start") || (e->Data.Forms.EventFlag == FormEventType::KeyPress && e->Data.Forms.RaisedBy->Name == "HostName" && e->Data.Forms.KeyInfo.KeyCode == ALLEGRO_KEY_ENTER) )
 		{
 			if( te->GetText() == "" )
 			{

@@ -130,6 +130,7 @@
     <ClCompile Include="Game\playerselect.cpp" />
     <ClCompile Include="Game\roundcountin.cpp" />
     <ClCompile Include="Game\roundover.cpp" />
+    <ClCompile Include="Game\settingskeyset.cpp" />
     <ClCompile Include="Game\settingsmenu.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -188,6 +189,7 @@
     <ClInclude Include="Game\playerselect.h" />
     <ClInclude Include="Game\roundcountin.h" />
     <ClInclude Include="Game\roundover.h" />
+    <ClInclude Include="Game\settingskeyset.h" />
     <ClInclude Include="Game\settingsmenu.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
