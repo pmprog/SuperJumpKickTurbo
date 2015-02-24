@@ -2,6 +2,10 @@
 #include "framework.h"
 #include "../Game/boot.h"
 
+#ifdef PANDORA
+#include <signal.h>
+#endif
+
 Framework* Framework::System;
 
 Framework::Framework( int Width, int Height, int Framerate, bool DropFrames )

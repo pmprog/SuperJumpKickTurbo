@@ -151,6 +151,8 @@
 		<Unit filename="Game/roundover.h" />
 		<Unit filename="Game/settingsmenu.cpp" />
 		<Unit filename="Game/settingsmenu.h" />
+		<Unit filename="Game/settingskeyset.cpp" />
+		<Unit filename="Game/settingskeyset.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
