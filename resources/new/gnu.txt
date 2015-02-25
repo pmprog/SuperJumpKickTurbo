@@ -1,0 +1,87 @@
+Name = "Gnu"
+Sprites = "resources/gnu.png"
+SpritesAlt = "resources/gnu_alt.png"
+SpriteShrunkScale = 2
+
+JumpFrames = 64.0
+JumpSpeed = 12.2
+JumpBackFrames = 20.0
+JumpBackVSpeed = 14.0
+JumpBackHSpeed = 6.0
+KickVSpeed = 8.0
+KickHSpeed = 16.0
+
+Profile [ 1536, 32, 64, 64 ]
+
+IdleFrameTime = 8
+Idle [
+	  0, 0, 144, 204,
+	144, 0, 144, 204,
+	288, 0, 144, 204
+	]
+IdleHit [
+	28, 52, 110, 155,
+	28, 52, 110, 155,
+	28, 52, 110, 155
+	]
+
+TakeOffFrameTime = 6
+TakeOff [
+	144, 204, 144, 204
+	]
+TakeOffHit [
+	18, 60, 88, 190,
+	18, 60, 88, 190
+	]
+
+InAirFrameTime = 6
+InAir [
+	0, 204, 144, 204
+	]
+InAirHit [
+	18, 96, 88, 160
+	]
+
+LandFrameTime = 6
+Land [
+	288, 204, 144, 204
+	]
+LandHit [
+	20, 64, 96, 192
+	]
+
+KickFrameTime = 6
+Kick [
+	288, 612, 144, 204
+	]
+KickHit [
+	32, 30, 162, 110
+	]
+KickAttack [
+	160, 131, 56, 36
+	]
+
+KnockDownFrameTime = 6
+KnockDown [
+	0, 408, 144, 204
+	]
+	
+KnockDownLandFrameTime = 6
+KnockDownLand [
+	288, 408, 144, 204
+	]
+
+KnockedOutFrameTime = 6
+KnockedOut [
+	  0, 816, 144, 204,
+	144, 816, 144, 204,
+	288, 816, 144, 204,
+	144, 816, 144, 204
+	]
+
+WinFrameTime = 8
+Win [
+	  0,   0, 144, 204,
+	  0, 204, 144, 204
+	]
+

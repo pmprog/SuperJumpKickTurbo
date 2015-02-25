@@ -1,2 +1,2 @@
-Characters [ "resources/ryu.txt", "resources/akuma.txt", "resources/bison.txt" ]
+Characters [ "resources/gnu.txt", "resources/akuma.txt", "resources/bison.txt" ]
 Locations [ "resources/japan.png", "resources/england.png" ]

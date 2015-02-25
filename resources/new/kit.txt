@@ -1,0 +1,107 @@
+Name = "Bison"
+Sprites = "resources/bison.png"
+SpritesAlt = "resources/bison_alt.png"
+SpriteShrunkScale = 4
+
+JumpFrames = 85.0
+JumpSpeed = 9.5
+JumpBackFrames = 30.0
+JumpBackVSpeed = 10.0
+JumpBackHSpeed = 7.0
+KickVSpeed = 15.0
+KickHSpeed = 19.0
+
+Profile [ 1728, 64, 64, 64 ]
+
+IdleFrameTime = 8
+Idle [
+	  0,  0, 200, 200,
+	200,  0, 200, 200,
+	400,  0, 200, 200,
+	600,  0, 200, 200,
+	800,  0, 200, 200,
+	600,  0, 200, 200,
+	400,  0, 200, 200,
+	200,  0, 200, 200
+	]
+IdleHit [
+	32, 44, 162, 150,
+	32, 44, 162, 150,
+	32, 44, 162, 150,
+	32, 44, 162, 150,
+	32, 44, 162, 150,
+	32, 44, 162, 150,
+	32, 44, 162, 150,
+	32, 44, 162, 150
+	]
+
+TakeOffFrameTime = 6
+TakeOff [
+	1045, 0, 170, 250,
+	1045, 0, 170, 250
+	]
+TakeOffHit [
+	42, 48, 86, 196,
+	42, 48, 86, 196
+	]
+
+InAirFrameTime = 6
+InAir [
+	1250, 0, 250, 250
+	]
+InAirHit [
+	46, 78, 160, 148
+	]
+
+LandFrameTime = 6
+Land [
+	1500, 0, 154, 300,
+	1500, 0, 154, 300
+	]
+LandHit [
+	20, 94, 102, 196,
+	20, 94, 102, 196
+	]
+
+KickFrameTime = 6
+Kick [
+	0, 250, 250, 250
+	]
+KickHit [
+	36, 66, 166, 136
+	]
+KickAttack [
+	182, 196, 50, 38
+	]
+
+SuperFrameTime = 4
+Super [
+	 376, 256, 128, 256,
+	1048, 256, 192, 256,
+	 528, 256, 128, 256,
+	 680, 256, 184, 256
+	]
+
+KnockDownFrameTime = 6
+KnockDown [
+	34, 570, 220, 118
+	]
+	
+KnockDownLandFrameTime = 6
+KnockDownLand [
+	262, 548, 200, 148
+	]
+
+KnockedOutFrameTime = 6
+KnockedOut [
+	470, 592, 256, 104
+	]
+
+WinFrameTime = 8
+Win [
+	 250, 250, 250, 250,
+	 500, 250, 250, 250,
+	 750, 250, 250, 250,
+	1000, 250, 250, 250
+	]
+

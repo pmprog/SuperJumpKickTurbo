@@ -29,7 +29,7 @@ void Menu::Begin()
 	TitleFighters[0]->Fighter_SetFacing( false );
 	TitleFighters[0]->PlayerName = "Menu:Akuma";
 
-	TitleFighters[1] = new Fighter( Fighter::NoControls, "resources/ryu.txt", nullptr, false );
+	TitleFighters[1] = new Fighter( Fighter::NoControls, "resources/gnu.txt", nullptr, false );
 	TitleFighters[1]->Fighter_SetPosition( 0, 265 );
 	TitleFighters[1]->Fighter_SetFacing( false );
 	TitleFighters[1]->PlayerName = "Menu:Ryu";
