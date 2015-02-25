@@ -598,6 +598,8 @@ void Arena::ResetArena()
 			delete Player2;
 		}
 
+		// TODO: Fix this to use datalists = new ConfigFile( "resources/data.txt" );
+
 		int p1char = rand() % 3;
 		int p1skin = rand() % 2;
 		int p2char = rand() % 3;

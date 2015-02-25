@@ -106,6 +106,7 @@ class Fighter
 		static Network* NetworkController;
 
 		Fighter( FighterController Controls, std::string Config, Arena* FightArena, bool AlternativeSprites );
+		~Fighter();
 
 		void CharSelect_RenderProfileIcon( int ScreenX, int ScreenY );
 
