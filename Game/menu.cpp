@@ -24,7 +24,7 @@ void Menu::Begin()
 	menuSelectedColour = al_map_rgb( 255, 255, 0 );
 	menuItemColour = al_map_rgb( 220, 220, 220 );
 
-	TitleFighters[0] = new Fighter( Fighter::NoControls, "resources/akuma.txt", nullptr, false );
+	TitleFighters[0] = new Fighter( Fighter::NoControls, "resources/wilber.txt", nullptr, false );
 	TitleFighters[0]->Fighter_SetPosition( 0, 400 );
 	TitleFighters[0]->Fighter_SetFacing( false );
 	TitleFighters[0]->PlayerName = "Menu:Akuma";
@@ -34,7 +34,7 @@ void Menu::Begin()
 	TitleFighters[1]->Fighter_SetFacing( false );
 	TitleFighters[1]->PlayerName = "Menu:Ryu";
 
-	TitleFighters[2] = new Fighter( Fighter::NoControls, "resources/bison.txt", nullptr, false );
+	TitleFighters[2] = new Fighter( Fighter::NoControls, "resources/kit.txt", nullptr, false );
 	TitleFighters[2]->Fighter_SetPosition( 0, 530 );
 	TitleFighters[2]->Fighter_SetFacing( false );
 	TitleFighters[2]->PlayerName = "Menu:Bison";

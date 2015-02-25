@@ -11,7 +11,7 @@ int Arena::Player2TotalWins = 0;
 
 Arena::Arena()
 {
-	Background = al_load_bitmap( "resources/japan.png" );
+	Background = al_load_bitmap( "resources/desert.png" );
 	ArenaWidth = al_get_bitmap_width(Background);
 
 	DemoMode = true;
@@ -613,25 +613,25 @@ void Arena::ResetArena()
 		switch( p1char )
 		{
 			case 0:
-				Player1 = new Fighter( Fighter::CPU_Easy, "resources/ryu.txt", this, (p1skin == 0) );
+				Player1 = new Fighter( Fighter::CPU_Easy, "resources/gnu.txt", this, (p1skin == 0) );
 				break;
 			case 1:
-				Player1 = new Fighter( Fighter::CPU_Easy, "resources/akuma.txt", this, (p1skin == 0) );
+				Player1 = new Fighter( Fighter::CPU_Easy, "resources/wilber.txt", this, (p1skin == 0) );
 				break;
 			case 2:
-				Player1 = new Fighter( Fighter::CPU_Easy, "resources/bison.txt", this, (p1skin == 0) );
+				Player1 = new Fighter( Fighter::CPU_Easy, "resources/kit.txt", this, (p1skin == 0) );
 				break;
 		}
 		switch( p2char )
 		{
 			case 0:
-				Player2 = new Fighter( Fighter::CPU_Easy, "resources/ryu.txt", this, (p2skin == 0) );
+				Player2 = new Fighter( Fighter::CPU_Easy, "resources/gnu.txt", this, (p2skin == 0) );
 				break;
 			case 1:
-				Player2 = new Fighter( Fighter::CPU_Easy, "resources/akuma.txt", this, (p2skin == 0) );
+				Player2 = new Fighter( Fighter::CPU_Easy, "resources/wilber.txt", this, (p2skin == 0) );
 				break;
 			case 2:
-				Player2 = new Fighter( Fighter::CPU_Easy, "resources/bison.txt", this, (p2skin == 0) );
+				Player2 = new Fighter( Fighter::CPU_Easy, "resources/kit.txt", this, (p2skin == 0) );
 				break;
 		}
 	}

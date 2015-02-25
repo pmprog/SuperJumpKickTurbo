@@ -177,16 +177,19 @@ void SettingsMenu::Render()
 	curY = DrawMenuItem( 5, curY, "Save and Return" );
 	curY = DrawMenuItem( 6, curY, "Cancel" );
 
-	curY = DISPLAY->GetHeight() - (fontCreditsHeight * 11);
+	curY = DISPLAY->GetHeight() - (fontCreditsHeight * 12);
 	curY = DrawMenuItem( 99, curY, "Credits:" );
 	curY = DrawMenuItem( 100, curY, " Programming:" );
 	curY = DrawMenuItem( 99, curY, "  Marq Watkin, Polymath Programming" );
-	curY = DrawMenuItem( 99, curY, "  www.pmprog.co.uk" );
+	curY = DrawMenuItem( 99, curY, "  http://www.pmprog.co.uk" );
 	curY = DrawMenuItem( 100, curY, " Music: " );
 	curY = DrawMenuItem( 99, curY, "  Naildown55" );
-	curY = DrawMenuItem( 99, curY, "  naildown55.newgrounds.com/audio/" );
+	curY = DrawMenuItem( 99, curY, "  http://naildown55.newgrounds.com/audio/" );
 	curY = DrawMenuItem( 100, curY, " Graphics: " );
-	curY = DrawMenuItem( 99, curY, "  Ripped from SNK vs Capcom" );
+	curY = DrawMenuItem( 99, curY, "  Creek23" );
+	curY = DrawMenuItem( 99, curY, "  http://opengameart.org/content/smack-game-sprites" );
+	curY = DrawMenuItem( 99, curY, "  Dylan Squires" );
+	curY = DrawMenuItem( 99, curY, "  http://opengameart.org/content/several-scrolling-backgrounds-and-layerable-runners" );
 
 	if( uiForm != nullptr )
 	{
@@ -201,7 +204,7 @@ bool SettingsMenu::IsTransition()
 
 int SettingsMenu::DrawMenuItem( int MenuID, int CurrentY, std::string Text )
 {
-	al_draw_text( ( MenuID < 99 ? fontTitle : fontCredits ), ( menuSelection == MenuID || MenuID == 100 ? menuSelectedColour : menuItemColour ), 20, CurrentY, ALLEGRO_ALIGN_LEFT, Text.c_str() );
+	al_draw_text( ( MenuID < 99 ? fontTitle : fontCredits ), ( menuSelection == MenuID || MenuID == 100 ? menuSelectedColour : menuItemColour ), (MenuID < 99 ? 20 : 4), CurrentY, ALLEGRO_ALIGN_LEFT, Text.c_str() );
 	return CurrentY + ( MenuID < 99 ? fontHeight : fontCreditsHeight );
 }
 

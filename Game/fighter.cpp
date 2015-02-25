@@ -146,24 +146,24 @@ Fighter::~Fighter()
 #endif
 
 	// TODO: Urh, I really should delete stuff!
-	delete animIdle;
-	// std::vector<Box*> collisionIdle;
-	delete animJumpTakeOff;
-	// std::vector<Box*> collisionJumpTakeOff;
-	delete animJumpFloat;
-	// std::vector<Box*> collisionJumpFloat;
-	delete animJumpLand;
-	// std::vector<Box*> collisionJumpLand;
-	delete animKick;
-	// std::vector<Box*> collisionKick;
-	// std::vector<Box*> attackKick;
-	delete animKnockDown;
-	delete animKnockDownLand;
-	delete animKnockedOut;
-	delete animWin;
-	
-	delete spriteSheet;
-	delete currentPosition;
+	//delete animIdle;
+	//// std::vector<Box*> collisionIdle;
+	//delete animJumpTakeOff;
+	//// std::vector<Box*> collisionJumpTakeOff;
+	//delete animJumpFloat;
+	//// std::vector<Box*> collisionJumpFloat;
+	//delete animJumpLand;
+	//// std::vector<Box*> collisionJumpLand;
+	//delete animKick;
+	//// std::vector<Box*> collisionKick;
+	//// std::vector<Box*> attackKick;
+	//delete animKnockDown;
+	//delete animKnockDownLand;
+	//delete animKnockedOut;
+	//delete animWin;
+	//
+	//delete spriteSheet;
+	//delete currentPosition;
 
 }
 

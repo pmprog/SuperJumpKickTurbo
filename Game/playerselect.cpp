@@ -276,7 +276,7 @@ void PlayerSelect::Update()
 		if( p1char->Fighter_GetState() == Fighter::FighterStates::Victor && p2char->Fighter_GetState() == Fighter::FighterStates::Victor )
 		{
 			// Both players have selected their fighters
-			ingame =  new Arena( "resources/japan.png", p1char, p2char );
+			ingame =  new Arena( "resources/desert.png", p1char, p2char );
 			p1char->currentArena = ingame;
 			p2char->currentArena = ingame;
 			delete FRAMEWORK->ProgramStages->Pop();
@@ -291,7 +291,7 @@ void PlayerSelect::Update()
 		{
 			// Start up single player game
 			ConstructPlayer2( Fighter::FighterController::CPU_Easy, *datalists->GetQuickStringValue( "Characters", rand() % datalists->GetArraySize( "Characters" ), "" ) );
-			ingame =  new Arena( "resources/japan.png", p1char, p2char );
+			ingame =  new Arena( "resources/desert.png", p1char, p2char );
 			p1char->currentArena = ingame;
 			p2char->currentArena = ingame;
 			delete FRAMEWORK->ProgramStages->Pop();
@@ -306,7 +306,7 @@ void PlayerSelect::Update()
 		{
 			// Start up single player game
 			ConstructPlayer1( Fighter::FighterController::CPU_Easy, *datalists->GetQuickStringValue( "Characters", rand() % datalists->GetArraySize( "Characters" ), "" ) );
-			ingame =  new Arena( "resources/japan.png", p1char, p2char );
+			ingame =  new Arena( "resources/desert.png", p1char, p2char );
 			p1char->currentArena = ingame;
 			p2char->currentArena = ingame;
 			delete FRAMEWORK->ProgramStages->Pop();
