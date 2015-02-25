@@ -6,6 +6,7 @@ Network* Fighter::NetworkController = nullptr;
 
 Fighter::Fighter( FighterController Controls, std::string Config, Arena* FightArena, bool AlternativeSprites )
 {
+	int spriteshrunkscale;
 
 #ifdef WRITE_LOG
 	fprintf( FRAMEWORK->LogFile, "Fighter: Constructing %s\n", Config.c_str() );
@@ -32,6 +33,8 @@ Fighter::Fighter( FighterController Controls, std::string Config, Arena* FightAr
 	spriteSheet = new SpriteSheet( *tmpstring );
 	delete tmpstring;
 
+	spriteshrunkscale = cfg->GetQuickIntegerValue("SpriteShrunkScale", 1);
+
 	jumpFrames = cfg->GetQuickFloatValue( "JumpFrames", 60.0f );
 	jumpSpeed = cfg->GetQuickFloatValue( "JumpSpeed", 3.0f );
 	jumpBackFrames = cfg->GetQuickFloatValue( "JumpBackFrames", 30.0f );
@@ -45,78 +48,87 @@ Fighter::Fighter( FighterController Controls, std::string Config, Arena* FightAr
 
 	// Add Idle Animation
 	animIdle = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "IdleFrameTime", 20) );
+	animIdle->SetScale( (float)spriteshrunkscale );
 	for( int frameidx = 0; frameidx < cfg->GetArraySize( "Idle" ) / 4; frameidx++ )
 	{
-		animIdle->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Idle", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "Idle", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "Idle", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "Idle", (frameidx * 4) + 3, 0) ) );
+		animIdle->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Idle", (frameidx * 4), 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "Idle", (frameidx * 4) + 1, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "Idle", (frameidx * 4) + 2, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "Idle", (frameidx * 4) + 3, 0) / spriteshrunkscale ) );
 		collisionIdle.push_back( new Box( cfg->GetQuickIntegerValue( "IdleHit", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "IdleHit", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "IdleHit", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "IdleHit", (frameidx * 4) + 3, 0) ) );
 	}
 
 	// Add TakeOff Animation
 	animJumpTakeOff = new Animation( spriteSheet, false, cfg->GetQuickIntegerValue( "TakeOffFrameTime", 40) );
+	animJumpTakeOff->SetScale( (float)spriteshrunkscale );
 	for( int frameidx = 0; frameidx < cfg->GetArraySize( "TakeOff" ) / 4; frameidx++ )
 	{
-		animJumpTakeOff->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4) + 3, 0) ) );
+		animJumpTakeOff->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4), 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4) + 1, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4) + 2, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "TakeOff", (frameidx * 4) + 3, 0) / spriteshrunkscale ) );
 		collisionJumpTakeOff.push_back( new Box( cfg->GetQuickIntegerValue( "TakeOffHit", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "TakeOffHit", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "TakeOffHit", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "TakeOffHit", (frameidx * 4) + 3, 0) ) );
 	}
 
 	// Add InAir Animation
 	animJumpFloat = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "InAirFrameTime", 40) );
+	animJumpFloat->SetScale( (float)spriteshrunkscale );
 	for( int frameidx = 0; frameidx < cfg->GetArraySize( "InAir" ) / 4; frameidx++ )
 	{
-		animJumpFloat->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "InAir", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "InAir", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "InAir", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "InAir", (frameidx * 4) + 3, 0) ) );
+		animJumpFloat->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "InAir", (frameidx * 4), 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "InAir", (frameidx * 4) + 1, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "InAir", (frameidx * 4) + 2, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "InAir", (frameidx * 4) + 3, 0) / spriteshrunkscale ) );
 		collisionJumpFloat.push_back( new Box( cfg->GetQuickIntegerValue( "InAirHit", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "InAirHit", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "InAirHit", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "InAirHit", (frameidx * 4) + 3, 0) ) );
 	}
 
 	// Add Land Animation
 	animJumpLand = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "LandFrameTime", 40) );
+	animJumpLand->SetScale( (float)spriteshrunkscale );
 	for( int frameidx = 0; frameidx < cfg->GetArraySize( "Land" ) / 4; frameidx++ )
 	{
-		animJumpLand->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Land", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "Land", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "Land", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "Land", (frameidx * 4) + 3, 0) ) );
+		animJumpLand->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Land", (frameidx * 4), 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "Land", (frameidx * 4) + 1, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "Land", (frameidx * 4) + 2, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "Land", (frameidx * 4) + 3, 0) / spriteshrunkscale ) );
 		collisionJumpLand.push_back( new Box( cfg->GetQuickIntegerValue( "LandHit", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "LandHit", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "LandHit", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "LandHit", (frameidx * 4) + 3, 0) ) );
 	}
 
 	// Add Kick Animation
 	animKick = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "KickFrameTime", 40) );
+	animKick->SetScale( (float)spriteshrunkscale );
 	for( int frameidx = 0; frameidx < cfg->GetArraySize( "Kick" ) / 4; frameidx++ )
 	{
-		animKick->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Kick", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "Kick", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "Kick", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "Kick", (frameidx * 4) + 3, 0) ) );
+		animKick->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Kick", (frameidx * 4), 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "Kick", (frameidx * 4) + 1, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "Kick", (frameidx * 4) + 2, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "Kick", (frameidx * 4) + 3, 0) / spriteshrunkscale ) );
 		collisionKick.push_back( new Box( cfg->GetQuickIntegerValue( "KickHit", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "KickHit", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "KickHit", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "KickHit", (frameidx * 4) + 3, 0) ) );
 		attackKick.push_back( new Box( cfg->GetQuickIntegerValue( "KickAttack", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "KickAttack", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "KickAttack", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "KickAttack", (frameidx * 4) + 3, 0) ) );
 	}
 
-	// Add Super Animation
-	animSuper = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "SuperFrameTime", 40) );
-	for( int frameidx = 0; frameidx < cfg->GetArraySize( "Super" ) / 4; frameidx++ )
-	{
-		animSuper->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Super", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "Super", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "Super", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "Super", (frameidx * 4) + 3, 0) ) );
-	}
+	//// Add Super Animation
+	//animSuper = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "SuperFrameTime", 40) );
+	//for( int frameidx = 0; frameidx < cfg->GetArraySize( "Super" ) / 4; frameidx++ )
+	//{
+	//	animSuper->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Super", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "Super", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "Super", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "Super", (frameidx * 4) + 3, 0) ) );
+	//}
 
 	// Add KnockDown Animation
 	animKnockDown = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "KnockDownFrameTime", 40) );
+	animKnockDown->SetScale( (float)spriteshrunkscale );
 	for( int frameidx = 0; frameidx < cfg->GetArraySize( "KnockDown" ) / 4; frameidx++ )
 	{
-		animKnockDown->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "KnockDown", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "KnockDown", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "KnockDown", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "KnockDown", (frameidx * 4) + 3, 0) ) );
+		animKnockDown->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "KnockDown", (frameidx * 4), 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "KnockDown", (frameidx * 4) + 1, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "KnockDown", (frameidx * 4) + 2, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "KnockDown", (frameidx * 4) + 3, 0) / spriteshrunkscale ) );
 	}
 
 	// Add KnockDownLand Animation
 	animKnockDownLand = new Animation( spriteSheet, false, cfg->GetQuickIntegerValue( "KnockDownLandFrameTime", 40) );
+	animKnockDownLand->SetScale( (float)spriteshrunkscale );
 	for( int frameidx = 0; frameidx < cfg->GetArraySize( "KnockDownLand" ) / 4; frameidx++ )
 	{
-		animKnockDownLand->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "KnockDownLand", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "KnockDownLand", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "KnockDownLand", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "KnockDownLand", (frameidx * 4) + 3, 0) ) );
+		animKnockDownLand->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "KnockDownLand", (frameidx * 4), 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "KnockDownLand", (frameidx * 4) + 1, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "KnockDownLand", (frameidx * 4) + 2, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "KnockDownLand", (frameidx * 4) + 3, 0) / spriteshrunkscale ) );
 	}
 
 	// Add KnockedOut Animation
 	animKnockedOut = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "KnockedOutFrameTime", 40) );
+	animKnockedOut->SetScale( (float)spriteshrunkscale );
 	for( int frameidx = 0; frameidx < cfg->GetArraySize( "KnockedOut" ) / 4; frameidx++ )
 	{
-		animKnockedOut->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "KnockedOut", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "KnockedOut", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "KnockedOut", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "KnockedOut", (frameidx * 4) + 3, 0) ) );
+		animKnockedOut->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "KnockedOut", (frameidx * 4), 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "KnockedOut", (frameidx * 4) + 1, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "KnockedOut", (frameidx * 4) + 2, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "KnockedOut", (frameidx * 4) + 3, 0) / spriteshrunkscale ) );
 	}
 
 	// Add Win Animation
 	animWin = new Animation( spriteSheet, true, cfg->GetQuickIntegerValue( "WinFrameTime", 40) );
+	animWin->SetScale( (float)spriteshrunkscale );
 	for( int frameidx = 0; frameidx < cfg->GetArraySize( "Win" ) / 4; frameidx++ )
 	{
-		animWin->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Win", (frameidx * 4), 0), cfg->GetQuickIntegerValue( "Win", (frameidx * 4) + 1, 0), cfg->GetQuickIntegerValue( "Win", (frameidx * 4) + 2, 0), cfg->GetQuickIntegerValue( "Win", (frameidx * 4) + 3, 0) ) );
+		animWin->AddFrame( spriteSheet->AddSprite( cfg->GetQuickIntegerValue( "Win", (frameidx * 4), 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "Win", (frameidx * 4) + 1, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "Win", (frameidx * 4) + 2, 0) / spriteshrunkscale, cfg->GetQuickIntegerValue( "Win", (frameidx * 4) + 3, 0) / spriteshrunkscale ) );
 	}
 
 	jumpIsPressed = false;
@@ -256,8 +268,8 @@ void Fighter::Fighter_Update( bool IgnoreCollisions )
 			delete collisionarea;
 		}
 		break;
-	case Fighter::Super:
-		break;
+	//case Fighter::Super:
+	//	break;
 
 	case Fighter::Knockdown:
 		FighterHit = false;
@@ -342,10 +354,10 @@ void Fighter::Fighter_SetState( FighterStates NewState, bool SaveState )
 		currentAnimation = animKick;
 		currentAnimation->Start();
 		break;
-	case Fighter::Super:
-		currentAnimation = animSuper;
-		currentAnimation->Start();
-		break;
+	//case Fighter::Super:
+	//	currentAnimation = animSuper;
+	//	currentAnimation->Start();
+	//	break;
 	case Fighter::Knockdown:
 		AUDIO->PlaySoundEffect( "resources/collision.wav" );
 		currentAnimation = animKnockDown;
@@ -407,9 +419,9 @@ void Fighter::Fighter_SetPosition(Vector2i* NewPosition)
 
 void Fighter::Fighter_Render(int ScreenOffsetX, int ScreenOffsetY)
 {
-	int screenY = 432 - currentPosition->Y + ScreenOffsetY - spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Height;
+	int screenY = 432 - currentPosition->Y + ScreenOffsetY - (spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Height * currentAnimation->GetScaleY());
 	int screenX = currentPosition->X - ScreenOffsetX;
-	screenX -= (currentFaceLeft ? -1 : 1) * (spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Width / 2);
+	screenX -= (currentFaceLeft ? -1 : 1) * ((spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Width * currentAnimation->GetScaleX()) / 2);
 	currentAnimation->DrawFrame( screenX, screenY, currentFaceLeft, false );
 
 	if( FRAMEWORK->Settings->GetQuickBooleanValue( "Debug.ShowCollisionBoxes", false ) )
@@ -509,15 +521,15 @@ Box* Fighter::Fighter_GetCurrentHitBox()
 
 Box* Fighter::CollisionBoxToScreenBox(Box* Source)
 {
-	int screenY = 432 - currentPosition->Y - spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Height;
+	int screenY = 432 - currentPosition->Y - (spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Height * currentAnimation->GetScaleY());
 	int screenX = currentPosition->X;
 
 	if( currentFaceLeft )
 	{
-		screenX += (spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Width / 2);
+		screenX += ((spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Width * currentAnimation->GetScaleX()) / 2);
 		screenX -= Source->GetRight();
 	} else {
-		screenX -= (spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Width / 2);
+		screenX -= ((spriteSheet->GetFrame( currentAnimation->GetCurrentFramesSpriteIndex() )->Width * currentAnimation->GetScaleX()) / 2);
 		screenX += Source->GetLeft();
 	}
 	screenY += Source->GetTop();

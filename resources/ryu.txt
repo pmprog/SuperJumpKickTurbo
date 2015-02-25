@@ -1,6 +1,7 @@
 Name = "Ryu"
 Sprites = "resources/ryu.png"
 SpritesAlt = "resources/ryu_alt.png"
+SpriteShrunkScale = 4
 
 JumpFrames = 64.0
 JumpSpeed = 12.2

@@ -1,14 +1,15 @@
 Name = "Akuma"
 Sprites = "resources/akuma.png"
 SpritesAlt = "resources/akuma_alt.png"
+SpriteShrunkScale = 4
 
 JumpFrames = 45.0
 JumpSpeed = 19.0
 JumpBackFrames = 10.0
 JumpBackVSpeed = 12.0
 JumpBackHSpeed = 9.0
-KickVSpeed = 9.0
-KickHSpeed = 9.0
+KickVSpeed = 12.0
+KickHSpeed = 12.0
 
 Profile [ 1408, 64, 64, 64 ]
 

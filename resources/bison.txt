@@ -1,6 +1,7 @@
 Name = "Bison"
 Sprites = "resources/bison.png"
 SpritesAlt = "resources/bison_alt.png"
+SpriteShrunkScale = 4
 
 JumpFrames = 85.0
 JumpSpeed = 9.5

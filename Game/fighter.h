@@ -34,8 +34,8 @@ class Fighter
 			Jump,
 			Kick,
 			BackJump,
-			Super,
-			Ultra,
+			// Super,
+			// Ultra,
 			Knockdown,
 			Floored,
 			Victor,
@@ -66,7 +66,7 @@ class Fighter
 		Animation* animKick;
 		std::vector<Box*> collisionKick;
 		std::vector<Box*> attackKick;
-		Animation* animSuper;
+		//Animation* animSuper;
 		Animation* animKnockDown;
 		Animation* animKnockDownLand;
 		Animation* animKnockedOut;

@@ -456,8 +456,8 @@ void Arena::Update()
 	{
 		case Fighter::BackJump:
 		case Fighter::Kick:
-		case Fighter::Super:
-		case Fighter::Ultra:
+		//case Fighter::Super:
+		//case Fighter::Ultra:
 			if( Player1->Fighter_GetPosition()->X < Camera.X )
 			{
 				Player1->Fighter_GetPosition()->X = Camera.X;
@@ -473,8 +473,8 @@ void Arena::Update()
 	{
 		case Fighter::BackJump:
 		case Fighter::Kick:
-		case Fighter::Super:
-		case Fighter::Ultra:
+		//case Fighter::Super:
+		//case Fighter::Ultra:
 			if( Player2->Fighter_GetPosition()->X < Camera.X )
 			{
 				Player2->Fighter_GetPosition()->X = Camera.X;

@@ -112,7 +112,7 @@ void SettingsMenu::EventOccurred(Event *e)
 		}
 	}
 
-	if( e->Type == EVENT_FORM_INTERACTION && e->Data.Forms.RaisedBy != nullptr )
+	if( e->Type == EVENT_FORM_INTERACTION && e->Data.Forms.RaisedBy != nullptr && uiForm != nullptr )
 	{
 		if( e->Data.Forms.EventFlag == FormEventType::KeyDown )
 		{

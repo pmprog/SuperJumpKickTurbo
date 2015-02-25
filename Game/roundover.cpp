@@ -104,13 +104,15 @@ void RoundOver::EventOccurred(Event *e)
 {
 	if( e->Type == EVENT_KEY_DOWN )
 	{
-		// leaving = true;
+		leaving = true;
+		/*
 		if( e->Data.Keyboard.KeyCode == ALLEGRO_KEY_ESCAPE )
 		{
 			delete FRAMEWORK->ProgramStages->Pop();
 			delete FRAMEWORK->ProgramStages->Pop();
 			return;
 		}
+		*/
 	}
 }
 
