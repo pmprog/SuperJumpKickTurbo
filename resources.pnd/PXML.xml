@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PXML xmlns="http://openpandora.org/namespaces/PXML">
+  <package id="superjumpkickturbo.marqwatkin">
+    <author name="Marq Watkin" website="http://www.pmprog.co.uk"/>
+    <version major="1" minor="0" release="0" build="0"/>
+    <titles>
+      <title lang="en_US">Super JumpKick Turbo</title>
+    </titles>
+    <descriptions>
+      <description lang="en_US">SJKT is a two button fighting game based on DiveKick.
+
+Network play works, though there is the occasional desync that I've not yet fixed. Not sure exactly how well it'll work on the Pandora; but I will try and release Win and Linux versions as well</description>
+    </descriptions>
+    <icon src="./resources.pnd/icon128.png"/>
+  </package>
+  <application id="superjumpkickturbo.marqwatkin">
+    <exec command="./launch.sh"/>
+    <author name="Marq Watkin" website="http://www.pmprog.co.uk"/>
+    <version major="1" minor="0" release="0" build="0"/>
+    <titles>
+      <title lang="en_US">Super JumpKick Turbo</title>
+    </titles>
+    <descriptions>
+      <description lang="en_US">SJKT is a two button fighting game based on DiveKick.
+
+Network play works, though there is the occasional desync that I've not yet fixed. Not sure exactly how well it'll work on the Pandora; but I will try and release Win and Linux versions as well</description>
+    </descriptions>
+    <!--Extra block for compatibility with OS versions before HF6-->
+    <title lang="en_US">Super JumpKick Turbo</title>
+    <description lang="en_US">SJKT is a two button fighting game based on DiveKick.
+
+Network play works, though there is the occasional desync that I've not yet fixed. Not sure exactly how well it'll work on the Pandora; but I will try and release Win and Linux versions as well</description>
+    <!--END Extra block-->
+    <icon src="./resources.pnd/icon128.png"/>
+    <licenses>
+      <license name="MIT" sourcecodeurl="https://github.com/pmprog/SuperJumpKickTurbo"/>
+    </licenses>
+    <icon src="./resources.pnd/icon128.png"/>
+    <previewpics>
+      <pic src="./resources.pnd/screen1.png"/>
+      <pic src="./resources.pnd/screen2.png"/>
+      <pic src="./resources.pnd/screen3.png"/>
+    </previewpics>
+    <categories>
+      <category name="Game">
+        <subcategory name="ArcadeGame"/>
+      </category>
+    </categories>
+  </application>
+  <!--Created with the PXMLCreator of PNDTools v.0.7.0-->
+</PXML>
