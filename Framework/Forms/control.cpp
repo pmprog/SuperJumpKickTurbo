@@ -2,7 +2,7 @@
 #include "control.h"
 #include "forms.h"
 
-Control::Control(Control* Owner) : Name("Control"), owningControl(Owner), focusedChild(nullptr), BackgroundColour(al_map_rgb( 80, 80, 80 )), ForegroundColour(al_map_rgb(255, 255, 255)), CanFocus(false), AllowTab(false), mouseInside(false), mouseDepressed(false), controlArea(nullptr)
+Control::Control(Control* Owner) : controlArea(nullptr), owningControl(Owner), focusedChild(nullptr), mouseInside(false), mouseDepressed(false), Name("Control"), BackgroundColour(al_map_rgb( 80, 80, 80 )), ForegroundColour(al_map_rgb(255, 255, 255)), CanFocus(false), AllowTab(false)
 {
 	if( Owner != nullptr )
 	{

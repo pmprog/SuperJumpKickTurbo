@@ -44,6 +44,8 @@ void TransitionTiled::PrepareTiles( TiledTransitions::Transition Style, int Tile
 			spiralLastY = 0;
 			spiralLastDirection = 0;
 			break;
+		default:
+			break;
 	}
 
 	// Cache screens
@@ -109,7 +111,7 @@ void TransitionTiled::Finish()
 {
 }
 
-void TransitionTiled::EventOccurred(Event *e)
+void TransitionTiled::EventOccurred(Event*)
 {
 }
 
@@ -223,7 +225,7 @@ void TransitionTiled::Render()
 			}
 		}
 	}
-	
+
 	al_hold_bitmap_drawing( false );
 }
 

@@ -1,7 +1,7 @@
 
 #include "checkbox.h"
 
-CheckBox::CheckBox( Control* Owner ) : Control( Owner ), Checked(false), imagechecked(nullptr), imageunchecked(nullptr)
+CheckBox::CheckBox( Control* Owner ) : Control( Owner ), imagechecked(nullptr), imageunchecked(nullptr), Checked(false)
 {
 	CanFocus = true;
 	LoadResources();

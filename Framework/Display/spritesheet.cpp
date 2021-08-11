@@ -63,7 +63,6 @@ void SpriteSheet::DrawSprite( int FrameNumber, int ScreenX, int ScreenY, float S
 	{
 		al_draw_bitmap_region( sheet, r->X, r->Y, r->Width, r->Height, ScreenX, ScreenY, 0 );
 	} else {
-		int renderX = r->X + ((r->Width * ScaleX) / 2);
 		if( Rotation == 0 )
 		{
 			al_draw_tinted_scaled_rotated_bitmap_region( sheet, r->X, r->Y, r->Width, r->Height, al_map_rgba(255, 255, 255, 255), 0, 0, ScreenX, ScreenY, ScaleX, ScaleY, 0, 0 );

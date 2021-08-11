@@ -202,6 +202,8 @@ void Fighter::Fighter_Update( bool IgnoreCollisions )
 			case Fighter::Idle:
 				Fighter_SetState( Fighter::Jump );
 				break;
+			default:
+				break;
 		}
 		jumpIsPressed = false;
 	}
@@ -216,6 +218,8 @@ void Fighter::Fighter_Update( bool IgnoreCollisions )
 			case Fighter::Jump:
 			case Fighter::BackJump:
 				Fighter_SetState( Fighter::Kick );
+				break;
+			default:
 				break;
 		}
 		kickIsPressed = false;
@@ -318,6 +322,8 @@ void Fighter::Fighter_Update( bool IgnoreCollisions )
 		break;
 		//		case Fighter::Ultra:
 		//			break;
+	default:
+		break;
 	}
 
 
@@ -396,6 +402,8 @@ void Fighter::Fighter_SetState( FighterStates NewState, bool SaveState )
 	case Fighter::Loser:
 		currentAnimation = animKnockedOut;
 		currentAnimation->Start();
+		break;
+	default:
 		break;
 	}
 
@@ -511,6 +519,8 @@ void Fighter::Fighter_SuperPressed()
 		case Fighter::Kick:
 			// Fighter_SetState( Fighter::Super );
 			break;
+		default:
+			break;
 	}
 }
 
@@ -564,10 +574,10 @@ Box* Fighter::CollisionBoxToScreenBox(Box* Source)
 	return b;
 }
 
-void Fighter::AI_Update( int Skill )
+void Fighter::AI_Update( int )
 {
 	int randomkeys = rand() % 30;
-	
+
 	switch( randomkeys )
 	{
 		case 0:
@@ -620,7 +630,7 @@ bool Fighter::State_Load(uint64_t FrameCount)
 	bool foundState = false;
 	for( int i = 0; i < FIGHTER_MAXIMUM_ROLLBACK_STATES; i++ )
 	{
-		if( RollbackStates[i].FrameCount >= 0 && RollbackStates[i].FrameCount <= FrameCount )
+		if( RollbackStates[i].FrameCount <= FrameCount )
 		{
 			Fighter_SetState( RollbackStates[i].State, false );
 			currentStateTime = RollbackStates[i].StateTime;
@@ -629,7 +639,7 @@ bool Fighter::State_Load(uint64_t FrameCount)
 			currentPosition->Y = RollbackStates[i].Y;
 			FighterHit = RollbackStates[i].BeenHit;
 
-			for( long l = RollbackStates[i].FrameCount; l <= FrameCount; l++ )
+			for( uint64_t l = RollbackStates[i].FrameCount; l <= FrameCount; l++ )
 			{
 				Fighter_Update( true );
 			}
