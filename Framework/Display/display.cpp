@@ -22,7 +22,6 @@ void Display::Initialise( int ScreenWidth, int ScreenHeight, bool Fullscreen, Di
   fprintf( FRAMEWORK->LogFile, "Framework: Initialise Display\n" );
 #endif
 	bool foundmode = false;
-	bool foundwindowedmode = false;
 	Vector2 fallback;
 
 	screenSize.X = ScreenWidth;

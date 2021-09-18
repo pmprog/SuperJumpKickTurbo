@@ -450,7 +450,7 @@ bool ConfigFile::SetIntegerValue( std::string Key, int ArrayIndex, int Value )
 bool ConfigFile::SetInteger64Value( std::string Key, long Value )
 {
 	char val[200];
-	sprintf( (char*)&val, "%d", Value );
+	sprintf( (char*)&val, "%ld", Value );
 	std::string* s = new std::string( val );
 	bool r = SetStringValue( Key, s );
 	return r;
@@ -459,7 +459,7 @@ bool ConfigFile::SetInteger64Value( std::string Key, long Value )
 bool ConfigFile::SetInteger64Value( std::string Key, int ArrayIndex, long Value )
 {
 	char val[200];
-	sprintf( (char*)&val, "%d", Value );
+	sprintf( (char*)&val, "%ld", Value );
 	std::string* s = new std::string( val );
 	bool r = SetStringValue( Key, ArrayIndex, s );
 	return r;

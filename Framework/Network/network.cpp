@@ -144,6 +144,9 @@ void Network::Update()
 				memcpy( &fwEvent->Data.Network.Traffic, &netEvent, sizeof(ENetEvent) );
 				Framework::System->PushEvent( fwEvent );
 				break;
+
+			case ENET_EVENT_TYPE_NONE:
+				break;
 		}
 	}
 }

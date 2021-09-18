@@ -3,7 +3,7 @@
 #include <iostream>
 #include <algorithm>
 
-TextEdit::TextEdit( Control* Owner, std::string Text, TTFFont* Font ) : Control( Owner ), text( Text ), font( Font ), TextHAlign( HorizontalAlignment::Left ), TextVAlign( VerticalAlignment::Centre ), editting(false), SelectionStart(Text.length()), caretTimer(0), caretDraw(false), editShift(false), editAltGr(false)
+TextEdit::TextEdit( Control* Owner, std::string Text, TTFFont* Font ) : Control( Owner ), caretDraw(false), caretTimer(0), text( Text ), font( Font ), editting(false), editShift(false), editAltGr(false), SelectionStart(Text.length()), TextHAlign( HorizontalAlignment::Left ), TextVAlign( VerticalAlignment::Centre )
 {
 	CanFocus = true;
 }
@@ -65,7 +65,7 @@ void TextEdit::EventOccured( Event* e )
 					e->Handled = true;
 					break;
 				case ALLEGRO_KEY_DELETE:
-					if( SelectionStart < text.length() )
+					if( SelectionStart < (int)text.length() )
 					{
 						text.erase( text.begin() + SelectionStart, text.begin() + SelectionStart + 1 );
 						RaiseEvent( FormEventType::TextChanged );
@@ -80,7 +80,7 @@ void TextEdit::EventOccured( Event* e )
 					e->Handled = true;
 					break;
 				case ALLEGRO_KEY_RIGHT:
-					if( SelectionStart < text.length() )
+					if( SelectionStart < (int)text.length() )
 					{
 						SelectionStart++;
 					}
@@ -145,7 +145,6 @@ void TextEdit::OnRender()
 {
 	int xpos;
 	int ypos;
-	int xadjust = 3;
 
 	al_draw_line( 0, Size.Y - 1, Size.X, Size.Y - 1, ForegroundColour, 1 );
 
@@ -227,7 +226,7 @@ void TextEdit::SetText( std::string Text )
 	RaiseEvent( FormEventType::TextChanged );
 }
 
-void TextEdit::RaiseEvent( FormEventType Type )
+void TextEdit::RaiseEvent( FormEventType )
 {
 	Event* ce = new Event();
 	ce->Type = EVENT_FORM_INTERACTION;

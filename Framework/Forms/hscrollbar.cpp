@@ -1,7 +1,7 @@
 
 #include "hscrollbar.h"
 
-HScrollBar::HScrollBar( Control* Owner ) : Control( Owner ), Maximum(10), Minimum(0), Value(0), capture(false), LargeChange(2)
+HScrollBar::HScrollBar( Control* Owner ) : Control( Owner ), capture(false), Minimum(0), Maximum(10), Value(0), LargeChange(2)
 {
 	//LoadResources();
 }

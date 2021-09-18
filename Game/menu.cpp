@@ -64,7 +64,6 @@ void Menu::EventOccurred(Event *e)
 {
 	bool rushedintro = false;
 	bool activateoption = false;
-	bool wasp1active = true;
 	Fighter::FighterController source1 = Fighter::FighterController::NoControls;
 	Fighter::FighterController source2 = Fighter::FighterController::NoControls;
 
@@ -157,7 +156,6 @@ void Menu::EventOccurred(Event *e)
 			Player1Joystick = e->Data.Joystick.ID;
 		} else if( Player2Joystick != -1 ) {
 			Player2Joystick = e->Data.Joystick.ID;
-			wasp1active = false;
 		}
 	}
 

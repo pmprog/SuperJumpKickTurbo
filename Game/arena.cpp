@@ -231,7 +231,7 @@ void Arena::EventOccurred(Event *e)
 			fprintf( FRAMEWORK->LogFile, "Packet : Input\n" );
 #endif
 
-			int tempcurrentframe = RoundFrameCount;
+			uint64_t tempcurrentframe = RoundFrameCount;
 
 			State_Load( netpacket.FrameCount );
 
@@ -314,7 +314,6 @@ void Arena::EventOccurred(Event *e)
 		if( transmitinput && source != Fighter::FighterController::NetworkClient )
 		{
 			Fighter* f = GetPlayerWithControls( source );
-			Fighter::FighterSaveState* tempstate = f->State_GetCurrent( RoundFrameCount );
 
 			netpacket.Type = PACKET_TYPE_INPUT;
 			netpacket.FrameCount = RoundFrameCount;
@@ -467,6 +466,8 @@ void Arena::Update()
 				Player1->Fighter_GetPosition()->X = Camera.X + DISPLAY->GetWidth();
 			}
 			break;
+		default:
+			break;
 	}
 	// Lock players in screen
 	switch( Player2->Fighter_GetState() )
@@ -483,6 +484,8 @@ void Arena::Update()
 			{
 				Player2->Fighter_GetPosition()->X = Camera.X + DISPLAY->GetWidth();
 			}
+			break;
+		default:
 			break;
 	}
 
@@ -604,7 +607,7 @@ void Arena::ResetArena()
 		int p1skin = rand() % 2;
 		int p2char = rand() % 3;
 		int p2skin = rand() % 2;
-		
+
 		if( p1char == p2char && p1skin == p2skin )
 		{
 			p2skin = 1 - p2skin;
